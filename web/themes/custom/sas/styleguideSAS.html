@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Styleguide</title>
+  <link rel="stylesheet" href="../santefr/css/main.css">
+  <link rel="stylesheet" href="css/main-sas.css">
+
+  <style type="text/css">
+    body {
+      background: #f5f7fa;
+    }
+    .modal-backdrop {
+      display: none;
+    }
+    .modal-sas, .vuemodal-sas {
+      display: block;
+      position: inherit;
+      left: inherit;
+      right: inherit;
+      top: inherit;
+      transform: inherit;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1 class="section">Styleguide SAS</h1>
+  <aside>
+    <h2>Sommaire</h2>
+    <ul>
+      <li><a href="#typo">Typography</a></li>
+      <li><a href="#buttons">Buttons</a></li>
+      <li><a href="#tags">Tags</a></li>
+      <li><a href="#cards">Cards</a></li>
+      <li><a href="#form">Form</a></li>
+      <li><a href="#modalsection">Modal</a></li>
+      <li><a href="#messages">Messages</a></li>
+      <li><a href="#notices">Notifications</a></li>
+    </ul>
+  </aside>
+  <br><br><br>
+  <section id="typo">
+    <h2>Typography</h2>
+    <h3 class="page-title">page-title</h3>
+    <p class="txt-bold-big">txt-bold-big</p>
+  </section>
+
+  <br><br>
+  <hr class="separation">
+  <br><br>
+
+  <section id="buttons">
+    <h2>Buttons</h2>
+    <div class="section">
+      <h3>.btn-highlight</h3>
+      <button class="btn-highlight">Button Highlight</button>
+    </div>
+
+    <div class="section">
+      <h3>.btn-highlight.with-icon</h3>
+      <button class="btn-highlight with-icon"><i class="icon icon-pencil" aria-hidden="true"></i>Button Highlight</button>
+    </div>
+
+    <div class="section">
+      <h3>.btn-highlight.only-icon</h3>
+      <button class="btn-highlight only-icon"><i class="icon icon-right" aria-hidden="true"></i><span class="sr-only">Only icon</span></button>
+    </div>
+
+    <div class="section">
+      <h3>.btn-highlight-outline</h3>
+      <button class="btn-highlight-outline">Button Highlight Outline</button>
+    </div>
+
+    <div class="section">
+      <h3>.btn-highlight-outline.with-icon</h3>
+      <button class="btn-highlight-outline with-icon"><i class="icon icon-pencil" aria-hidden="true"></i>Button Highlight</button>
+    </div>
+
+    <div class="section">
+      <h3>.btn-highlight-outline.only-icon</h3>
+      <button class="btn-highlight-outline only-icon"><i class="icon icon-right" aria-hidden="true"></i><span class="sr-only">Only icon</span></button>
+    </div>
+
+    <div class="section">
+      <h3>.btn-add</h3>
+      <button type="button" class="btn-add">
+        <span>Ajouter une autre période d'indisponibilité</span>
+      </button>
+    </div>
+
+    <div class="section">
+      <h3>.btn-delete</h3>
+      <button type="button" class="btn-delete">
+        <span>Supprimer</span>
+      </button>
+    </div>
+
+  </section>
+
+  <br><br>
+  <hr class="separation">
+  <br><br>
+
+  <section id="tags">
+    <h2>Tags</h2>
+    <div class="section">
+      <h3>.tag-with-chip</h3>
+      <div class="tag-with-chip">
+        <span class="chip"></span>
+        Disponibilités
+      </div>
+
+      <h3>.tag-letter</h3>
+      <div class="tag-letter" aria-hidden="true">C</div>
+    </div>
+
+    <h3>.tag-params</h3>
+    <div class="tag-params">
+      <i class="icon-plus"></i>
+      <p>Surnuméraire</p>
+    </div>
+    <div class="tag-params">
+      <i class="icon-close"></i>
+      <p>Surnuméraire</p>
+    </div>
+  </section>
+
+  <br><br>
+  <hr class="separation">
+  <br><br>
+
+  <section id="cards">
+    <h2>Cards</h2>
+    <h3>Card page de recherche</h3>
+    <div class="sas-card">
+      <div class="sas-card-header">
+        <h3 class="sas-ps">
+          <div class="ps-content">
+            <i class="icon-stethoscope"></i>
+            <div class="ps-content-col">
+              <div class="ps-name">Dr. Francis Brunet</div>
+              <div class="ps-profession">Médecin généraliste</div>
+            </div>
+
+          </div>
+
+          <div class="card-reorientation"><i class="icon-more"></i> Participation au forfait de réorientation des urgences</div>
+        </h3>
+        <p class="sas-card-moment">Aujourd'hui</p>
+      </div>
+      <div class="sas-card-content">
+        <ul>
+          <li class="content-address"><i class="icon-pin"></i> 101 avenue Henri Barbusse, 92140 Clamart</li>
+          <li class="content-distance"><i class="icon-distance"></i>300 m</li>
+          <li class="content-hourly"><i class="icon-opened"></i><span class="hourly-open">Ouvert</span> - Ferme
+            à 19h00</li>
+          <li class="content-phone">
+            <i class="icon-cards-phone"></i><a href="#" rel="noopener noreferrer">01 40 43 43 26</a>
+          </li>
+        </ul>
+        <div class="tag-with-chip"><span class="chip"></span>disponibilité</div>
+
+      </div>
+      <div class="sas-card-footer"></div>
+    </div>
+  </section>
+  <br>
+  <br>
+  <hr class="separation">
+  <br>
+  <br>
+  <section id="disponibilite-creneau">
+
+    <h2>Créneau snp</h2>
+    <h3>Slot sans legend</h3>
+    <br>
+    <br>
+    <h3>.availabilities-slot > .slot-header > .slot-header-link</h3>
+    <table class="availabilities-calendar">
+      <tr>
+        <th scope="col">Lun 24</th>
+        <th scope="col">Mar 25</th>
+        <th scope="col">Mer 26</th>
+      </tr>
+      <tr>
+        <td>
+          <div class="availabilities-slot">
+            <div class="slot-header">
+              <a href="#" class="slot-header-link">9h-9h15</a>
+            </div>
+          </div>
+          <div class="availabilities-slot">
+            <div class="slot-header">
+              <a href="#" class="slot-header-link">9h-9h15</a>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="availabilities-slot">
+            <div class="slot-header">
+              <a href="#" class="slot-header-link">9h-9h15</a>
+            </div>
+          </div>
+          <div class="availabilities-slot">
+            <div class="slot-header">
+              <a href="#" class="slot-header-link">9h-9h15</a>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="availabilities-slot">
+            <div class="slot-header">
+              <a href="#" class="slot-header-link">9h-9h15</a>
+            </div>
+          </div>
+          <div class="availabilities-slot">
+            <div class="slot-header">
+              <a href="#" class="slot-header-link">9h-9h15</a>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
+    <h3>Slot avec legend</h3>
+    <h3>.availabilities-slot role="button" tabindex="0" > .slot-header</h3>
+    <table class="availabilities-calendar">
+      <tr>
+        <th scope="col">Lun 24</th>
+        <th scope="col">Mar 25</th>
+        <th scope="col">Mer 26</th>
+      </tr>
+      <tr>
+        <td>
+          <div class="availabilities-slot">
+            <div class="slot-header">
+              9h-9h15
+            </div>
+          </div>
+          <div class="availabilities-slot">
+            <div class="slot-header">
+              9h-9h15
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="availabilities-slot">
+            <div class="slot-header">
+              9h-9h15
+            </div>
+          </div>
+          <div class="availabilities-slot" role="button" tabindex="0" >
+            <div class="slot-header">
+              9h-9h15
+            </div>
+            <div class="slot-content">
+              <div class="slot-legend">
+                <ul class="resetul">
+                  <li>
+                    <div class="super-counter">
+                    <span>5/8</span>
+                  </div>
+                  </li>
+                  <li class="tag-letter">C</li>
+                  <li class="tag-letter">T</li>
+                  <li class="tag-letter">D</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <h3>.surnum-counter</h3>
+    <div class="surnum-counter">
+      <span>5/7</span>
+    </div>
+  </section>
+
+  <br><br><br>
+  <hr class="separation">
+  <br><br>
+
+  <section id="form">
+    <h2>Form</h2>
+    <h3>Checkbox</h3>
+    <div class="form-item form-type-checkbox">
+      <input type="checkbox" id="edit-sous-cas-206754enceinte-0" name="sous_cas[206754|enceinte-0]" class="sr-only">
+      <label class="option" for="edit-sous-cas-206754enceinte-0">Checkbox</label>
+    </div>
+
+    <h3>Radio</h3>
+    <div class="form-item radio-standard">
+      <input type="radio" name="choice-visibility" id="nb_patient">
+      <label for="nb_patient">Radio</label>
+    </div>
+
+    <h3>Inputs</h3>
+    <div class="form-item">
+      <label for="input_text">Texte : </label>
+      <input type="text" name="choice-visibility" id="input_text">
+    </div>
+    <br>
+    <div class="form-item">
+      <label for="date">Date : </label>
+        <input type="date" placeholder="Saisir une date" name="date" id="date">
+    </div>
+    <br>
+    <div class="form-item">
+      <label for="hour">Select : </label>
+      <select id="hour" name="hour">
+        <option value="0">10h00</option>
+        <option value="1">11h00</option>
+        <option value="2">12h00</option>
+        <option value="3">13h00</option>
+        <option value="4">14h00</option>
+      </select>
+    </div>
+    <br>
+    <h3>Ajouter un fichier :</h3>
+    <div class="form-item">
+      <input type="file" name="add_file" class="add_file" id="add_file">
+      <label for="add_file">Ajouter un fichier</label>
+    </div>
+
+  </section>
+
+  <br><br>
+  <hr class="separation">
+  <br><br>
+
+  <section id="modalsection">
+    <h2>Modal</h2>
+    <h3>.modal-sas (.ui-dialog / modal drupal) </h3>
+    <button type="button" class="btn-highlight js-btn-open-modal-sas">
+      Open modal
+    </button>
+    <p>La class "js-btn-open-modal-sas" est utile pour gérer l'accessibilité de la modal</p>
+    <br><br>
+    <div class="ui-dialog ui-widget ui-widget-content modal-sas">
+      <div class="ui-dialog-titlebar">
+        <span id="ui-id-1" class="ui-dialog-title">Titre</span>
+        <button type="button" class="ui-dialog-titlebar-close" title="Close">
+          <span class="ui-button-icon ui-icon ui-icon-closethick"></span>
+          <span class="ui-button-icon-space"> </span>Close
+        </button>
+      </div>
+      <div class="ui-dialog-content">
+        <p><strong>En cochant la case ci-dessous, vos créneaux ameli.pro et éditeurs n'apparaîtront plus dans le SAS.</strong><br>
+          Seules les plages SNP saisies dans le SAS seront visibles des régulateurs.<br>
+          Pour les afficher à nouveau dans le SAS, vous devrez décocher cette case via le même bouton d'accès.</p>
+        <div class="wrapper-btn-actions">
+          <button type="button" class="btn-highlight-outline btn-cancel js-btn-cancel">
+            Annuler
+          </button>
+          <input type="submit" id="edit-submit--4efdJw7GRkQ" name="op" value="Enregistrer" class="btn-hightlight-outline form-submit">
+        </div>
+      </div>
+    </div>
+    <br><br>
+    <h3>.vuemodal-sas</h3>
+    <button type="button" class="btn-highlight js-btn-open-modal-sas">
+      Open modal
+    </button>
+    <p>La class "js-btn-open-modal-sas" est utile pour gérer l'accessibilité de la modal</p>
+    <br><br>
+    <div class="wrapper-vuemodal-sas">
+      <div id="backdrop" class="fade in modal-backdrop"></div>
+
+      <div class="ui-dialog ui-widget ui-widget-content vuemodal-sas">
+        <div id="firstfocusmodal" class="firstfocusmodal" tabindex="0"></div>
+        <div class="ui-dialog-titlebar">
+          <span class="ui-dialog-title">Titre</span>
+          <button type="button" class="ui-dialog-titlebar-close" title="Close">Close</button>
+        </div>
+        <div class="ui-dialog-content">
+          <p>Content</p>
+          <div class="wrapper-btn-actions">
+            <button type="button" class="btn-highlight-outline btn-cancel js-btn-cancel">Annuler</button>
+            <input type="submit" id="edit-submit2" name="op" value="Enregistrer" class="btn-hightlight-outline form-submit">
+          </div>
+        </div>
+        <div id="lastfocusmodal" class="lastfocusmodal" tabindex="0"></div>
+      </div>
+    </div>
+    <br><br>
+    <h2>Modal composant</h2>
+    <h3>.information-ps</h3>
+    <em>Le background blanc est valable que pour cette page</em>
+    <div style="background-color: white; padding: 20px">
+      <ul class="information-ps resetul">
+        <li class="sas-ps-name"><a href="#">Dr. Francis Brunet</a></li>
+        <li class="sas-ps-profession">Médecin généraliste</li>
+        <li class="sas-ps-phone"><i class="icon-cards-phone"></i><a href="#">01 40 43 43 26</a></li>
+      </ul>
+    </div>
+    <br><br>
+    <h2>Patient adressés</h2>
+    <h3>.patient-referred-container</h3>
+    <em>Le background blanc est valable que pour cette page</em>
+    <div style="background-color: white; padding: 20px">
+      <div class="patient-referred-container">
+        <p class="patient-slot"><span class="txt-bold-big">Lundi 14/06/22</span> - 12h-14h<span class="tag-letter">t</span></p>
+        <div class="number-patient-container">
+          <p class="number-patient-title">
+            Nombre de patients adressés
+          </p>
+          <div class="number-patient-counter">
+            <button type="button" class="btn-remove"></button>
+              <div class="patient-counter">
+                <span>6</span>/8
+              </div>
+            <button type="button" class="btn-add"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br><br>
+    <h2>Patient adressés confirmations</h2>
+    <h3>.number-patient-confirmed-container</h3>
+    <em>Le background blanc est valable que pour cette page</em>
+    <div style="background-color: white; padding: 20px">
+       <div class="number-patient-confirmed-container">
+         <p class="number-patient-title">
+           Nombre de patients adressés
+         </p>
+           <ul class="information-ps resetul">
+             <li class="sas-ps-name"><a href="#">Dr. Francis Brunet</a></li>
+             <li class="sas-ps-profession">Médecin généraliste</li>
+             <li class="sas-ps-phone"><i class="icon-cards-phone"></i><a href="#">01 40 43 43 26</a></li>
+           </ul>
+         <p class="number-patient-title">
+           le 09/07/2021 sur la plage 17h00-19h30
+         </p>
+       </div>
+    </div>
+  </section>
+
+  <br><br>
+  <hr class="separation">
+  <br><br>
+
+  <section id="messages">
+    <h2>Messages</h2>
+    <p><em>Le background blanc est valable que pour cette page, pour faire ressortir le bloc message</em></p>
+    <div class="section" style="background-color: white; padding: 20px">
+      <div class="block-message">
+        <div class="wrapper-wysiwyg">
+          <p>Donec erat tellus, <strong>sodales ut sodales in</strong>, maximus ut massa. Sed semper fringilla odio, id luctus neque faucibus et. Suspendisse potenti. Donec elementum tortor erat, at lobortis quam interdum in. Donec et hendrerit justo. Sed eget dui sit amet nulla euismod accumsan. <strong>Vestibulum est elit</strong>, sagittis ut lorem non, fringilla sodales justo. Etiam luctus ipsum id lacus cursus aliquet. Curabitur feugiat mi sapien, non aliquet diam convallis non. Donec ultricies orci in quam varius mattis. Donec a mollis ante, in porta purus. Nam commodo urna in iaculis porta. Cras eu tortor nulla. Nulla tempus dignissim magna, id aliquet velit tempor a. Nam ultrices euismod leo, vitae auctor erat rhoncus ac.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <br><br><br><br>
+  <section id="notices">
+    <h2>Notifications</h2>
+    <h3>.notice-message .notice-sucess</h3>
+    <div class="notice-wrapper">
+      <div class="notice-message notice-success">
+        <p>Vous avez adressé un patient le 09/07/2021 sur la plage 17h00-19h30 à Francis Brunet, médecin généraliste</p>
+      </div>
+    </div>
+    <br>
+    <h3>.notice-message .notice-error</h3>
+    <div class="notice-wrapper">
+      <div class="notice-message notice-error">
+        <p>Une erreur est survenue, veuillez sélectionner un autre créneau </p>
+      </div>
+    </div>
+  </section>
+  <br><br><br><br>
+  <section id="informative-banner">
+    <h2>Bandeau informatif</h2>
+    <h3>.informative-banner</h3>
+    <div class="informative-banner">
+      <span class="informative-date">29/11/21:</span>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad aliquam assumenda debitis, dolores doloribus.</p>
+    </div>
+  </section>
+  <br><br><br><br>
+  </div>
+  <script type="application/javascript">
+    $(function () {
+      jcf.setOptions('Select', {
+        wrapNative: false,
+        wrapNativeOnMobile: false,
+        useCustomScroll: false,
+        multipleCompactStyle: true
+      });
+
+      jcf.replaceAll();
+    });
+
+  </script>
+
+</body>
+</html>

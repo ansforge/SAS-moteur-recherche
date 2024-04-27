@@ -1,0 +1,131 @@
+.wrapper-user-account {
+  @media screen and (min-width: $screen-lg-min) {
+    top: 135px;
+    height: calc(100vh - 135px);
+  }
+  .layer-user-account {
+    width: 300px;
+    @media screen and (max-width: $screen-xs-max) {
+      background: $grey38;
+    }
+
+    @media screen and (min-width: 1400px) {
+      top: -135px;
+      padding-top: 135px;
+    }
+
+    @media screen and (max-width: $screen-md-max) {
+      position: fixed;
+      width: 100vw;
+      right: 0;
+      .user-account-overlay {
+        display: none;
+      }
+    }
+  }
+
+  .user-account-header {
+    right: 22px;
+    top: 60px;
+    display: block;
+    .btn-close-user-account {
+      @media screen and (max-width: $screen-md-max) {
+        display: none;
+      }
+    }
+  }
+
+  .user-account-content {
+    font-family: $font-maria;
+    height: calc(100vh - 119px);
+    background: $grey53;
+    color: $black;
+
+    .toolbar-tray-open & {
+      height: calc(100vh - 158px);
+    }
+
+    .user-roles {
+      padding: 32px 0 24px;
+      font-size: torem(24);
+      line-height: 31px;
+
+      @media screen and (min-width: $screen-sm-min) {
+        font-size: torem(14);
+        line-height: 18px;
+      }
+
+      .user-roles-title {
+        margin: 0;
+        padding: 0 0 9px;
+        @media screen and (max-width: $screen-md-max) {
+          font-size: torem(16);
+        }
+      }
+
+      .user-roles-item {
+        padding: 8px 0;
+        margin: 0 0 0 16px;
+        list-style: disc;
+        font-weight: 700;
+        @media screen and (max-width: $screen-md-max) {
+          font-size: torem(16);
+        }
+      }
+    }
+
+    .account-tabs-content {
+      padding: 35px 32px 20px;
+      @media screen and (max-width: $screen-md-max) {
+        padding-top: 65px;
+      }
+      .user-account {
+        background: none;
+        padding: 0;
+        border-radius: 0;
+        & > ul > li {
+          border: 0;
+          margin-bottom: 30px;
+          a {
+            @extend .link-dsfr; // sass-lint:disable-line placeholder-in-extend
+            text-transform: none;
+            height: auto;
+            padding: 0;
+            width: auto;
+          }
+  
+          &.disconnect-btn {
+            margin-top: 50px;
+            a {
+              @extend .btn-dsfr; // sass-lint:disable-line placeholder-in-extend
+              text-decoration: none;
+            }
+          }
+        }
+      }
+    }
+
+    .delegates-block {
+      flex-wrap: wrap;
+      color: $grey40;
+
+      .delegates {
+        color: $black; 
+        font-weight: 800;
+        font-size: torem(16);
+        margin-top: 25px;
+        margin-bottom: 15px;
+        width: 100%;
+      }
+    }
+  }
+  @media screen and (max-width: $screen-md-max) {
+    display: none;
+    &.layer-show {
+      display: none;
+    }
+    &.open {
+      display: block;
+    }
+  }
+}

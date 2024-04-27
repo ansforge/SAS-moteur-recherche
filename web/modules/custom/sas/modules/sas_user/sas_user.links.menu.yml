@@ -1,0 +1,12 @@
+sas_user.user_admin:
+  title: 'SAS - Utilisateurs'
+  route_name: sas_user.admin_user
+  parent: sas_config.main
+  description: 'Gérer les utilisateurs du SAS.'
+  weight: 10
+sas_user.user_add:
+  route_name: sas_user.admin_create
+  title: 'Ajouter un utilisateur'
+  parent: sas_user.user_admin
+  description: 'Ajouter un utilisateur SAS'
+  weight: 0

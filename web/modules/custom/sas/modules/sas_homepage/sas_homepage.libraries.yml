@@ -1,0 +1,8 @@
+welcome-popin:
+  js:
+    assets/js/sas-welcome-popin.js: {}
+  dependencies:
+    - core/jquery
+    - core/once
+    - core/drupal
+    - core/drupal.dialog

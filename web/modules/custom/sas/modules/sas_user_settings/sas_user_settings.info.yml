@@ -1,0 +1,8 @@
+name: 'sas user settings'
+type: module
+description: 'sas user settings entity'
+core_version_requirement: '^9 || ^10'
+package: 'ANS - SAS'
+dependencies:
+  - sas:sas_keycloak
+  - sas:sas_structure

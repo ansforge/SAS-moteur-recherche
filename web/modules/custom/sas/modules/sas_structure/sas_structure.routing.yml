@@ -1,0 +1,34 @@
+entity.sas_structure_settings.edit:
+  path: '/sas/structure-settings/{node}/edit'
+  defaults:
+    _form: '\Drupal\sas_structure\Form\SasStructureSettingsPopinForm'
+  requirements:
+    node: \d+
+    _custom_access: '\Drupal\sas_structure\Form\SasStructureSettingsPopinForm::access'
+  options:
+    parameters:
+      node:
+        type: 'entity:node'
+
+entity.sas_structure_settings.sos_medecin.edit:
+  path: '/sas/structure-settings/sos_medecin/{siret}/edit'
+  defaults:
+    _form: '\Drupal\sas_structure\Form\SasStructureSettingsPopinForm'
+  requirements:
+    _custom_access: '\Drupal\sas_structure\Form\SasStructureSettingsPopinForm::access'
+
+sas_structure.sos_medecin.association_autocomplete:
+  path: '/sas/json-api/sos-medecin/associations/autocomplete'
+  defaults:
+    _controller: '\Drupal\sas_structure\Controller\SosMedecinAutocomplete::autocompleteAssociationList'
+    _format: json
+  requirements:
+    _permission: 'access content'
+
+sas_structure.cpts_autocomplete:
+  path: '/sas/json-api/cpts/autocomplete'
+  defaults:
+    _controller: '\Drupal\sas_structure\Controller\CptsAutocomplete::autocompleteCptsList'
+    _format: json
+  requirements:
+    _permission: 'access content'

@@ -1,0 +1,102 @@
+<?php
+
+/**
+ * @file
+ * Contains hok_update.
+ */
+
+use Drupal\Core\Database\Database;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\sas_structure\Enum\StructureConstant;
+
+/**
+ * Implements hook_schema().
+ */
+function sas_structure_schema() {
+  $schema['sas_siret_interfaced'] = [
+    'description' => 'sas SOS interfaced',
+    'fields' => [
+      'siret' => [
+        'description' => 'The siret',
+        'type' => 'int',
+        'size' => 'big',
+        'not null' => TRUE,
+      ],
+    ],
+    'primary key' => ['siret'],
+    'indexes' => [
+      'rpps' => ['siret'],
+    ],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Update structure settings entity and table (Replace finess_id by structure_id.)
+ */
+function sas_structure_update_8001() {
+  $entity_type = 'sas_structure_settings';
+  $new_field_name = 'structure_id';
+  $old_field_name = 'finess';
+
+  $field_definition = BaseFieldDefinition::create('string')
+    ->setLabel('Structure ID')
+    ->setDescription('Structure ID (FINESS, SIRET, ...)')
+    ->setSettings([
+      'max_length' => 50,
+    ]);
+  \Drupal::entityDefinitionUpdateManager()->installFieldStorageDefinition($new_field_name, $entity_type, $entity_type, $field_definition);
+
+  $field_definition = BaseFieldDefinition::create('string')
+    ->setLabel('ID Type')
+    ->setDescription("ID type (FINESS, SIRET, ...)")
+    ->setSettings([
+      'max_length' => 25,
+    ]);
+  \Drupal::entityDefinitionUpdateManager()->installFieldStorageDefinition('id_type', $entity_type, $entity_type, $field_definition);
+
+  \Drupal::database()->update($entity_type)
+    ->expression($new_field_name, $old_field_name)
+    ->fields([
+      'id_type' => StructureConstant::ID_TYPE_FINESS,
+    ])
+    ->execute();
+
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $definition = $update_manager->getFieldStorageDefinition($old_field_name, $entity_type);
+  $update_manager->uninstallFieldStorageDefinition($definition);
+}
+
+/**
+ * Add practitioner count property.
+ */
+function sas_structure_update_8002() {
+  $field_definition = BaseFieldDefinition::create('integer')
+    ->setLabel('Practitioner count')
+    ->setDescription('How many practitioner work for this structure.')
+    ->setDefaultValue(0)
+    ->setSettings([
+      'unsigned' => TRUE,
+    ]);
+
+  \Drupal::entityDefinitionUpdateManager()->installFieldStorageDefinition(
+    'practitioner_count',
+    'sas_structure_settings',
+    'sas_structure_settings',
+    $field_definition
+  );
+}
+
+/**
+ * Create new database custom table sas_siret_interfaced.
+ */
+function sas_structure_update_10001() {
+  $schema_sas_structure = sas_structure_schema();
+  $schema = Database::getConnection()->schema();
+  $table = 'sas_siret_interfaced';
+
+  if ($schema !== NULL && !$schema->tableExists($table)) {
+    $schema->createTable($table, $schema_sas_structure[$table]);
+  }
+}

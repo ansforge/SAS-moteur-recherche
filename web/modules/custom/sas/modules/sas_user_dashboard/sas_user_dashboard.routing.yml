@@ -1,0 +1,25 @@
+sas_user_dashboard.root:
+  path: '/sas/dashboard'
+  defaults:
+    _title: 'Tableau de bord utilisateur'
+    _controller: '\Drupal\sas_user_dashboard\Controller\SasUserDashboard::render'
+  requirements:
+    _sas_user_data_access_check: 'TRUE'
+
+sas_user_dashboard.gestionnaire_de_structure:
+  path: '/sas/dashboard/gestionnaire/{user}'
+  defaults:
+    _title: 'Tableau de bord utilisateur'
+    _controller: '\Drupal\sas_user_dashboard\Controller\SasUserDashboardGestionnaireDeStructure::renderPageDashboard'
+  requirements:
+    _sas_user_data_access_check: 'TRUE'
+    user: \d+
+
+sas_user_dashboard.delegataire:
+  path: '/sas/dashboard/delegataire/{user}'
+  defaults:
+    _title: 'Tableau de bord utilisateur'
+    _controller: '\Drupal\sas_user_dashboard\Controller\SasUserDashboardDelegataire::renderPageDashboard'
+  requirements:
+    _sas_user_data_access_check: 'TRUE'
+    user: \d+

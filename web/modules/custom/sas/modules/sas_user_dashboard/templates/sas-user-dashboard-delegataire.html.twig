@@ -1,0 +1,43 @@
+<div class="container container-dashboard">
+  <div class="wrapper-dashboard wrapper-dahsboard-delegataire">
+    <div class="content-left">
+      <div class="block-presentation">
+        <h1 class="title title-delegataire">{{ 'Bonjour'|t }} {{ first_name }} {{ last_name }}</h1>
+        <p class="email">{{ email }}</p>
+        <p class="intro">{{ general_info }}</p>
+        <div class="desc">{{ paragraph|raw }}</div>
+      </div>
+    </div>
+    <div class="content-right">
+      {% if professionals %}
+        <div class="wrapper-professional">
+          <h2 class="dashboard-title-section">{{ 'Vos professionnels de santé liés'|t }}</h2>
+          <ul class="resetul list-border">
+            {% for professional in professionals %}
+              <li class="list-border-item">
+                <a href="{{ path('sas_user_dashboard.root', {}, {'query': {'userId': professional.id, 'back_url': path('<current>')}}) }}">
+                  {{ professional.first_name }} {{ professional.last_name }} ({{ professional.email }})
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+      {% if structures %}
+        <div class="wrapper-structure">
+          <h2 class="dashboard-title-section">{{ 'Vos gestionnaires de structures liés'|t }}</h2>
+          <ul class="resetul list-border">
+            {% for structure in structures %}
+              <li class="list-border-item">
+                <a href="/sas/dashboard/gestionnaire/{{ structure.id }}?back_url={{ path('<current>') }}">
+                  {{ structure.first_name }} {{ structure.last_name }} ({{ structure.email }})
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{{ attach_library('sas/modal-sas') }}

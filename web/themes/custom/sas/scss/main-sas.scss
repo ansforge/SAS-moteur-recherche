@@ -1,0 +1,26 @@
+/*************************************************************************************
+  Import tous les fichiers parents
+  NE PAS APPLIQUER DES STYLES ICI.
+****************************************************************************************/
+
+@import '../../santefr/scss/0-init/variables';
+@import '../../santefr/scss/0-init/breakpoint';
+@import '../../santefr/scss/0-init/font';
+@import '../../santefr/scss/0-init/color';
+@import '../../santefr/scss/0-init/mixin';
+
+@import '0-init/init';
+
+@import '1-base/base';
+
+@import '2-layout/layout';
+
+@import '3-component/component';
+
+@import '4-navigation/navigation';
+
+@import '5-search/search';
+
+// @import '6-container/container';
+
+@import '7-theme/theme';

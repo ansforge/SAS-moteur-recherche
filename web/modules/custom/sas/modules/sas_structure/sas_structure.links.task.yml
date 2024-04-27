@@ -1,0 +1,21 @@
+# Sas structure settings routing definition
+sas_structure_settings.settings_tab:
+  route_name: sas_structure_settings.settings
+  title: 'Settings'
+  base_route: sas_structure_settings.settings
+
+entity.sas_structure_settings.canonical:
+  route_name: entity.sas_structure_settings.canonical
+  base_route: entity.sas_structure_settings.canonical
+  title: 'View'
+
+entity.sas_structure_settings.edit_form:
+  route_name: entity.sas_structure_settings.edit_form
+  base_route: entity.sas_structure_settings.canonical
+  title: 'Edit'
+
+entity.sas_structure_settings.delete_form:
+  route_name:  entity.sas_structure_settings.delete_form
+  base_route:  entity.sas_structure_settings.canonical
+  title: Delete
+  weight: 10

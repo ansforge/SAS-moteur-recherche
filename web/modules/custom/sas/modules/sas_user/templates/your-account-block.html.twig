@@ -1,0 +1,89 @@
+{#
+/**
+* @file
+* Default theme implementation to display a block.
+*
+* @see template_preprocess_block()
+*
+* @ingroup themeable
+*/
+#}
+<button type="button"
+        aria-controls="js-user-account"
+        aria-expanded="false"
+        class="account-panel-opener"
+        id="js-account-panel-opener">
+  <i class="sas-icon sas-icon-connection" aria-hidden="true"></i>
+  <span class="account-panel-title">{{ user_first_name }} {{ user_last_name }}</span>
+</button>
+<div id="js-user-account" class="wrapper-user-account">
+  <div class="firstfocusmodal" tabindex="0"></div>
+  <div class="layer-user-account">
+    <div class="user-account-header">
+      <button type="button" class="btn-close-user-account" id="js-btn-close-user-account">
+        <svg width="13" height="15" viewBox="0 0 13 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M11.631 11.6549L8.92652 8.63691L7.70107 7.26411L8.53321 6.33802C9.47261 5.28481 10.4185 4.22797 11.3612 3.1784C11.8195 2.66633 12.2876 2.17967 12.7361 1.63854L12.7556 1.61675C13.0814 1.2442 13.0814 0.649187 12.7556 0.276639C12.4215 -0.0854553 11.8903 -0.0854553 11.5562 0.276639L10.4315 1.53322L7.73033 4.55483L6.50162 5.924L5.66949 4.99427L2.83828 1.8165C2.3832 1.32258 1.93138 0.795978 1.4633 0.294798L1.4438 0.273008C1.11035 -0.0910026 0.577794 -0.0910026 0.244351 0.273008C-0.0797359 0.646334 -0.0797359 1.23979 0.244351 1.61312L1.36904 2.8697L4.07348 5.89131L5.30218 7.26411L4.47004 8.19747L1.62583 11.3571C1.18376 11.8692 0.712428 12.3703 0.263854 12.8933L0.244351 12.9151C-0.0814504 13.2876 -0.0814504 13.8827 0.244351 14.2552C0.577794 14.6192 1.11035 14.6192 1.4438 14.2552L2.56848 12.9986L5.27292 9.98065L6.50162 8.60422L7.33376 9.53395L10.1617 12.6936C10.62 13.2056 11.0686 13.7286 11.5367 14.2298L11.5562 14.2516C11.8897 14.6064 12.4156 14.5992 12.7412 14.2354C13.0668 13.8716 13.0732 13.284 12.7556 12.9115L11.631 11.6549Z" fill="#595959"/>
+        </svg>
+        <span class="sr-only">Fermer</span>
+      </button>
+    </div>
+    <div class="user-account-content">
+      <div class="account-tabs-content">
+        <div role="tabpanel" class="account-tab-pane active" id="tab-users">
+          <div class="user-account">
+            {% if roles %}
+              <div class="user-roles">
+                <p class="user-roles-title">{{ 'Vous êtes connecté en tant que : '|t }}</p>
+                <ul class="resetul user-roles-list">
+                  {% for role in roles %}
+                    <li class="user-roles-item">{{ role.label }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+            <ul class="resetul">
+              <li>
+                {{ identifiant }}
+              </li>
+
+              {% if dashboard %}
+                <li class="personal-dashboard">{{ dashboard }}</li>
+              {% endif %}
+              {% if dashboard_gestionnaire %}
+                <li class="structures-block">
+                  {{ dashboard_gestionnaire }}
+                </li>
+              {% endif %}
+              {% if dashboard_delegataire %}
+                <li class="delegation-item">
+                  {{ dashboard_delegataire }}
+                </li>
+              {% endif %}
+
+              {% if adding_delegataire %}
+                <li class="delegates-block">
+                  <div class="delegates">{{ 'Vos délégataires'|t }} :</div>
+                  {% if results %}
+                    <ul class="resetul delegates-list">
+                      {% for result in results %}
+                        <li class="delegates-list-item">{{ result.first_name }} {{ result.last_name }}</li>
+                      {% endfor %}
+                    </ul>
+                  {% endif %}
+                  <div class="wrapper-delegates-btn">
+                    {{ adding_delegataire }}
+                  </div>
+                </li>
+              {% endif %}
+              <li class="disconnect-btn">
+                {{ logout }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="user-account-overlay" id="js-user-account-overlay"></div>
+  <div class="lastfocusmodal" tabindex="0"></div>
+</div>

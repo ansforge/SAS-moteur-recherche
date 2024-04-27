@@ -1,0 +1,20 @@
+name: 'SAS user'
+type: module
+description: 'Specific features for SAS user'
+core_version_requirement: '^9 || ^10'
+package: 'ANS - SAS'
+
+dependencies:
+  - drupal:node
+  - drupal:role_delegation
+  - drupal:taxonomy
+  - drupal:user
+  - sante_user:sante_user
+  - sas:sas_core
+  - sas:sas_config
+  - sas:sas_entity_snp_user
+  - sas:sas_territory
+  - simple_cron:simple_cron
+  - sas:sas_keycloak
+  - ans_openid_connect:ans_openid_connect
+  - sas:sas_user_settings

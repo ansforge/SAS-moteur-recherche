@@ -1,0 +1,112 @@
+<div class="container container-dashboard">
+  <div class="wrapper-dashboard">
+    {% if role %}
+      <div class="content-left">
+        <div class="block-presentation">
+          <h1 class="title">{{ 'Bonjour'|t }} {{ results.first_name }} {{ results.last_name }}</h1>
+          <p class="email">{{ results.email }}</p>
+          <p class="intro">{{ general_info }}</p>
+          <div class="desc">{{ paragraph|raw }}</div>
+        </div>
+      </div>
+    {% endif %}
+    <div class="content-right">
+      {% if results.addresses or sos_medecin_assos or cpts_list %}
+        <div class="wrapper-addresses">
+          <h2 class="title-section-address">{{ 'Vos structures liées'|t }}</h2>
+          {% if results.addresses %}
+            <ul class="resetul">
+              {% for addresse in results.addresses %}
+                <li>
+                  <div class="card-address">
+                    <div class="card-header">
+                      <p class="address-label">{{ 'Adresse'|t }} : <span class="index">{{ loop.index }}</span></p>
+                      <p class="address">{{ addresse.full_address }}</p>
+                    </div>
+                    <div class="card-body">
+                      <p class="title-body">{{ 'Horaires de consultation'|t }}</p>
+                      <p class="info">{{ 'Editer pour déclarer ou modifier vos créneaux disponibles'|t }}</p>
+                      <div class="link-cnam">
+                        {% if addresse.link_availability_page %}
+                          {{ addresse.link_availability_page }}
+                        {% endif %}
+                        {% if addresse.structure_settings_link %}
+                          {{ addresse.structure_settings_link }}
+                        {% endif %}
+                      </div>
+
+                    </div>
+                  </div>
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+          {% if sos_medecin_assos %}
+            <div class="sos-medecin-associations">
+              {% for association in sos_medecin_assos %}
+                <div class="association">
+                  <div class="association-name">
+                    <h3 class="title-sub-section">{{ association.name }}</h3>
+                    <div>{{ association.settings_link }}</div>
+                  </div>
+                  <ul class="resetul">
+                    {% for pfg in association.pfg_list %}
+                      <li>
+                        <div class="card-address">
+                          <div class="card-header">
+                            <p class="address-label">{{ 'Adresse'|t }} : <span class="index">{{ loop.index }}</span></p>
+                            <p class="address-name">{{ pfg.title }}</p>
+                            <p class="address">{{ pfg.address }}</p>
+                          </div>
+                          <div class="card-body">
+                            <p class="title-body">{{ 'Horaires de consultation'|t }}</p>
+                            <p class="info">{{ 'Editer pour déclarer ou modifier vos créneaux disponibles'|t }}</p>
+                            <div class="link-cnam">
+                              {% if pfg.link_availability_page %}
+                                {{ pfg.link_availability_page }}
+                              {% endif %}
+                            </div>
+                          </div>
+                        </div>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+        {% if cpts_list %}
+          <div class="wrapper-cpts">
+            {% for cpts in cpts_list %}
+              {% if cpts.effectors|length > 0 %}
+              <div class="cpts-group">
+                <h2 class="title-section-cpts">{{ cpts.title }}</h2>
+                <h3 class="subtitle-section-cpts">{{ 'Liste des professionnels de santé inscrits au SAS au sein de la CPTS'|t }}</h3>
+                <ul class="list-cpts">
+                  {% for ps in cpts.effectors %}
+                    <li class="ps-item">
+                      <div class="ps-name">{{ ps.name }}</div>
+                      <div class="ps-specialite">{{ ps.speciality }}</div>
+                      <div class="ps-date-update">{{ 'Inscrit le'|t }} {{ ps.registration_date }}</div>
+                       <div class="ps-profile">
+                         <a href="{{ ps.link_ps }}" class="btn-highlight link-ps">{{ 'VOIR DÉTAIL'|t }}</a>
+                       </div>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+              {% else %}
+                <div class="cpts-group">
+                  <h2 class="title-section-cpts">{{ cpts.title }}</h2>
+                  <h3 class="subtitle-section-cpts">{{ "Aucun professionnel de santé n'est actuellement inscrit au SAS au sein de cette CPTS."|t }}</h3>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{{ attach_library('sas/modal-sas') }}

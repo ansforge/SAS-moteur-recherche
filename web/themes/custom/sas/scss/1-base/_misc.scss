@@ -1,0 +1,40 @@
+/**
+ * @file
+ * Styles for system messages and progress bar.
+ */
+
+/* ---------------- Top of page link  -----------------*/
+/*.top-of-page {
+  a {}
+}*/
+
+/* ---------------- Message Styling -----------------*/
+/*.messages--status {}
+.messages--warning {}
+.messages--error {
+  p.error {}
+}*/
+
+/* ---------------- Progress Bar Styling -----------------*/
+/*.progress { }
+
+
+.ajax-progress {
+  .throbber {
+    tr & {}
+  }
+  .message {}
+}*/
+/* ---------------- Alert Styling -----------------*/
+/*.alert-sm {}
+.alert a {}
+.alert-success {}
+.alert-info {
+  a, a:hover, a:focus {}
+}
+.alert-warning {
+  a, a:hover, a:focus {}
+}
+.alert-danger {
+  a, a:hover, a:focus {}
+}*/

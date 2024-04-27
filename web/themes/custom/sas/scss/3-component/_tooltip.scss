@@ -1,0 +1,73 @@
+.tooltip {
+  position: relative;
+
+  &__item {
+    position: absolute;
+    padding: 13px;
+    visibility: hidden;
+    opacity: 0;
+    background: $white;
+    transition: all 0.25s cubic-bezier(0, 0, 0.2, 1);
+    color: $black;
+    font-size: torem(12);
+    line-height: 1.4;
+    font-weight: 500;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    z-index: 4;
+    min-width: 230px;
+  }
+
+  &__initiator {
+    display: flex;
+    cursor: pointer;
+    z-index: 5;
+    border: 0;
+    background: none;
+    padding: 0;
+    color: $sas-blue4;
+  }
+
+  &[data-direction='right'] {
+    .tooltip__initiator {
+      margin-left: 4px;
+    }
+    .tooltip__initiator:focus ~ .tooltip__item,
+    .tooltip__initiator:hover ~ .tooltip__item {
+      visibility: visible;
+      opacity: 1;
+      left: 45px;
+    }
+
+    .tooltip__item {
+      top: -8px;
+      left: 35px;
+
+      &.left::before {
+        content: '';
+        display: inline-block;
+        position: absolute;
+        width: 0;
+        height: 0;
+        left: -6px;
+        border-top: 7px solid transparent;
+        border-bottom: 7px solid transparent;
+        border-right: 7px solid $white;
+      }
+    }
+  }
+
+  &[data-direction='bottom'] {
+    .tooltip__initiator:hover ~ .tooltip__item {
+      transform: translate3d(-50%, 0, 0);
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .tooltip__item {
+      top: calc(100% + 1em);
+      left: 50%;
+      transform: translate3d(-50%, -15px, 0);
+    }
+  }
+}

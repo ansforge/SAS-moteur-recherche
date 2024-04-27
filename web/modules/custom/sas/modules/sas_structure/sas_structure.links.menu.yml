@@ -1,0 +1,14 @@
+
+# Sas structure settings menu items definition
+entity.sas_structure_settings.collection:
+  title: 'Sas structure settings list'
+  route_name: entity.sas_structure_settings.collection
+  description: 'List Sas structure settings entities'
+  parent: system.admin_structure
+  weight: 100
+
+sas_structure_settings.admin.structure.settings:
+  title: 'Sas structure settings settings'
+  description: 'Configure Sas structure settings entities'
+  route_name: sas_structure_settings.settings
+  parent: system.admin_structure

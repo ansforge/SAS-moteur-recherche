@@ -1,0 +1,7 @@
+services:
+  sas_api_client.cli.is_interfaced:
+    class: Drupal\sas_api_client\Commands\IsInterfacedCommands
+    arguments:
+      - '@plugin.manager.simple_cron'
+    tags:
+      - { name: drush.command }

@@ -1,0 +1,10 @@
+name: 'SAS territory'
+type: module
+description: 'Specific features for SAS term territory'
+core_version_requirement: '^9 || ^10'
+package: 'ANS - SAS'
+
+dependencies:
+  - drupal:node
+  - drupal:views
+  - sas:sas_api_client

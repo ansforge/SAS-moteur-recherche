@@ -1,0 +1,50 @@
+/**
+ * @file
+ * Custom mixins
+ */
+
+@mixin btn-sas($color: $white, $color-hover: $white, $bg: $sas-blue4, $bg-hover: $blue2, $border: $sas-blue4, $border-hover: $blue2) {
+  display: inline-block;
+  padding: 13px 37px;
+  background-color: $bg;
+  color: $color;
+  border: 1px solid $border;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: torem(13);
+  text-align: center;
+  line-height: 16px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: 0.3s;
+
+  &:hover,
+  &:focus {
+    border-color: $border-hover;
+    text-decoration: none;
+    background: $bg-hover;
+    color: $color-hover;
+  }
+}
+
+@mixin msg-status {
+  min-height: 50px;
+  position: relative;
+  font-size: torem(14);
+  font-weight: 700;
+  border: 1px solid $sas-grey7;
+  border-radius: 10px;
+  padding: 15px 50px;
+}
+
+@mixin clear-btn {
+  background: 0;
+  border: 0;
+  position: absolute;
+  z-index: 1;
+  color: $grey33;
+  font-size: torem(18);
+  top: 30%;
+}

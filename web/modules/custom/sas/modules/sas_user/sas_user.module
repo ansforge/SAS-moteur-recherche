@@ -1,0 +1,577 @@
+<?php
+
+/**
+ * @file
+ * Contains sas_user.module.
+ */
+
+use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Core\Database\Query\AlterableInterface;
+use Drupal\Core\Database\Query\SelectInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Link;
+use Drupal\Core\Render\BubbleableMetadata;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Url;
+use Drupal\sas_snp\Enum\SnpConstant;
+use Drupal\sas_user\Enum\SasRegulatorSync;
+use Drupal\sas_user\Enum\SasUserConstants;
+use Drupal\sas_user\PageNodeAnonymousAccessControlHandler;
+use Drupal\sas_user\SasUserAccessControlHandler;
+use Drupal\user\Entity\User;
+use Drupal\user\UserInterface;
+use Drupal\views\ViewExecutable;
+
+/**
+ * Implements hook_help().
+ */
+function sas_user_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the sante_homepage module.
+    case 'help.page.sas_user':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Sas user') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_entity_type_build().
+ */
+function sas_user_entity_type_build(array &$entity_types) {
+  /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
+  $entity_types['user']->setFormClass('cancel', 'Drupal\sas_user\Form\SasUserCancelForm');
+  $entity_types['user']->setFormClass('sas_profile_form', 'Drupal\sas_user\Form\SasProfileForm');
+  $entity_types['user']->setFormClass('sas_register_form', 'Drupal\sas_user\Form\SasRegisterForm');
+  $entity_types['user']->setLinkTemplate('sas-edit', '/user/{user}/sas-edit');
+  $entity_types['user']->setLinkTemplate('sas-resend-email', '/user/{user}/resend');
+  $entity_types['user']->setLinkTemplate('sas-toggle-statut', '/user/{user}/togglestatut');
+  $entity_types['user']->setHandlerClass('access', SasUserAccessControlHandler::class);
+}
+
+/**
+ * Implements hook_user_cancel_methods_alter().
+ */
+function sas_user_user_cancel_methods_alter(&$methods) {
+  if (\Drupal::service('sas_core.service')->isSasContext()) {
+    unset($methods['user_cancel_block']);
+    unset($methods['user_cancel_block_unpublish']);
+    unset($methods['user_cancel_reassign']);
+  }
+}
+
+/**
+ * Implements hook_entity_operation().
+ */
+function sas_user_entity_operation(EntityInterface $entity) {
+  $operations = [];
+
+  if ($entity->getEntityTypeId() === 'user') {
+    $operations['sas_edit'] = [
+      'title' => t('Edit'),
+      'weight' => 10,
+      'url' => $entity
+        ->toUrl('sas-edit'),
+    ];
+    $operations['sas_resend_email'] = [
+      'title' => t("Renvoyer l'email de bienvenue"),
+      'weight' => 10,
+      'url' => $entity
+        ->toUrl('sas-resend-email'),
+    ];
+
+    $operations['sas_toggle_statut'] = [
+      'title' => t($entity->isActive() ? "Désactiver l'utilisateur" : "Activer l'utilisateur"),
+      'weight' => 10,
+      'url' => $entity
+        ->toUrl('sas-toggle-statut'),
+    ];
+
+  }
+
+  return $operations;
+}
+
+/**
+ * Implements hook_entity_operation_alter().
+ */
+function sas_user_entity_operation_alter(array &$operations, EntityInterface $entity) {
+  /** @var \Drupal\user\UserInterface $entity */
+  $entityTypeId = $entity->getEntityTypeId();
+
+  if ($entityTypeId !== 'user') {
+    return;
+  }
+
+  if (!$entity->access('sas_edit')) {
+    unset($operations['sas_edit']);
+  }
+  if (!$entity->access('update')) {
+    unset($operations['edit']);
+  }
+  if (!$entity->access('sas_resend_email')) {
+    unset($operations['sas_resend_email']);
+  }
+  if (!$entity->access('role_delegation')) {
+    unset($operations['role_delegation']);
+  }
+
+}
+
+/**
+ * Implements hook_mail().
+ */
+function sas_user_mail($key, &$message, $params) {
+  if ($key == 'sas_user_account_expiration' || $key == 'sas_user_adding_delegataire') {
+    $message['subject'] = $params['subject'];
+    $message['body'][] = $params['body'];
+  }
+
+  if ($key === 'resend_email') {
+    $mail_content = \Drupal::config('user.mail')
+      ->get('register_admin_created.body');
+    $message['subject'] = \Drupal::config('user.mail')
+      ->get('register_admin_created.subject');
+    if (!empty($mail_content)) {
+      $message['body'][] = \Drupal::token()->replace(
+        $mail_content,
+        ['user' => $message['params']['account']],
+        ['callback' => 'sante_user_mail_tokens', 'clear' => TRUE]
+      );
+    }
+  }
+
+  if (preg_match('/^sas_user_password_expired_(.*)$/', $key, $matches) > 0) {
+    $config_password = \Drupal::config('sas_config.user_account')
+      ->get('texts.reminder_mail');
+    $step = $matches[1];
+    $subject = $config_password[$step . '_mail']['mail_subject'];
+    $body = $config_password[$step . '_mail']['mail_content'];
+    if (!empty($body['value'])) {
+      $body = check_markup($body['value'], $body['format']);
+    }
+    $message['subject'] = $subject;
+    if (!empty($body)) {
+      $message['body'][] = \Drupal::token()->replace(
+        $body,
+        [
+          'user' => $message['params']['user'],
+          'expiration' => $message['params']['expiration'],
+        ],
+        ['callback' => 'sante_user_mail_tokens', 'clear' => TRUE]
+      );
+    }
+  }
+}
+
+/**
+ * Implements hook_mail_alter().
+ */
+function sas_user_mail_alter(&$message) {
+  if (!\Drupal::service('sas_core.service')->isSasContext()) {
+    return;
+  }
+
+  $message['headers']['From'] = t('SAS <@email>', ['@email' => $message['from']])->__toString();
+}
+
+/**
+ * Implements hook_user_login().
+ */
+function sas_user_user_login($account) {
+  $is_sas_regulator = array_intersect($account->getRoles(), [
+    SnpConstant::SAS_REGULATEUR_OSNP,
+    SnpConstant::SAS_IOA,
+  ]);
+  $sasContext = \Drupal::service('sas_core.service')->isSasContext();
+  // Reset activity count to 0 after each login.
+  if ($sasContext) {
+    if ($is_sas_regulator) {
+      // Make regulator synchronisation with aggregator.
+      /** @var \Drupal\sas_user\Service\AggregRegulatorSyncInterface $regulator_sync_helper */
+      $regulator_sync_helper = \Drupal::service('sas_user.aggreg_regulator_sync');
+      $regulator_data = $regulator_sync_helper->buildRegulatorPayload($account);
+      $regulator_sync_helper->makeRegulatorSync(SasRegulatorSync::LOGIN_ENDPOINT, $regulator_data);
+    }
+
+    /** @var \Drupal\user\UserInterface $account */
+    $isUserSAS = preg_filter('/^sas_(.*)$/', '$0', $account->getRoles());
+    if (!empty($isUserSAS)) {
+      $account->set('field_sas_compteur_inactivite', 0);
+      $account->save();
+    }
+  }
+}
+
+/**
+ * Implements hook_token_info().
+ */
+function sas_user_token_info() {
+  $info = [];
+  $info['types']['sas_token'] = [
+    'name' => t('Custom Sas Token'),
+    'description' => t('Custom tokens for sas.'),
+  ];
+  $info['tokens']['sas_token']['sas_base_url'] = [
+    'name' => t('Absolute URL for sas'),
+    'description' => t('Url of the sas'),
+  ];
+
+  // Custom tokens for sas_adding_delegataire.
+  $info['types']['sas_adding_delegataire'] = [
+    'name' => t('the form sas adding_delegataire'),
+    'description' => t('the form sas adding_delegataire'),
+  ];
+
+  $adding_delegataire = [
+    'lastname' => [
+      'name' => t('lastname of the form sas adding_delegataires'),
+      'description' => t('lastname of the form sas adding_delegataire'),
+    ],
+    'firstname' => [
+      'name' => t('firstname of the form sas adding_delegataires'),
+      'description' => t('firstname of the form sas adding_delegataire'),
+    ],
+    'city' => [
+      'name' => t('city of the form sas adding_delegataires'),
+      'description' => t('city of the form sas adding_delegataire'),
+    ],
+    'email' => [
+      'name' => t('email of the form sas adding_delegataires'),
+      'description' => t('email of the form sas adding_delegataire'),
+    ],
+    'possede_un_compte' => [
+      'name' => t('compte exist of the form sas adding_delegataires'),
+      'description' => t('compte exist  of the form sas adding_delegataire'),
+    ],
+  ];
+  $info['tokens']['sas_adding_delegataire'] = $adding_delegataire;
+
+  return $info;
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function sas_user_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
+  $replacements = [];
+
+  if ($type == 'sas_token') {
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'sas_base_url':
+          /** @var \Drupal\Core\Config\ConfigFactoryInterface $config_factory */
+          $config_factory = \Drupal::service('config.factory');
+          $config_site_sas = $config_factory->get('sas_config.general_settings')
+            ->getRawData();
+          $replacement_text = $config_site_sas['config']['sas_url'] ?? "https://sas.sante.fr";
+          $replacement_url = Url::fromRoute('<front>', [], [
+            'attributes' => ['class' => 'simple-link'],
+            'absolute' => TRUE,
+          ]);
+          $link = Link::fromTextAndUrl($replacement_text, $replacement_url);
+          $link = $link->toString();
+          $bubbleable_metadata->addCacheableDependency($link);
+          $link = $link->getGeneratedLink();
+          $link = new FormattableMarkup($link, []);
+          $replacements[$original] = $link;
+          break;
+      }
+    }
+  }
+
+  if ($type == 'sas_adding_delegataire' && !empty($data['sas_form_adding_delegataire'])) {
+    foreach ($tokens as $name => $original) {
+      $replacements[$original] = $data['sas_form_adding_delegataire'][$name];
+    }
+  }
+
+  return $replacements;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function sas_user_theme($existing, $type, $theme, $path) {
+  return [
+    'block_sas_login_button' => [
+      'variables' => [
+        'login_link' => NULL,
+        'class' => NULL,
+      ],
+    ],
+    'block_sas_logout_psc_button' => [
+      'variables' => [
+        'logout' => NULL,
+      ],
+    ],
+    'your_account_block' => [
+      'variables' => [
+        'identifiant' => NULL,
+        'user_last_name' => NULL,
+        'user_first_name' => NULL,
+        'logout' => NULL,
+        'link' => NULL,
+        'roles' => [],
+        'dashboard' => NULL,
+        'dashboard_gestionnaire' => NULL,
+        'dashboard_delegataire' => NULL,
+        'adding_delegataire' => NULL,
+        'results' => [],
+      ],
+    ],
+    'sas_territoire_field_multiple_value_form' => [
+      'base hook' => 'field_multiple_value_form',
+    ],
+  ];
+}
+
+/**
+ * Prepares variables for individual form element templates.
+ *
+ * Default template: field-multiple-value-form.html.twig.
+ *
+ * Combines multiple values into a table with drag-n-drop reordering.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - element: A render element representing the form element.
+ */
+function template_preprocess_sas_territoire_field_multiple_value_form(&$variables) {
+  $variables['territoire'] = $variables['element']['territoire'];
+  unset($variables['element']['territoire']);
+  $variables['#attached']['library'][] = 'sas_user/sas_territoire_autocomplete';
+  template_preprocess_field_multiple_value_form($variables);
+}
+
+/**
+ * Implements hook_query_TAG_alter().
+ */
+function sas_user_query_sas_structures_rattachees_alter(AlterableInterface $query) {
+  if (!($query instanceof SelectInterface)) {
+    return;
+  }
+
+  $config = \Drupal::config('sas_config.profile_config_form');
+  $config_name = 'attached_structure';
+  $roles = \Drupal::currentUser()->getRoles();
+  if (in_array(SnpConstant::SAS_GESTIONNAIRE_DE_COMPTES, $roles)
+    && empty(array_intersect(SasUserConstants::SAS_ADMIN_ROLES, $roles))) {
+    $config_name = 'attached_structure_gest_compte';
+  }
+
+  $attached_structure = $config->get($config_name) ?? [];
+
+  if (!empty($attached_structure) && is_array($attached_structure)) {
+
+    $fields = [
+      'node_revision__field_establishment_type' => [
+        'alias' => 'establishment_type',
+        'field' => 'field_establishment_type_target_id',
+        'field_alias' => 'establishment_type_target_id',
+        'field_value' => array_column($attached_structure['health_institution'] ?? [], 'target_id'),
+      ],
+      'node_revision__field_finess_establishment_type' => [
+        'alias' => 'finess_establishment_type',
+        'field' => 'field_finess_establishment_type_target_id',
+        'field_alias' => 'finess_establishment_type_target_id',
+        'field_value' => array_column($attached_structure['finess_institution'] ?? [], 'target_id'),
+      ],
+      'node_revision__field_type_de_service_de_sante' => [
+        'alias' => 'type_de_service_de_sante',
+        'field' => 'field_type_de_service_de_sante_target_id',
+        'field_alias' => 'type_de_service_de_sante_target_id',
+        'field_value' => array_column($attached_structure['service_de_sante'] ?? [], 'target_id'),
+      ],
+    ];
+    $orCondition = $query->orConditionGroup();
+    foreach ($fields as $table => $join) {
+      if (!empty($join['field_value'])) {
+        $condition = t('@alias.entity_id = @node.nid AND @alias.revision_id = @node.vid', [
+          '@alias' => $join['alias'],
+          '@node' => 'node_field_data',
+        ])->__toString();
+        $query->addJoin('LEFT', $table, $join['alias'], $condition);
+        $query->addField($join['alias'], $join['field'], $join['field_alias']);
+        $orCondition->condition($join['field'], $join['field_value'], 'IN');
+      }
+    }
+
+    $query->condition($orCondition);
+  }
+}
+
+/**
+ * Implements hook_views_pre_build().
+ */
+function sas_user_views_pre_build(ViewExecutable $view) {
+
+  if ($view->id() == 'sas_userlist' && in_array($view->current_display, [
+    'sas_user_territorial',
+    'sas_user_territorial_export',
+  ])) {
+
+    $user = \Drupal::service('entity_type.manager')->getStorage('user')
+      ->load(\Drupal::currentUser()->id());
+
+    $tids = [];
+    if (!$user->get('field_sas_territoire')->isEmpty()) {
+      foreach ($user->get('field_sas_territoire')->getValue() as $territory) {
+        $tids[] = $territory['target_id'];
+      }
+    }
+    if (!empty($tids)) {
+      $view->setArguments([implode('+', $tids)]);
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function sas_user_preprocess_menu(&$variables) {
+  if (!\Drupal::service('sas_core.service')->isSasContext()) {
+    return;
+  }
+
+  if (empty($variables['items'])) {
+    // Additional empty check to prevent exotic situations, where the preprocess
+    // function is entered even without items.
+    // @see https://www.drupal.org/node/2833885
+    return;
+  }
+  // Ensure that menu_name exists.
+  if (!isset($variables['menu_name'])) {
+    // In rare cases (for unknown reasons) menu_name may not be set.
+    // As fallback, we can fetch it from the first menu item.
+    $first_link = reset($variables['items']);
+    /** @var Drupal\Core\Menu\MenuLinkDefault $original_link */
+    // Fetch the menu_name from the original link.
+    $original_link = $first_link['original_link'];
+    $variables['menu_name'] = $original_link->getMenuName();
+  }
+
+  if ($variables['menu_name'] == 'admin') {
+    if (!admin_toolbar_links_access_filter_user_has_admin_role($variables['user'])) {
+      _sas_user_filter_admin_menu($variables['items']);
+    }
+  }
+}
+
+function _sas_user_filter_admin_menu(array &$items) {
+  foreach ($items as $menu_id => $item) {
+    /** @var \Drupal\Core\Menu\MenuLinkBase $original_link */
+    $original_link = $item['original_link'];
+    if ($original_link->getUrlObject()->isExternal()) {
+      // Do not filter external URL at all.
+      continue;
+    }
+    $route_name = $original_link->getRouteName();
+
+    if ($route_name === 'entity.user.collection' || $route_name === 'help.main') {
+      unset($items[$menu_id]);
+    }
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function sas_user_entity_presave(EntityInterface $entity) {
+  if ($entity instanceof User) {
+    if (!empty(array_filter($entity->getRoles(TRUE), static fn ($value) => preg_match('/^sas_(.*)$/', $value)))) {
+      $codes = \Drupal::service('sas_user.helper')->getUserPostalCode($entity);
+      if (!empty($codes)) {
+        $entity->set('field_sas_codes_postaux', implode(',', array_unique($codes)));
+      }
+
+      $entity->set('field_sas_user_sas', TRUE);
+    }
+    else {
+      $entity->set('field_sas_user_sas', FALSE);
+    }
+    if (!empty($entity->get('field_sas_territoire'))) {
+      $territoires = array_column($entity->get('field_sas_territoire')
+        ->getValue(), 'target_id');
+      $territoires = array_filter(array_unique($territoires));
+      $territoires = array_map(static fn ($value) => ['target_id' => $value], $territoires);
+      $entity->set('field_sas_territoire', $territoires);
+    }
+  }
+
+}
+
+/**
+ * Implements hook_entity_type_alter().
+ */
+function sas_user_entity_type_alter(array &$entity_types) {
+  $entity_types['node']->setHandlerClass('access', PageNodeAnonymousAccessControlHandler::class);
+}
+
+/**
+ * Implements hook_user_update().
+ */
+function sas_user_user_update(UserInterface $entity) {
+  $is_sas_regulator = array_intersect($entity->getRoles(TRUE), [
+    SnpConstant::SAS_REGULATEUR_OSNP,
+    SnpConstant::SAS_IOA,
+  ]);
+
+  $is_original_sas_regulator = array_intersect($entity->original->getRoles(TRUE), [
+    SnpConstant::SAS_REGULATEUR_OSNP,
+    SnpConstant::SAS_IOA,
+  ]);
+
+  if ($is_sas_regulator || $is_original_sas_regulator) {
+    // Make regulator synchronisation with aggregator.
+    $habilitation = !empty($is_sas_regulator);
+    /** @var \Drupal\sas_user\Service\AggregRegulatorSyncInterface $regulator_sync_helper */
+    $regulator_sync_helper = \Drupal::service('sas_user.aggreg_regulator_sync');
+    $regulator_data = $regulator_sync_helper->buildRegulatorPayload(
+      $entity,
+      $habilitation,
+      $entity->getEmail() !== $entity->original->getEmail() ? $entity->original->getEmail() : NULL
+    );
+    $regulator_sync_helper->makeRegulatorSync(SasRegulatorSync::ACCOUNT_CRUD_ENDPOINT, $regulator_data);
+  }
+
+}
+
+/**
+ * Implements hook_user_insert().
+ */
+function sas_user_user_insert(EntityInterface $entity) {
+  $is_sas_regulator = array_intersect($entity->getRoles(), [
+    SnpConstant::SAS_REGULATEUR_OSNP,
+    SnpConstant::SAS_IOA,
+  ]);
+  if ($is_sas_regulator) {
+    // Make regulator synchronisation with aggregator.
+    /** @var \Drupal\sas_user\Service\AggregRegulatorSyncInterface $regulator_sync_helper */
+    $regulator_sync_helper = \Drupal::service('sas_user.aggreg_regulator_sync');
+    $regulator_data = $regulator_sync_helper->buildRegulatorPayload($entity);
+    $regulator_sync_helper->makeRegulatorSync(SasRegulatorSync::ACCOUNT_CRUD_ENDPOINT, $regulator_data);
+  }
+
+}
+
+/**
+ * Implements hook_user_delete().
+ */
+function sas_user_user_delete(EntityInterface $entity) {
+  $is_sas_regulator = array_intersect($entity->getRoles(), [
+    SnpConstant::SAS_REGULATEUR_OSNP,
+    SnpConstant::SAS_IOA,
+  ]);
+  if ($is_sas_regulator) {
+    // Make regulator synchronisation with aggregator.
+    /** @var \Drupal\sas_user\Service\AggregRegulatorSyncInterface $regulator_sync_helper */
+    $regulator_sync_helper = \Drupal::service('sas_user.aggreg_regulator_sync');
+    $regulator_data = $regulator_sync_helper->buildRegulatorPayload($entity, FALSE);
+    $regulator_sync_helper->makeRegulatorSync(SasRegulatorSync::ACCOUNT_CRUD_ENDPOINT, $regulator_data);
+  }
+
+}

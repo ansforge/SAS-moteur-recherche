@@ -1,0 +1,40 @@
+<?php
+
+/**
+ * @file
+ * Contains sas_entity_snp_user.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function sas_entity_snp_user_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the sante_homepage module.
+    case 'help.page.sas_user':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Sas user') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * @file
+ * Implementing our hooks.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function sas_entity_snp_user_theme($existing, $type, $theme, $path) {
+  return [
+    'sas-snp-user-data-form-alter' => [
+      'render element' => 'form',
+    ],
+  ];
+}

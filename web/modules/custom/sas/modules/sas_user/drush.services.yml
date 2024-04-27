@@ -1,0 +1,30 @@
+services:
+  sas_user.rpps_adeli_migration:
+    class: Drupal\sas_user\Commands\EffectorRppsAdeliMigration
+    arguments:
+      - '@sas_user.effector_helper'
+      - '@sas_user.rpps_adeli_migration_csv_file'
+      - '@sas_core.service'
+    tags:
+      - { name: drush.command }
+
+  sas_user.settings_rpps_adeli_migration:
+    class: Drupal\sas_user\Commands\SettingsRppsAdeliMigration
+    arguments:
+      - '@sas_user.effector_helper'
+      - '@sas_user.settings_rpps_adeli_migration_csv_file'
+      - '@entity_type.manager'
+      - '@database'
+      - '@sas_core.service'
+    tags:
+      - { name: drush.command }
+
+  sas_user.slist_sas_user:
+    class: Drupal\sas_user\Commands\SasRppsCds
+    arguments:
+      - '@sas_structure.helper'
+      - '@sas_user.rpps_export_csv_file'
+      - '@sas_core.service'
+      - '@database'
+    tags:
+      - { name: drush.command }

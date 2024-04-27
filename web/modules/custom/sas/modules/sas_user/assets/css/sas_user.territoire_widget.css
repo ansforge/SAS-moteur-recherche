@@ -1,0 +1,11 @@
+.field--widget-sas-user-territory-user-autocomplete .field-label .label,
+.field--widget-sas-user-territory-content-autocomplete .field-label .label,
+.sas-territoire-autocomplete-select,
+.sas-territoire-autocomplete-select .form-item__label {
+  display: inline-block;
+}
+
+.field--widget-sas-user-territory-user-autocomplete .field-label .label,
+.field--widget-sas-user-territory-content-autocomplete .field-label .label {
+  margin-right: 0.2em;
+}

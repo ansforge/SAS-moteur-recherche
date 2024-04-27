@@ -1,0 +1,10 @@
+services:
+  sas_snp.cli.update_snp:
+    class: Drupal\sas_snp\Commands\SasUpdateSnpCommands
+    arguments:
+      - '@database'
+      - '@sas_core.service'
+      - '@entity_type.manager'
+      - '@sas_snp.unavailability_helper'
+    tags:
+      - { name: drush.command }

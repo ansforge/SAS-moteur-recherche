@@ -1,0 +1,16 @@
+services:
+  term.territory:
+    class: Drupal\sas_territory\Services\SasGetTermCodeCities
+    arguments: ['@entity_type.manager','@database','@cache.data']
+
+  territory.manager:
+    class: Drupal\sas_territory\Services\TerritoryManager
+    arguments:
+      - '@sas_api_client.service'
+
+  territory.sas_api.command:
+    class: Drupal\sas_territory\Commands\SasApiTerritorySyncCommand
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: drush.command }

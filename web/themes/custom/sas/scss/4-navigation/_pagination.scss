@@ -1,0 +1,24 @@
+.wrapper-calendar-pagination {
+  border: 1px solid $grey3;
+  background: $grey4;
+  height: 4.125rem;
+  display: flex;
+  align-items: center;
+  padding: 15px 25px;
+  border-radius: 0.25rem;
+  font-family: $font-mont;
+
+  @media screen and (min-width: $screen-md-min) {
+    padding: 15px 33px;
+  }
+
+  .btn-pager {
+    margin: 0 10px;
+  }
+
+  .dates {
+    margin: 0 0 0 10px;
+    font-weight: 700;
+    font-size: torem(20);
+  }
+}

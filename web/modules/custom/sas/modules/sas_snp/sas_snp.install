@@ -1,0 +1,87 @@
+<?php
+
+/**
+ * @file
+ * Schema, install, update and uninstall functions for the sas_snp module.
+ */
+
+use Drupal\Core\Database\Database;
+
+/**
+ * Implements hook_schema().
+ */
+function sas_snp_schema() {
+  $schema['sas_snp_availability'] = [
+    'description' => 'sas snp availability',
+    'fields' => [
+      'nid' => [
+        'description' => 'The Nid node.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'has_snp' => [
+        'description' => 'field has_snp in sas api.',
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'is_interfaced' => [
+        'description' => 'field is_interfaced in aggreg.',
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+    ],
+    'primary key' => ['nid'],
+    'indexes' => [
+      'nid' => ['nid'],
+    ],
+  ];
+
+  $schema['sas_is_interfaced'] = [
+    'description' => 'sas is interfaced',
+    'fields' => [
+      'rpps' => [
+        'description' => 'The RPPS',
+        'type' => 'int',
+        'size' => 'big',
+        'not null' => TRUE,
+      ],
+    ],
+    'primary key' => ['rpps'],
+    'indexes' => [
+      'rpps' => ['rpps'],
+    ],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Create new database custom table sas_snp_unavailability.
+ */
+function sas_snp_update_9001() {
+  $schema_sas_snp = sas_snp_schema();
+  $schema = Database::getConnection()->schema();
+  $table = 'sas_snp_availability';
+
+  if ($schema !== NULL && !$schema->tableExists($table)) {
+    $schema->createTable($table, $schema_sas_snp[$table]);
+  }
+}
+
+/**
+ * Create new database custom table sas_is_interfaced.
+ */
+function sas_snp_update_9002() {
+  $schema_sas_snp = sas_snp_schema();
+  $schema = Database::getConnection()->schema();
+  $table = 'sas_is_interfaced';
+
+  if ($schema !== NULL && !$schema->tableExists($table)) {
+    $schema->createTable($table, $schema_sas_snp[$table]);
+  }
+}

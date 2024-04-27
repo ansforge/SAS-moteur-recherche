@@ -1,0 +1,13 @@
+/**
+ * @file
+ * Font Variables
+ */
+
+@import '../../fonts/icons/icons';
+
+.fa-solid, 
+.fas, 
+.fa-regular, 
+.far {
+  font-family: 'Font Awesome 6 Free', sans-serif !important; // sass-lint:disable-line no-important
+}

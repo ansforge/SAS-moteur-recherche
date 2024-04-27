@@ -1,0 +1,16 @@
+services:
+  sas_directory_pages.preprocess_context_subscriber:
+    class: '\Drupal\sas_directory_pages\EventSubscriber\PreprocessContextAlterEventSubscriber'
+    arguments:
+      - '@sas_core.service'
+    tags:
+      - { name: 'event_subscriber' }
+  sas_directory_pages.aggreg_service:
+    class: '\Drupal\sas_directory_pages\Service\SasDirectoryAggregService'
+    arguments:
+      - '@sas_api_client.service'
+  sas_directory_pages.payload_helper:
+    class: Drupal\sas_directory_pages\Service\PayloadOrientationHelper
+    arguments:
+      - '@entity_type.manager'
+      - '@term.territory'

@@ -1,0 +1,182 @@
+.card-address {
+  margin: 16px 0;
+  border: 1px solid $grey3;
+  border-radius: 5px;
+  font-family: $font-mont;
+
+  p {
+    margin: 0;
+  }
+
+  .card-header {
+    padding: 16px 32px;
+    background: $grey;
+    border: 1px solid $grey3;
+
+    .address-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      font-size: torem(18);
+      line-height: torem(35);
+    }
+    .index {
+      font-style: italic;
+    }
+    .address {
+      font-size: torem(15);
+    }
+  }
+
+  .card-body {
+    padding: 2rem;
+
+    .title-body {
+      font-family: $font-frank;
+      font-size: torem(19);
+      font-weight: 600;
+    }
+
+    .info {
+      padding: 35px 0 75px;
+      font-size: torem(14);
+      font-weight: 700;
+      color: $grey17;
+    }
+
+    .btn-edit-dispo.is-disabled {
+      background: $sas-grey6;
+      border-color: $sas-grey6;
+      cursor: initial !important; // sass-lint:disable-line no-important
+    }
+  }
+}
+
+.accordion
+.collapse-container
+a {
+  &.with-icon {
+    color: $white;
+    &:hover {
+      text-decoration: none;
+    }
+  }
+}
+
+
+.link-cnam {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+
+  .ajax-progress-throbber {
+    position: absolute;
+    left: 100%;
+    top: 20%;
+  }
+}
+
+/* CARD PAGE DE RECHERCHE */
+
+.sas-card {
+  font-family: $font-mont;
+  max-width: 565px;
+  height: auto;
+  border: 2px solid $blue2;
+  border-radius: torem(4);
+  padding: 27px 27px 27px 40px;
+  box-shadow: 0 3px 8px 0 rgba(0, 0, 0, 0.1);
+
+
+  &-header {
+    display: flex;
+    justify-content: space-between;
+
+    .sas-ps {
+      .ps-content {
+        display: flex;
+        position: relative;
+        margin-left: 27px;
+        i {
+          font-size: torem(31);
+          &:before {
+            position: absolute;
+            left: -40px;
+          }
+        }
+        &-col {
+          display: flex;
+          flex-direction: column;
+          .ps-name {
+            font-size: torem(16);
+            font-weight: 600;
+
+          }
+          .ps-profession {
+            color: $grey22;
+            font-size: torem(12);
+            font-weight: 700;
+          }
+        }
+
+      }
+      .card-reorientation {
+        font-size: torem(12);
+        font-weight: 400;
+        margin-left: 27px;
+        margin-top: 21px;
+        display: flex;
+        align-items: center;
+
+        i {
+          font-size: torem(19);
+          margin-right: 6px;
+          color: $blue2;
+        }
+      }
+    }
+    .sas-card-moment {
+      font-size: torem(14);
+    }
+  }
+
+  .sas-card-content {
+    i {
+      margin-right: 15px;
+      font-size: torem(17);
+    }
+
+    font-size: torem(14);
+    letter-spacing: torem(0.5);
+
+    ul {
+      padding-left: 0;
+
+      li {
+        margin-bottom: 16px;
+        list-style: none;
+
+        &:last-child {
+          margin-bottom: 30px;
+        }
+      }
+    }
+    .content-hourly {
+      .hourly-open {
+        color: $sas-green9;
+        font-weight: 500;
+      }
+
+      .hourly-close {
+        color: $red9;
+        font-weight: 500;
+      }
+    }
+  }
+}
+.info-test-ta {
+  a {
+    font-size: torem(14);
+  }
+}

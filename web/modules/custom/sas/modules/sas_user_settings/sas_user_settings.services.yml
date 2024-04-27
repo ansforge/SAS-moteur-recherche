@@ -1,0 +1,7 @@
+services:
+  sas_user_settings.helper:
+    class: Drupal\sas_user_settings\Service\SasUserSettingsHelper
+    arguments:
+      - '@entity_type.manager'
+      - '@sas_keycloak.psc_user'
+      - '@sas_structure.helper'

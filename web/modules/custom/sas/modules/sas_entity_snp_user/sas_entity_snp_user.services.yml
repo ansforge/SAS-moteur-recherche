@@ -1,0 +1,18 @@
+services:
+  sas_snp_user_data.helper:
+    class: Drupal\sas_entity_snp_user\Service\SasSnpUserDataHelper
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@sas_keycloak.psc_user'
+      - '@sas_structure.helper'
+      - '@sas_api_client.service'
+
+  sas_snp_user_data.normalizer:
+    class: Drupal\sas_entity_snp_user\Normalizer\SasSnpUserDataNormalizer
+    arguments:
+      - '@entity_type.manager'
+      - '@entity_type.repository'
+      - '@entity_field.manager'
+    tags:
+      - { name: normalizer, priority: 2 }

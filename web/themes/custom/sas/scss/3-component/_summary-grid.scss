@@ -1,0 +1,65 @@
+$column-gap: 35px;
+
+.summary-grid {
+  display: flex;
+  gap: $column-gap; // sass-lint:disable-line no-misspelled-properties
+
+  > .summary-name {
+    color: $blue2;
+    font-size: torem(16);
+    font-weight: 600;
+    text-decoration: underline;
+  }
+}
+
+.summary-infos {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 10px $column-gap; // sass-lint:disable-line no-misspelled-properties
+
+  > .summary-info-label {
+    color: $black;
+    font-weight: 700;
+  }
+
+  > .summary-info-phone {
+    display: flex;
+    align-items: center;
+    font-size: torem(16);
+
+    a {
+      color: $blue2;
+    }
+
+    &::before {
+      @extend %fonticon;
+      content: $sas-icon-phone;
+      font-size: torem(16);
+      text-decoration: none;
+      margin-inline-end: 5px;
+    }
+  }
+}
+
+/* #region @override */
+
+.modal-summary-grid {
+  margin-bottom: 40px;
+  .summary-info-phone {
+    margin-inline-end: $column-gap;
+  }
+}
+
+.modal-confirm-summary-grid {
+  .summary-info-label {
+    color: $grey22;
+  }
+
+  .summary-info-phone {
+    &::before {
+      font-size: torem(20);
+    }
+  }
+}
+
+/* #endregion */

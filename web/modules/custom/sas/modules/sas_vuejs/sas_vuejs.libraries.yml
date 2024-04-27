@@ -1,0 +1,98 @@
+# ⚠️ Please Note ⚠️
+#
+# Until we are able to fix the collision between sante_vuejs & sas_vuejs Webpack's chunks:
+#
+# we load all sas_vuejs without defer, allowing sas components to init properly, before sante_vuejs chunks are loaded
+#
+# and in the case of ajax loaded content, we load the needed sas_vuejs libraries before the loader.
+# Cf. web/modules/custom/sas/modules/sas_directory_pages/src/Plugin/PreprocessHandler/PreprocessAsyncPerimeter.php
+#
+# in all cases the order must be : sas chunks load -> sas components init -> sante chunks load -> sante components init
+# (We could choose the other order but that one is easier)
+#
+# Contact : Haithem AMRI / Grégory LE GRAND
+
+vue-js:
+  js:
+    js/script.js: { }
+    vue-core/dist/js/chunk-vendors.js: { }
+    vue-core/dist/js/chunk-common.js: { }
+    js/ResizeSensor.js: { }
+  dependencies:
+    - core/jquery
+
+header-searchbar:
+  js:
+    vue-core/dist/js/header-searchbar.js: { }
+  dependencies:
+    - sas_vuejs/vue-js
+
+search-page:
+  js:
+    vue-core/dist/js/search-page.js: { }
+  css:
+    component:
+      vue-core/dist/css/search-page.css: { }
+  dependencies:
+    - sas_vuejs/vue-js
+    - sante_iframe_covid/leaflet
+
+home-page:
+  js:
+    vue-core/dist/js/home-page.js: { }
+  dependencies:
+    - sas_vuejs/vue-js
+
+time-slot-schedule:
+  js:
+    vue-core/dist/js/time-slot-schedule.js: { }
+  css:
+    component:
+      vue-core/dist/css/time-slot-schedule.css: { }
+  dependencies:
+    - sas_vuejs/vue-js
+
+directory-snp-calendar:
+  js:
+    vue-core/dist/js/directory-snp-calendar.js: { }
+  css:
+    component:
+      vue-core/dist/css/directory-snp-calendar.css: { }
+  dependencies:
+    - sas_vuejs/vue-js
+
+aggreg-ps-calendar:
+  js:
+    vue-core/dist/js/aggreg-ps-calendar.js: { }
+  dependencies:
+    - sas_vuejs/vue-js
+
+faq-page:
+  js:
+    vue-core/dist/js/faq-page.js: { }
+  dependencies:
+    - sas_vuejs/vue-js
+
+reorientation-page:
+  js:
+    vue-core/dist/js/faq-page-contact.js: { }
+  dependencies:
+    - sas_vuejs/vue-js
+
+formation-home-page:
+  js:
+    vue-core/dist/js/formation-home-page.js: { }
+  dependencies:
+    - sas_vuejs/vue-js
+
+formation-page:
+  js:
+    vue-core/dist/js/formation-page.js: { }
+  dependencies:
+    - sas_vuejs/vue-js
+
+user-dashboard-page:
+  js:
+    vue-core/dist/js/user-dashboard-page.js: { }
+  dependencies:
+    - sas_vuejs/vue-js

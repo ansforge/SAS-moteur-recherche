@@ -1,0 +1,33 @@
+.informative-banner {
+  font-family: $font-mont;
+  background-color: $yellow2;
+  width: 100%;
+  padding: 12px 12px 12px 38px;
+  display: flex;
+  align-items: center;
+  border-radius: torem(4);
+
+  &:before {
+    content: '!';
+    background-color: black;
+    min-height: 28px;
+    min-width: 28px;
+    border-radius: 50%;
+    font-size: torem(20);
+    font-weight: 500;
+    color: $yellow2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 18px;
+  }
+
+  p {
+    margin-left: 5px;
+    font-size: torem(14);
+  }
+
+  .informative-date {
+    font-weight: 700;
+  }
+}

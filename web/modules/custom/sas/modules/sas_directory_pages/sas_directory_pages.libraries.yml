@@ -1,0 +1,7 @@
+directory_page_content_ajax:
+  js:
+    js/directory_page_content_ajax.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/once

@@ -1,0 +1,8 @@
+name: 'SAS Vue JS'
+type: module
+description: 'Provide Vue JS features for SAS pages.'
+core_version_requirement: '^9 || ^10'
+package: 'ANS - SAS'
+
+dependencies:
+  - sas:sas_core

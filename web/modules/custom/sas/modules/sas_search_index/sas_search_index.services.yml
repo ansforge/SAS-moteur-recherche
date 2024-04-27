@@ -1,0 +1,6 @@
+services:
+  sas_search_index.helper:
+    class: Drupal\sas_search_index\Service\SasSearchIndexHelper
+    arguments:
+      - '@entity_type.manager'
+      - '@logger.factory'

@@ -1,0 +1,31 @@
+<?php
+
+/**
+ * @file
+ * Contains sante_directory_pages.module.
+ */
+
+use Drupal\sas_directory_pages\Entity\FinessInstitutionSas;
+use Drupal\sas_directory_pages\Entity\HealthInstitutionSas;
+use Drupal\sas_directory_pages\Entity\ProfessionnelDeSanteSas;
+use Drupal\sas_directory_pages\Entity\ServiceDeSanteSas;
+
+/**
+ * Implements hook_entity_bundle_info_alter().
+ *
+ * Set bundle classes for directory nodes.
+ */
+function sas_directory_pages_entity_bundle_info_alter(array &$bundles): void {
+  if (isset($bundles['node']['finess_institution'])) {
+    $bundles['node']['finess_institution']['class'] = FinessInstitutionSas::class;
+  }
+  if (isset($bundles['node']['health_institution'])) {
+    $bundles['node']['health_institution']['class'] = HealthInstitutionSas::class;
+  }
+  if (isset($bundles['node']['professionnel_de_sante'])) {
+    $bundles['node']['professionnel_de_sante']['class'] = ProfessionnelDeSanteSas::class;
+  }
+  if (isset($bundles['node']['service_de_sante'])) {
+    $bundles['node']['service_de_sante']['class'] = ServiceDeSanteSas::class;
+  }
+}

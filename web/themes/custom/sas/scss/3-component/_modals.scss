@@ -1,0 +1,1570 @@
+.modal-sas,
+.vuemodal-sas {
+  width: 100% !important; // sass-lint:disable-line no-important
+  max-width: 890px;
+  font-family: $font-mont;
+  border: 0 !important; // sass-lint:disable-line no-important
+  border-radius: 0;
+  box-shadow: none;
+  background: $white;
+
+  .ui-dialog-titlebar {
+    padding: 25px 30px;
+
+    @media screen and (min-width: $screen-md-min) {
+      padding: 25px 45px;
+    }
+
+    &:after {
+      left: 30px;
+      right: 30px;
+
+      @media screen and (min-width: $screen-md-min) {
+        left: 45px;
+        right: 45px;
+      }
+    }
+
+    .ui-dialog-title {
+      font-size: torem(18);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+
+      &:before {
+        content: none;
+      }
+    }
+  }
+
+  .ui-dialog-titlebar-close {
+    @media screen and (min-width: $screen-md-min) {
+      right: 45px;
+    }
+
+    &:before {
+      font-size: torem(16);
+      font-weight: 700;
+    }
+  }
+
+  .ui-dialog-content {
+    padding: 20px 30px 30px;
+
+    @media screen and (max-width: $screen-sm-max) {
+      max-height: 87vh !important; // sass-lint:disable-line no-important
+    }
+
+    @media screen and (min-width: $screen-md-min) {
+      padding: 35px 45px 45px;
+    }
+  }
+
+  .wrapper-btn-actions {
+    margin: 35px auto 0;
+    text-align: center;
+
+    .btn-cancel {
+      @media screen and (min-width: $screen-md-min) {
+        margin-right: 16px;
+      }
+    }
+
+    .form-submit {
+      @extend %btn-highlight;
+    }
+  }
+
+  .form-field {
+    span {
+      display: block;
+      margin: 32px 0 15px;
+      font-size: torem(16);
+      font-weight: 700;
+      line-height: torem(36);
+
+      @media screen and (min-width: $screen-md-min) {
+        font-size: torem(21);
+      }
+    }
+
+    label {
+      font-size: torem(14);
+    }
+  }
+
+  &.sas-loader {
+    max-width: 545px;
+  }
+
+  input,
+  select {
+    border: 1px solid $grey3;
+    padding: 5px;
+  }
+
+  input[type='date'] {
+    width: 150px;
+    height: 33px;
+    font-weight: 500;
+    font-size: torem(16);
+    padding: 9px 12px;
+  }
+}
+
+.vuemodal-sas {
+  position: fixed;
+  z-index: 1050;
+  width: 100%;
+  overflow-y: auto;
+
+  @media screen and (min-width: $screen-md-min) {
+    transform: translate(-50%, -50%);
+    right: 0;
+    bottom: 0;
+    top: 50%;
+    left: 50%;
+    height: fit-content;
+    max-height: 90vh;
+  }
+}
+
+#cnam-validation-form-ajax-wrapper {
+  .wrapper-btn-actions {
+    position: sticky;
+    bottom: -45px;
+    background: white;
+    padding: 10px 0;
+  }
+}
+
+/* #region Calendar SNP */
+.modal-modif-dispo {
+  legend {
+    margin-bottom: 2rem;
+  }
+
+  fieldset {
+    &.consultation {
+      margin-top: 2rem;
+
+      label {
+        align-items: center;
+
+        .tag-letter {
+          margin-right: 8px;
+        }
+      }
+    }
+
+    &.weekly-recurrence {
+      margin-top: 4rem;
+
+      legend {
+        margin-bottom: 15px;
+      }
+
+      .form-type-checkbox label {
+        font-weight: 500;
+      }
+
+      .form-wrapper {
+        .form-item {
+          min-width: 112px;
+        }
+
+        input[type='checkbox'] {
+          &:checked+label {
+            &:after {
+              left: 3px;
+              top: 3px;
+              width: 14px;
+              height: 14px;
+            }
+          }
+        }
+
+        label {
+          &:before {
+            min-height: 20px;
+            min-width: 20px;
+          }
+        }
+      }
+    }
+
+    &.fieldset-date {
+      margin: 60px 0 50px;
+
+      @media screen and (min-width: $screen-md-min) {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+      }
+
+      label {
+        @extend %txt-bold-big;
+      }
+    }
+
+    .fieldset-wrapper {
+      @media screen and (min-width: $screen-md-min) {
+        display: flex;
+        justify-content: space-between;
+      }
+    }
+  }
+
+  .wrapper-edit-types {
+    @media screen and (min-width: $screen-md-min) {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    &>.form-item {
+      width: calc((100% - 16px) / 2);
+
+      label {
+        padding: 18px 55px 18px 28px;
+        height: 100%;
+        border: 1px solid $sas-grey5;
+        border-radius: 10px;
+        font-size: torem(20);
+        font-weight: 500;
+        text-align: left;
+        line-height: 30px;
+
+        &:hover {
+          border: 1px solid $sas-grey5;
+        }
+
+        .nb-patient {
+          input[type='text'] {
+            width: 65px;
+            height: 33px;
+          }
+        }
+
+        .example {
+          display: block;
+          font-size: torem(13);
+          font-weight: 400;
+        }
+      }
+
+      input[type='radio'] {
+        &+label {
+          &:before {
+            width: 28px;
+            min-width: 28px;
+            height: 28px;
+            min-height: 28px;
+          }
+
+          &:after {
+            width: 20px;
+            height: 20px;
+          }
+        }
+
+        &:checked+label {
+          background: $sas-blue9;
+          border: 1px solid $sas-blue4;
+
+          &:before {
+            border-color: $sas-blue4;
+          }
+
+          &:after {
+            top: 22px;
+            left: 32px;
+          }
+        }
+      }
+    }
+  }
+
+  .hours-date {
+    select {
+      min-width: 75px;
+    }
+  }
+}
+
+.modal-further-info {
+  .form-type-textarea {
+    margin: 27px 0;
+
+    label {
+      font-size: torem(20);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      height: 180px;
+      width: 100%;
+      border-radius: 4px;
+
+      @media screen and (min-width: $screen-md-min) {
+        max-width: 800px;
+        min-width: 800px;
+      }
+    }
+  }
+  .wrapper-btn-actions {
+    button:not(:last-child) {
+      margin-right: 16px;
+    }
+  }
+}
+
+.modal-unavailability {
+  .checkbox-indefinite-period {
+    margin-bottom: 32px;
+    font-size: torem(16);
+    font-weight: 500;
+  }
+
+  .form-date-inline {
+    margin: 0 0 32px;
+  }
+
+  .wrapper-add-slot {
+    margin: 32px 0;
+  }
+}
+
+.modal-delete-slot {
+  .form-item {
+    margin-top: 50px;
+
+    input[type='radio']:not(:checked) + label {
+      color: $sas-grey2;
+
+      &:before {
+        border-color: $sas-grey2;
+      }
+    }
+  }
+}
+
+.modal-info-slot {
+  .desc {
+    font-family: $font-frank;
+    font-size: torem(19);
+    font-weight: 600;
+  }
+
+  .list-time-slots-snp {
+    li {
+      margin: 16px 0 32px 10px;
+    }
+  }
+}
+
+/* #endregion */
+
+/* #region Modal PS information */
+
+.information-ps {
+  font-size: torem(16);
+  display: flex;
+
+  .sas-ps-name {
+    font-weight: 600;
+    color: $blue2;
+    text-decoration: underline;
+  }
+
+  .sas-ps-profession {
+    font-weight: 700;
+    margin-left: 51px;
+  }
+
+  .sas-ps-phone {
+    color: $blue2;
+    font-size: torem(14);
+    margin-left: 51px;
+    display: inline-block;
+
+    i {
+      margin-right: 12px;
+      color: $blue2;
+    }
+  }
+}
+
+/* #endregion */
+
+/* #region Modal patient referred */
+
+.patient-referred-container {
+  .patient-slot {
+    display: flex;
+    align-items: center;
+    font-size: torem(20);
+
+    .tag-letter {
+      margin-left: 6px;
+      text-transform: uppercase;
+    }
+  }
+  .number-patient-container {
+    background: $sas-grey3;
+    border-radius: 4px;
+    padding: 22px;
+    text-align: center;
+    height: 151px;
+
+    .number-patient-counter {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: torem(22);
+      letter-spacing: 2px;
+
+      .patient-counter {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: $white;
+        height: 42px;
+        width: 93px;
+        border-radius: 20px;
+        margin-right: 15px;
+        border: 2px solid $sas-blue4;
+
+        span {
+          font-weight: 700;
+        }
+      }
+    }
+  }
+}
+/* #endregion */
+
+/* #region Modal patient confirmation */
+.number-patient-confirmed-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: torem(30);
+  background: $sas-grey3;
+  border-radius: 4px;
+}
+/* #endregion */
+
+/* #region Welcome Popin First Connection */
+.wrapper-dialog-sas-welcome-popin {
+  .dialog-sas-welcome-popin {
+    z-index: 50;
+    max-width: 700px;
+    min-height: 335px;
+    border-radius: 3px;
+
+    .ui-dialog-titlebar {
+      padding: 0;
+      height: 55px;
+
+      &:after {
+        content: none;
+      }
+
+      .ui-dialog-title {
+        display: none;
+      }
+
+      .ui-dialog-titlebar-close {
+        width: 25px;
+        height: 25px;
+        top: 20px;
+        right: 20px;
+        transform: none;
+
+        &:before {
+          font-weight: 700;
+          font-size: torem(24);
+        }
+      }
+    }
+
+    .ui-dialog-content {
+      padding: 0 55px 55px;
+      height: auto !important; // sass-lint:disable-line no-important
+      max-height: inherit !important; // sass-lint:disable-line no-important
+      font-size: torem(15);
+      font-weight: 500;
+      line-height: torem(30);
+      font-family: $font-frank;
+
+      p {
+        margin-top: 0;
+      }
+    }
+  }
+
+  .dialog-overlay {
+    position: absolute;
+    z-index: 40;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* #endregion */
+
+/* #region Modal register snp slot profesional */
+
+.temp-reg-tab {
+  display: flex;
+  gap: 5px; // sass-lint:disable-line no-misspelled-properties
+  margin-bottom: 40px;
+
+  .register-name {
+    text-decoration: underline;
+    color: $blue2;
+    font-weight: 600;
+    margin-right: 30px;
+    font-size: torem(16);
+  }
+
+  .register-type {
+    font-weight: 700;
+    color: $black;
+    margin-right: 30px;
+  }
+
+  .register-phone {
+    display: flex;
+    align-items: center;
+    font-size: torem(16);
+
+    a {
+      color: $blue2;
+    }
+
+    &::before {
+      @extend %fonticon;
+      content: $sas-icon-phone;
+      text-decoration: none;
+      font-size: 16px;
+      margin-right: 5px;
+    }
+  }
+}
+
+.ui-dialog-content .additional-information-wrapper {
+  background-color: $sas-grey1;
+  border: 1px solid $grey3;
+  border-radius: 4px 4px 0 0;
+  padding: 20px;
+  margin-bottom: 36px;
+  color: $black;
+  .additional-information-title {
+    margin: 0 0 25px;
+    font-weight: 700;
+    font-size: torem(16);
+    display: flex;
+    align-items: center;
+
+    i {
+      font-size: torem(24);
+      margin-right: 16px;
+    }
+  }
+  p {
+    font-size: torem(14);
+    margin: 0;
+  }
+}
+
+/* #endregion */
+
+/* #region Plage horaire */
+
+.ui-dialog-content {
+  .patient__adresser__day {
+    font-size: torem(20);
+    font-weight: 800;
+    color: $black2;
+    display: flex;
+    text-transform: capitalize;
+    span {
+      font-weight: 400;
+    }
+    .date-start {
+      margin-left: 5px;
+    }
+    .tag-letter {
+      margin-left: 5px;
+      font-weight: bold;
+    }
+  }
+  .patient__details {
+    align-items: center;
+    background: $sas-grey3;
+    border-radius: 4px;
+    color: $black2;
+    display: flex;
+    flex-direction: column;
+    height: 147px;
+    margin: 15px auto 0;
+    padding: 15px;
+    h2.patient__details__title {
+      font-size: torem(16);
+      font-weight: 400;
+      line-height: 22.4px;
+      margin: 0 0 15px;
+      text-transform: none;
+    }
+    .patient__details__contenu {
+      display: flex;
+    }
+    .sas__patient__compteur {
+      align-items: center;
+      background-color: $grey2;
+      border-radius: 30px;
+      display: flex;
+      font-family: $font-frank;
+      font-size: torem(25);
+      font-weight: 700;
+      justify-content: center;
+      padding: 5px 25px;
+      text-align: center;
+    }
+    .patient__details--placeholder {
+      margin: 0 15px;
+      width: 50px;
+    }
+    .patient__details__contenu--sup,
+    .patient__details__contenu--ajout {
+      align-items: center;
+      background: $blue27;
+      border: 0;
+      border-radius: 30px;
+      color: $white;
+      display: flex;
+      font-size: torem(40);
+      font-weight: 700;
+      height: 50px;
+      justify-content: center;
+      text-decoration: none;
+      width: 50px;
+    }
+    .patient__details__contenu--sup span {
+      margin-bottom: 3px;
+    }
+  }
+}
+
+/* #endregion */
+
+/* #region Hors créneaux */
+
+.hours-date {
+  input[type='date']::-webkit-inner-spin-button {//sass-lint:disable-line no-vendor-prefixes
+    display: none;
+    -webkit-appearance: none; //sass-lint:disable-line no-vendor-prefixes
+  }
+
+  input[type='date']::-webkit-calendar-picker-indicator {//sass-lint:disable-line no-vendor-prefixes
+    display: block;
+    background: url('../images/calendar.svg') no-repeat right top transparent;
+  }
+  label {
+    font-size: torem(20);
+  }
+  .bold_700 {
+    font-weight: 700;
+    margin-right: 5px;
+    margin-left: 15px;
+  }
+
+  input {
+    border-radius: 4px;
+    padding: 3px;
+  }
+  select {
+    border-radius: 4px;
+    padding: 3px;
+    height: 33px;
+    font-size: torem(16);
+  }
+}
+.confirm-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: $sas-grey3;
+  padding: 30px;
+
+  .confirm-name {
+    text-decoration: underline;
+    color: $blue2;
+    font-weight: 700;
+    margin-right: 30px;
+  }
+  .confirm-type {
+    font-weight: 700;
+    color: $grey22;
+    margin-right: 30px;
+  }
+  .confirm-phone {
+    display: flex;
+    align-items: center;
+
+    a {
+      color: $blue2;
+    }
+
+    &::before {
+      content: $sas-icon-phone;
+      text-decoration: none;
+      font-family: $icomoon-font-family-sas;
+      font-size: 20px;
+      margin-right: 5px;
+    }
+  }
+}
+
+/* #endregion */
+
+/* #region Modal CNAM dashboard */
+
+.modal-cnam {
+  top: 50% !important; // sass-lint:disable-line no-important
+  transform: translateY(-50%);
+  .ui-dialog-content {
+    @media screen and (min-width: $screen-lg-min) {
+      max-height: 85vh !important; // sass-lint:disable-line no-important
+    }
+  }
+
+  @media screen and (max-width: $screen-xs-max) {
+    top: 0 !important; // sass-lint:disable-line no-important
+    transform: translateY(0);
+    .ui-dialog-content:not(.modal-home-body-container) {
+      max-height: calc(100vh - 150px) !important; // sass-lint:disable-line no-important
+
+      @supports (-webkit-text-size-adjust: none) and (not (-ms-accelerator: true)) {//sass-lint:disable-line no-vendor-prefixes
+        max-height: calc(100vh - 120px) !important; // sass-lint:disable-line no-important
+      }
+    }
+    #cnam-validation-form-ajax-wrapper .wrapper-btn-actions {
+      bottom: 0;
+      position: relative;
+    }
+  }
+}
+.js-form-item-forfait-reo-enabled {
+  margin-top: 30px;
+}
+
+.sas-snp-user-data-form,
+.form-field.cnam-dashboard {
+
+  h2 {
+    line-height: 1.3;
+  }
+  legend {
+    display: contents;
+  }
+
+  span {
+    margin: 0;
+
+    .fieldset-legend {
+      margin: 0;
+      padding-bottom: 20px;
+    }
+  }
+
+  .autocomplete-wrap {
+    padding: 17px 25px;
+    background: $sas-grey1;
+    line-height: torem(30);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    @media screen and (max-width: $screen-sm-max) {
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+    .mail-support {
+      flex: 1 100%;
+      margin: 15px 0 0;
+      line-height: 1.4;
+    }
+    input[type='search'] {
+      padding: 5px 12px;
+      border-radius: 5px;
+      border: 1px solid $grey5;
+      font-size: torem(16);
+      line-height: torem(21);
+      font-family: $font-frank;
+      color: $black2;
+      background: $white;
+    }
+    .dropdown {
+      position: relative;
+      z-index: 10;
+      ul {
+        width: 350px;
+        position: absolute;
+        margin: 0;
+        top: 34px;
+        padding: 5px 11px;
+        border: 1px solid $grey5;
+        background-color: $white;
+        right: 0;
+        li {
+          list-style-type: none;
+          button {
+            background-color: $white;
+            border: 0;
+            line-height: 1.2;
+            text-align: left;
+            display: block;
+            padding: 3px;
+            &:hover {
+              color: $white;
+              background-color: $sas-blue4;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  p.error-msg {
+    margin: 0;
+    padding: 10px 0;
+    font-size: torem(14);
+    font-weight: bold;
+    color: $red12;
+  }
+
+  .form-item-cpts-autocomplete,
+  .form-item-msp-autocomplete {
+    .form-item--error-message {
+      display: inline-block;
+      padding: 10px 0 0;
+      color: $sas-red1;
+      font-weight: 700;
+    }
+  }
+
+  .participation-sas {
+    padding: 0 0 25px;
+
+    span:first-child {
+      padding-top: 20px;
+      margin-bottom: 30px;
+      font-size: torem(21);
+    }
+
+    .form-item-participation-sas {
+      margin-bottom: 15px;
+    }
+
+    .participation-sas-select {
+      padding-left: 30px;
+
+      .form-item-value {
+        padding: 15px 30px;
+      }
+
+      select {
+        @media screen and (min-width: $screen-md-min) {
+          min-width: 307px;
+        }
+        font-size: torem(14);
+
+        &:checked {
+          font-style: italic;
+        }
+      }
+    }
+  }
+
+  .cpts-container {
+    .cpts-autocomplete {
+      .form-item-cpts-autocomplete {
+        padding: 17px 25px;
+        background: $sas-grey1;
+        line-height: torem(30);
+      }
+    }
+
+    .cpts-places {
+      margin-top: 5px;
+
+      .fieldgroup {
+        padding: 15px 30px;
+        background: $sas-grey1;
+
+        legend {
+          span {
+            margin: 0;
+            font-size: torem(16);
+            margin-bottom: 15px;
+            display: block;
+            font-weight: 700;
+            span {
+              display: inline;
+            }
+          }
+      }
+
+        .fieldset-wrapper {
+          .option {
+            &::before {
+              margin-right: 16px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .edit-sas-participation-alert {
+    padding: 28px;
+    background: $sas-grey1;
+    font-size: torem(16);
+    line-height: 1.4;
+    border-radius: 4px;
+    color: $sas-red1;
+    p {
+      font-weight: 700;
+      margin: 0;
+    }
+  }
+
+  .select-multiple {
+    margin-bottom: 20px;
+  }
+
+  .tag-list {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    flex-wrap: wrap;
+    li {
+      list-style-type: none;
+      button {
+        position: relative;
+        background-color: $white;
+        border-radius: 0;
+        border: 1px solid $black;
+        background-image: none;
+        color: $black;
+        height: 21px;
+        display: flex;
+        align-items: center;
+        appearance: none;
+        margin: 3px 5px 3px 0;
+        padding: 3px 20px 3px 5px;
+        &::after {
+          content: $icon-close;
+          font-family: $icomoon-font-family;
+          color: $black;
+          font-size: torem(11);
+          position: absolute;
+          width: 11px;
+          height: 11px;
+          right: 4px;
+          top: 0;
+        }
+      }
+    }
+  }
+
+
+  .chosen-container {
+    width: 300px !important; //sass-lint:disable-line no-important
+    height: 33px;
+    border: 1px solid $grey3;
+    background: $white;
+    border-radius: 4px;
+
+    .chosen-choices {
+      position: absolute;
+      left: -4px;
+      top: 50px;
+      background: transparent;
+      box-shadow: none;
+      border: 0;
+      overflow: initial;
+      width: 250%;
+      display: flex;
+      flex-wrap: wrap;
+
+      .search-choice {
+
+
+        span {
+          margin: 0;
+          line-height: 0;
+          font-size: torem(13);
+          font-weight: 400;
+        }
+      }
+
+      .search-field {
+        position: absolute;
+        top: -48px;
+        width: 40%;
+        left: 4px;
+
+        .chosen-search-input {
+          position: absolute;
+          left: 7px;
+          width: 97% !important; //sass-lint:disable-line no-important
+          color: $black;
+          font-style: italic;
+        }
+      }
+    }
+  }
+
+  .software-container {
+    padding: 15px 30px 85px;
+    background: $sas-grey1;
+    margin-top: 5px;
+    margin-bottom: 30px;
+
+    .editor_name {
+      display: block;
+      margin-bottom: 10px;
+      font-size: torem(16);
+      font-weight: 700;
+      line-height: 2.25;
+    }
+
+    fieldset {
+      &.fieldgroup {
+        padding-bottom: 20px;
+
+        span {
+          font-size: torem(16);
+          margin-bottom: 15px;
+          display: block;
+          font-weight: 700;
+          line-height: 2.25;
+          span {
+            display: inline;
+          }
+        }
+
+        .fieldset-wrapper {
+          [id*='edit-has-software--'] {
+            display: flex;
+
+            legend {
+              display: contents;
+
+              .fieldset-legend {
+                font-size: torem(16);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .available-hours {
+      .form-item-hours-available {
+        display: flex;
+        align-items: center;
+      }
+
+      label {
+        color: $black;
+      }
+    }
+    .editor-selector-container {
+      width: 100%;
+      max-width: 300px;
+      position: relative;
+      .editor-selector {
+        border: 1px solid $grey3;
+        border-radius: 4px;
+        appearance: none;
+        background-color: $white;
+        font-size: torem(14);
+        width: 100%;
+        text-align: left;
+        padding: 6px 10px;
+        font-family: $font-mont;
+        font-style: italic;
+        &::after {
+          content: $icon-down;
+          font-family: $icomoon-font-family;
+          color: $black;
+          font-style: normal;
+          font-size: torem(16);
+          position: absolute;
+          width: 16px;
+          height: 18px;
+          right: 12px;
+          top: 7px;
+        }
+        &.select-opened {
+          &::after {
+            content: $icon-up;
+          }
+        }
+      }
+      .editor-select {
+        position: absolute;
+        z-index: 10;
+        width: 100%;
+        background: $white;
+        border: 1px solid $grey3;
+        border-radius: 8px;
+        filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.25));
+      }
+
+      .editor-autocomplete {
+        padding: 17px 13px;
+        width: 100%;
+        font-size: torem(14);
+        border-radius: 4px;
+        border-bottom: 1px solid $grey3;
+        display: flex;
+        input {
+          flex: 1;
+          padding: 8px 13px;
+          font-family: $font-mont;
+        }
+      }
+
+      ul.editor-autocomplete-checkbox-list {
+        max-height: 274px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        li {
+          border-bottom: 1px solid $grey3;
+          padding-right: 13px;
+
+          label {
+            padding: 17px 13px 12px;
+            width: 100%;
+            color: $black;
+            padding-right: 40px;
+            cursor: pointer;
+            &:before {
+              position: absolute;
+              right: 0;
+              margin: 0;
+            }
+            &:after {
+              left: auto;
+              right: 3px;
+              top: 20px;
+            }
+          }
+        }
+      }
+      & + .tag-list {
+        margin-top: 10px;
+      }
+    }
+  }
+
+  .software-choice {
+    @media screen and (max-width: $screen-sm-max) {
+      flex-direction: column;
+      gap: 10px; // sass-lint:disable-line no-misspelled-properties
+    }
+    & > div:first-child {
+      margin-right: 50px;
+    }
+  }
+
+  .editor-disabled-hour {
+    padding: 15px 30px;
+    background: $sas-grey1;
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+
+    label {
+      color: $black;
+    }
+  }
+  .editor-disabled {
+    padding-bottom: 20px;
+
+    h2 {
+      margin: 0 0 30px;
+    }
+
+    span {
+      margin-bottom: 30px;
+    }
+
+    .form-disabled {
+      .option {
+
+        &:before,
+        &:after {
+          background: $grey6;
+        }
+      }
+      label {
+        color: $grey6;
+      }
+    }
+  }
+
+  .reorientation-title {
+    margin: 15px 0 30px;
+  }
+
+  .form-item-sas-participation-alert {
+    color: $sas-red1;
+    background: $sas-grey1;
+    margin-left: 30px;
+    padding: 15px;
+    font-weight: 600;
+  }
+
+  .software-editor {
+    .form-item-editor-software {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      font-weight: 700;
+      font-size: torem(16);
+      min-width: 80%;
+      color: $black;
+      margin-bottom: 15px;
+    }
+  }
+
+  .cpts-autocomplete,
+  .msp-autocomplete {
+    label {
+      font-size: torem(16);
+      font-weight: 700;
+      color: $black;
+      margin-right: 10px;
+    }
+
+    input {
+      font-size: torem(14);
+      float: right;
+    }
+
+    .form-item-value,
+    .form-item-msp-autocomplete {
+      padding: 17px 25px;
+      background: $sas-grey1;
+      line-height: torem(30);
+    }
+  }
+
+  .sos-autocomplete {
+    .js-form-item {
+      display: flex;
+      align-items: center;
+      background-color: $sas-grey1;
+      padding: 17px 25px;
+      flex-wrap: wrap;
+    }
+
+    .field-suffix {
+      width: 100%;
+      display: block;
+      margin-top: 14px;
+
+      .mail-support {
+        font-size: torem(14);
+        line-height: 1.3;
+        font-weight: 400;
+      }
+    }
+
+    label {
+      font-size: torem(16);
+      font-weight: 700;
+      color: $black;
+      flex: 1;
+      margin-right: 7px;
+    }
+
+    input {
+      max-width: 291px;
+    }
+
+    & + #autocomplete-error-text {
+      margin: 0;
+      font-size: torem(14);
+    }
+  }
+  .ui-autocomplete-input {
+    font-style: italic;
+  }
+  .ui-autocomplete-loading {
+    background-repeat: no-repeat !important; // sass-lint:disable-line no-important
+  }
+  [id*='edit-participation-sas-via--'] {
+    font-style: italic;
+
+    option {
+      font-style: normal;
+    }
+  }
+  #autocomplete-error-text {
+    padding: 10px 0;
+  }
+
+  @media screen and (max-width: $screen-sm-max) {
+    .wrapper-btn-actions {
+      button:not(:last-child) {
+        margin-right: 15px;
+      }
+    }
+  }
+}
+
+/* #endregion */
+
+/* #region Modal CGU */
+
+#cgu-error-msg,
+.messages--error {
+  margin: 10px 10px 30px;
+}
+.ui-dialog-title {
+  &:before {
+    visibility: hidden;
+    margin-left: -25px;
+  }
+}
+
+.ui-dialog {
+  .context-sas-approve-cgu & {
+    max-width: 890px;
+    left: 0;
+    border-radius: 0;
+    .ui-dialog-titlebar {
+      &:after {
+        left: 40px;
+        right: 55px;
+      }
+      .ui-dialog-title {
+        font-weight: 800;
+        font-size: torem(18);
+      }
+    }
+  }
+}
+
+.sas-cgu-form {
+  font-family: $font-mont;
+
+  #cgu-paragraph {
+    border: 1px solid $grey3;
+    padding: 20px;
+    font-size: torem(14);
+    border-radius: 4px;
+    p {
+      margin: 0 0 15px;
+      color: #000;
+    }
+  }
+  .js-form-item-cgu {
+    margin: 15px 0;
+  }
+  .form-required {
+    color: $black;
+  }
+  .btn-highlight {
+    margin: 0 auto;
+    display: block;
+  }
+}
+.context-sas-approve-cgu {
+  .ui-widget-overlay {
+    z-index: 101;
+    background: rgba(51, 51, 51, 0.5);
+  }
+}
+#notice-osnp-ioa {
+  background: $sas-grey1;
+  color: $sas-red1;
+  font-size: torem(12);
+  margin-top: 30px;
+  padding: 15px;
+  border-radius: 5px;
+  font-weight: 500;
+  p {
+    margin: 0;
+  }
+}
+
+/* #endregion */
+
+/* #region Modal cnam params */
+
+.service-status-form {
+  .fieldset-legend {
+    font-size: torem(20);
+  }
+  .fieldset-wrapper {
+    margin-top: 20px;
+
+    .participation-sas-details-wrapper {
+      .form-item-hours-available {
+        background: $sas-grey1;
+        padding: 25px;
+        margin-top: 15px;
+      }
+    }
+  }
+}
+
+.form-item-practitioner-count {
+  margin-bottom: 30px;
+
+  label {
+    font-weight: 700;
+    color: $black;
+    font-size: torem(16);
+  }
+
+  input {
+    max-width: 85px;
+    margin-left: 10px;
+    border-radius: 4px;
+    padding: 7px 0 8px 15px;
+    font-size: torem(14);
+  }
+}
+
+.practitioner-count-message {
+  font-size: torem(16);
+  background-color: $sas-grey1;
+  padding: 38px 60px;
+  color: $black;
+  margin-bottom: 45px;
+}
+
+.no-close {
+  .ui-dialog-titlebar-close {
+    display: none;
+  }
+}
+
+/* #endregion */
+
+/* #region All filters Modal */
+
+.all__filters {
+  &__group {
+    margin-bottom: 45px;
+  }
+
+  &__group-items {
+    display: flex;
+    flex-wrap: wrap;
+    padding-left: 0;
+    padding-top: 8px;
+  }
+
+  &__group-item {
+    list-style: none;
+    flex: 0 0 33.333333%;
+    padding: 10px 0;
+
+    .form-item {
+      input[type='checkbox'] + label {
+        cursor: pointer;
+        font-size: torem(16);
+        margin: 0;
+        width: 100%;
+
+        &::before {
+          border-radius: 30%;
+          border-color: $grey54;
+          width: 20px;
+          height: 20px;
+        }
+      }
+
+      input[type='checkbox']:focus + label {
+        outline: none;
+
+        &::before {
+          outline: 2px solid $blue5;
+        }
+      }
+
+      input[type='checkbox']:checked + label {
+        #sas-all-filters-modal & {
+          &::after {
+            content: $icon-plus;
+            font-family: $icomoon-font-family;
+            color: $white;
+            top: 10px;
+            margin-top: -10px;
+            left: 0;
+            height: 20px;
+            width: 20px;
+            background-color: $blue31;
+            font-size: 8px;
+            text-align: center;
+            border-radius: 30%;
+          }
+        }
+      }
+    }
+  }
+
+  &__actions {
+    border-top: 1px solid $grey3;
+
+    .btn-container {
+      margin-top: 30px;
+    }
+
+    .btn {
+      margin-top: 5px;
+      margin-bottom: 5px;
+      padding: 13px 25px;
+
+      &:not(.outline-blue) {
+        background: $blue31;
+
+        &:hover,
+        &:focus {
+          background: $black;
+        }
+      }
+
+      &:not(:last-child) {
+        margin-right: 15px;
+      }
+
+      &.outline-blue {
+        color: $blue31;
+        border-color: $blue31;
+
+        &:hover,
+        &:focus {
+          background: $blue31;
+          color: $white;
+        }
+      }
+    }
+  }
+}
+
+/* #endregion */

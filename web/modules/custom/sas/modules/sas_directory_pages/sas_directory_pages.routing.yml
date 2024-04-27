@@ -1,0 +1,9 @@
+sas_directory_pages.page_content_ajax:
+  path: '/sas_directory_pages/{node}'
+  defaults:
+    _title: 'Sas directory page Ajax Content'
+    _controller: '\Drupal\sas_directory_pages\Controller\PageContentAjaxController::pageContentAjax'
+  requirements:
+    _permission: 'access content'
+    _entity_access: 'node.view'
+    node: \d+

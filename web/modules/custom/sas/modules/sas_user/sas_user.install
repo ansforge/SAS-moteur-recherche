@@ -1,0 +1,47 @@
+<?php
+
+/**
+ * @file
+ * Contains hook_update.
+ */
+
+use Drupal\Core\Database\Database;
+
+/**
+ * Install SasRegulatorSyncError entity type.
+ */
+function sas_user_update_8001() {
+  if (!Database::getConnection()->schema()->tableExists('sas_regulator_sync_error')) {
+    \Drupal::entityTypeManager()->clearCachedDefinitions();
+    \Drupal::entityDefinitionUpdateManager()
+      ->installEntityType(\Drupal::entityTypeManager()->getDefinition('sas_regulator_sync_error'));
+  }
+  else {
+    return 'SasRegulatorSyncError entity already exists';
+  }
+}
+
+/**
+ * Remove duplicate territories on users.
+ */
+function sas_user_update_8002() {
+  $query = \Drupal::database()
+    ->select('user__field_sas_territoire', 'sas_territoire');
+  $query->fields('sas_territoire', ['entity_id']);
+  $query->groupBy('entity_id');
+  $query->groupBy('field_sas_territoire_target_id');
+  $query->having('COUNT(*) > 1');
+  $duplicateUser = $query->execute()->fetchCol();
+  $duplicateUser = \Drupal::entityTypeManager()
+    ->getStorage('user')
+    ->loadMultiple($duplicateUser);
+  foreach ($duplicateUser as $user) {
+    $territoires = array_column($user->get('field_sas_territoire')
+      ->getValue(), 'target_id');
+    $territoires = array_filter(array_unique($territoires));
+    $territoires = array_map(static fn ($value) => ['target_id' => $value], $territoires);
+    $user->set('field_sas_territoire', $territoires);
+    $user->save();
+  }
+
+}

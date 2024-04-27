@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Résultat de recherche - bloc de filtre</title>
+    <link rel="stylesheet" href="../santefr/css/main.css" />
+    <link rel="stylesheet" href="css/main-sas.css" />
+    
+      <!-- TEMP STYLE -->
+    <style>
+      html {
+        background: #F5F7FA;
+      }
+      body {
+        padding: 20px;
+        height: 100%;
+        background: #F5F7FA;
+      }
+      
+    </style>
+  </head>
+  <body>
+    <div class="filter-wrapper" role="region" aria-label="Filtres">
+      <ul class="active-filters">
+        <li>
+          <button type="button" aria-label="Supprimer le filtre:Médecin généraliste"> Médecin généraliste <i class="icon-cross-out"><span class="sr-only">Supprimer ce filtre</span></i></button>
+        </li>
+      </ul>
+      <ul class="filter-list">
+        <li>
+          <div class="form-item form-type-checkbox">
+            <input type="checkbox" id="filter-1">
+            <label for="filter-1">
+              PS disposant créneaux disponibles
+            </label>
+          </div>
+        </li>
+        <li>
+          <div class="form-item">
+            <select>
+              <option value="None" selected disabled>Selectionner une réponse</option>
+              <option value="A">Alpha</option>
+              <option value="B">Bravo</option>
+              <option value="C">Charlie</option>
+            </select>
+          </div>
+        </li>
+      </ul>
+    </div>    
+  </body>
+</html>

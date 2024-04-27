@@ -1,0 +1,61 @@
+.search-results {
+  --sas-average-card-height: 320px;
+  --sas-smallest-card-height: 220px;
+  --sas-search-list-width: 700px;
+  --sas-search-list-width-large: 1175px;
+  --sas-search-list-gap: 45px;
+
+  display: flex;
+  gap: var(--sas-search-list-gap); // sass-lint:disable-line no-misspelled-properties
+  font-family: $font-mont;
+
+  .search-list {
+    width: var(--sas-search-list-width);
+    transition: all 0.3s;
+
+    .tags {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .tag-with-chip {
+      border: 0;
+      padding: 0;
+      letter-spacing: 1px;
+      margin-left: 24px;
+      color: $sas-grey4;
+
+      .chip {
+        margin-right: 3px;
+      }
+    }
+
+    .sas-no-result {
+      font-weight: 600;
+      padding: 34px 16px;
+      text-align: center;
+      background-color: rgba($red5, .1);
+      color: $red5;
+
+      p {
+        font-size: torem(14);
+        line-height: 2;
+        font-family: $font-mont;
+        margin-top: 0;
+        margin-bottom: 34px;
+      }
+    }
+
+    > :last-child {
+      margin-block-end: calc(100vh - var(--sas-header-height) - var(--sas-smallest-card-height));
+    }
+  }
+
+  &.mini-map {
+    .search-list {
+      width: var(--sas-search-list-width-large);
+    }
+  }
+}

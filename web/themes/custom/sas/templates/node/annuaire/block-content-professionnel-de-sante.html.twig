@@ -1,0 +1,120 @@
+{#
+  extend du template bloc lieu ps dans le theme santefr
+#}
+{% extends '@santefr/node/annuaire/block-content-professionnel-de-sante.html.twig' %}
+
+{% block heading_anchors %}
+  {% include "@sas/node/annuaire/block-heading-anchor.html.twig" with {
+    blockSameAddress: TRUE,
+    blockSnpCalendar: item.snp_calendar_schedule_id is defined,
+    blockAggregCalendar: aggregator_calendar,
+  } %}
+{% endblock heading_anchors %}
+
+{#
+  add publication date on "infos pratiques"
+#}
+{% block publication_date %}
+  {% if publication_date %}
+    <div class="sas-ps-publication-date">{{ publication_date }}</div>
+  {% endif %}
+{% endblock publication_date %}
+
+{% block infos_pratiques_col1 %}
+  {% if option_participation_sas or option_forfait_reorientation %}
+    <ul class="resetul list-tag-pfr-cnam">
+    {% if option_participation_sas %}
+      <li class="tag-cnam">
+        {{ option_participation_sas }}
+      </li>
+    {% endif %}
+    {% if option_forfait_reorientation %}
+      <li class="tag-pfr">
+        {{ option_forfait_reorientation }}
+      </li>
+    {% endif %}
+    </ul>
+  {% endif %}
+
+  {{ parent() }}
+{% endblock infos_pratiques_col1 %}
+
+{#
+  Add MS Santé email after phone number
+#}
+{% block infos_pratiques_col1_phone %}
+  {{ parent() }}
+  {% if emails_mssante %}
+    <div class="form-group">
+      <h3 class="label">MS Santé</h3>
+      {% for email_mssante in emails_mssante %}
+        <p class="no-margin"><a href="mailto:{{ email_mssante }}">{{ email_mssante }}</a></p>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if snp_edit_information %}
+    <div class="edit_information bloc-info">
+      <h3 class="label">{{ 'Informations complémentaires'|t }}</h3>
+      <div class="bloc-info-content">
+        <p class="no-margin">{{ snp_edit_information }}</p>
+      </div>
+    </div>
+  {% endif %}
+{% endblock infos_pratiques_col1_phone %}
+
+{% block infos_pratiques_row1 %}
+  <div class="d-flex bloc-info">
+    {% if item.aggregator_specialities %}
+      <div class="aggregator-specialities">
+        <h3 class="label">{{ 'Actes et compétences'|t }}</h3>
+        <div class="bloc-info-content">
+          <ul>
+            {% for speciality in item.aggregator_specialities %}
+              <li>{{ speciality }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+{% endblock infos_pratiques_row1 %}
+
+{#
+  Add snp calendar & snp edit link in left col
+#}
+{% block left_column %}
+  {{ parent() }}
+
+  {% if aggregator_calendar %}
+    {#  <div class="aggregator-calendar-placeholder aggregator-action-{{ item.aggregator_action }} anchor-target" data-place-nid="{{ item.nid }}" id="directory-aggregator-calendar-anchor-{{ blockId }}"></div>#}
+  {% endif %}
+
+  {% if item.snp_calendar_schedule_id is defined %}
+    {#
+    <div class="directory-snp-calendar">
+      <div class="accordion box anchor-target" id="directory-snp-calendar-anchor-{{ blockId }}">
+        <h2 class="sr-only">{{ 'Les horaires'|t }}</h2>
+        <button class="btn-collapse btn-accordion" type="button" aria-expanded="true"
+                aria-controls="collapseDetailSnpCalendar{{ item.nid }}">
+          {{ 'Les horaires'|t }}
+        </button>
+        <div id="collapseDetailSnpCalendar{{ item.nid }}" class="collapse collapsetomodal" >
+          <div class="collapse-container">
+
+            <div class="directory-snp-calendar-placeholder" data-schedule-id="{{ item.snp_calendar_schedule_id }}" id="directory-snp-calendar-placeholder-{{ item.nid }}"></div>
+
+            {% if item_link_availability_page %}
+              <div>
+                {{ item_link_availability_page }}
+              </div>
+            {% endif %}
+
+          </div>
+        </div>
+      </div>
+    </div>
+    #}
+  {% endif %}
+
+{% endblock left_column %}

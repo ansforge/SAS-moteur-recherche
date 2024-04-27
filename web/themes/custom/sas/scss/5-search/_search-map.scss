@@ -1,0 +1,160 @@
+.search-map {
+  display: block;
+  flex: 1;
+  position: sticky;
+  height: calc(100vh - var(--sas-header-height));
+  top: var(--sas-header-height);
+
+  .toggle-map {
+    position: relative;
+    z-index: 450;
+    display: inline-flex;
+    margin: 27px 0 0 21px;
+    padding: 7px 9px;
+    border: 1px solid $grey3;
+    border-radius: 3px;
+    background-color: white;
+    box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.15);
+  }
+
+  .relaunch-search {
+    position: absolute;
+    z-index: 450;
+    top: 29px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 33px;
+    font-size: torem(15);
+    font-family: $font-mont;
+    color: $blue2;
+    text-transform: uppercase;
+    font-weight: 700;
+    background: $white;
+    border-radius: 21px;
+    transition: all .2s ease;
+    border: 0;
+    white-space: nowrap;
+
+    &.recenter {
+      display: block;
+      cursor: pointer;
+    }
+    &.show-btn {
+      &:hover,
+      &:focus {
+        color: $white;
+        background: $blue2;
+      }
+    }
+
+    .mini-map & {
+      display: none;
+    }
+  }
+
+
+  .map-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    // The -1vw is needed below because otherwise it overflows behind the scrollbar and I'm not sure why. Probably because of the `position: absolute;`
+    width: calc(100vw - var(--sas-search-page-width-margin) - var(--sas-search-list-width) - var(--sas-search-list-gap) - 1vw);
+
+    .mini-map & {
+      --sas-search-list-width: var(--sas-search-list-width-large);
+    }
+
+    .mapbox-container {
+      position: relative;
+      height: 100%;
+
+      .marker-is-displayed {
+        background-position: bottom;
+        background-size: 50px auto;
+        width: 51px;
+        height: 72px;
+        opacity: 1;
+        margin-left: -25.5px;
+        margin-top: -72px;
+
+        &:before {
+          top: 30px;
+          font-size: torem(27.6);
+          margin-top: 0;
+        }
+
+        &.active {
+          &:after {
+            content: ' ';
+            background: url('../images/pin-border.png') no-repeat;
+            background-size: 100%;
+            width: 51px;
+            height: 72px;
+            z-index: 2;
+            display: block;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* Marker mapbox */
+.mapbox-container {
+  .leaflet-div-icon {
+    background: transparent;
+    border: 0;
+  }
+
+  .sas-address-position-marker {
+    background-image: url('../images/sas-icon-research-position.svg');
+    background-size: cover;
+    width: 17px;
+    height: 17px;
+    margin-left: -8.5px;
+    margin-top: -17px;
+    transition: all .2s ease;
+    &:hover {
+      background-position: bottom;
+      width: 22px;
+      height: 22px;
+      margin-left: -11px;
+      margin-top: -22px;
+    }
+    /* We do not have control over this element in JS */
+    z-index: 10000 !important; // sass-lint:disable-line no-important
+  }
+}
+
+/* Map marqueurs pictos */
+#mapbox_sas_vuejs {
+  .marker-single-position-soon,
+  .marker-single-position-current,
+  .marker-single-position-preferred-doctor,
+  .marker-single-position {
+    &[data-icon] {
+      &:before {
+        content: $icon-hospital;
+      }
+    }
+
+    &[data-icon='1'] {
+      &:before {
+        content: $icon-hospital;
+      }
+    }
+
+    &[data-icon='2'] {
+      &:before {
+        content: $icon-stethoscope;
+      }
+    }
+
+    &[data-icon='3'] {
+      &:before {
+        content: $icon-pharmacie;
+      }
+    }
+  }
+}

@@ -1,0 +1,8 @@
+structure-settings-popin:
+  js:
+    assets/js/structure-settings-popin.js: {}
+  dependencies:
+    - core/jquery
+    - core/once
+    - core/drupal
+    - core/drupal.dialog

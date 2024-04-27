@@ -1,0 +1,44 @@
+{#
+  extend du template dans le theme santefr
+#}
+{% extends '@santefr/node/annuaire-etablissement-service.html.twig' %}
+
+{% block heading_anchors %}
+  {% include "@sas/node/annuaire/block-heading-anchor.html.twig" with {
+    blockService: TRUE,
+    blockSnpCalendar: snp_calendar_schedule_id is defined,
+  } %}
+{% endblock heading_anchors %}
+
+{#
+  Add snp calendar & snp edit link in left col
+#}
+{% block left_column %}
+  {{ parent() }}
+
+  {% if snp_calendar_schedule_id is defined %}
+    {#
+    <div class="directory-snp-calendar">
+      <div class="accordion box anchor-target" id="directory-snp-calendar-anchor-">
+        <h2 class="sr-only">{{ 'Les horaires'|t }}</h2>
+        <button class="btn-collapse btn-accordion" type="button" aria-expanded="true"
+                aria-controls="collapseDetailSnpCalendar">
+          {{ 'Les horaires'|t }}
+        </button>
+        <div id="collapseDetailSnpCalendar" class="collapse collapsetomodal" >
+          <div class="collapse-container">
+
+            <div class="directory-snp-calendar-placeholder" data-schedule-id="{{ snp_calendar_schedule_id }}" id="directory-snp-calendar-placeholder"></div>
+
+            {% if link_availability_page %}
+              <div>{{ link_availability_page }}</div>
+            {% endif %}
+
+          </div>
+        </div>
+      </div>
+    </div>
+    #}
+  {% endif %}
+
+{% endblock left_column %}

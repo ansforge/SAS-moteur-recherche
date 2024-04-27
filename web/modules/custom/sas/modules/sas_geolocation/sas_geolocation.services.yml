@@ -1,0 +1,9 @@
+services:
+  sas_geolocation.helper:
+    class: Drupal\sas_geolocation\Service\SasGeolocationHelper
+    arguments:
+      - '@sas_api_client.service'
+  sas_geolocation.timezone:
+    class: Drupal\sas_geolocation\Service\SasTimezoneHelper
+    arguments:
+      - '@sas_snp.content_helper'

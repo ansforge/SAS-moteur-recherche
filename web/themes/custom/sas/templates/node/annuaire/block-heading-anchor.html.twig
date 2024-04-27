@@ -1,0 +1,24 @@
+{#
+  extend du template des liens vers ancres dans la page ou l'onglet
+#}
+{% extends '@santefr/node/annuaire/block-heading-anchor.html.twig' %}
+
+{% block calendar_anchors %}
+
+  {% if blockSnpCalendar %}
+   {#
+    <li class="anchor-item">
+      <a href="#directory-snp-calendar-anchor-{{ blockId }}" class="anchor-link" >{{ 'Les horaires'|t }}</a>
+    </li>
+   #}
+  {% endif %}
+
+  {% if blockAggregCalendar %}
+    {#
+    <li class="anchor-item">
+      <a href="#directory-aggregator-calendar-anchor-{{ blockId }}" class="anchor-link" >{{ 'Les horaires'|t }}</a>
+    </li>
+    #}
+  {% endif %}
+
+{% endblock calendar_anchors %}

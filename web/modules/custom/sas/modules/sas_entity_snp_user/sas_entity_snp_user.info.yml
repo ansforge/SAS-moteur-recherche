@@ -1,0 +1,8 @@
+name: 'SAS entity snp user'
+type: module
+description: 'Provides a sas snp user data entity.'
+core_version_requirement: '^8 || ^9 || ^10'
+package: 'ANS - SAS'
+configure: entity.sas_snp_user_data.settings
+dependencies:
+  - sas:sas_keycloak

@@ -1,0 +1,19 @@
+name: 'SAS search'
+type: module
+description: 'Manage search feature for SAS.'
+core_version_requirement: '^9 || ^10'
+package: 'ANS - SAS'
+dependencies:
+  - drupal:node
+  - drupal:taxonomy
+  - sante_search_solr:sante_search_solr
+  - sas:sas_api_client
+  - sas:sas_config
+  - sas:sas_entity_snp_user
+  - sas:sas_snp
+  - sas:sas_territory
+  - sas:sas_vuejs
+  - sas:sas_user
+  - sas:sas_geolocation
+  - search_api:search_api
+  - search_api_solr:search_api_solr

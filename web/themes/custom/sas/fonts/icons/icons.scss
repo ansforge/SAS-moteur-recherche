@@ -1,0 +1,128 @@
+@import "variables";
+
+@font-face {
+  font-family: '#{$icomoon-font-family-sas}';
+  src:  url('#{$icomoon-font-path-sas}/#{$icomoon-font-family-sas}.eot?iihgns');
+  src:  url('#{$icomoon-font-path-sas}/#{$icomoon-font-family-sas}.eot?iihgns#iefix') format('embedded-opentype'),
+    url('#{$icomoon-font-path-sas}/#{$icomoon-font-family-sas}.ttf?iihgns') format('truetype'),
+    url('#{$icomoon-font-path-sas}/#{$icomoon-font-family-sas}.woff?iihgns') format('woff'),
+    url('#{$icomoon-font-path-sas}/#{$icomoon-font-family-sas}.svg?iihgns##{$icomoon-font-family-sas}') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+.sas-icon {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: '#{$icomoon-font-family-sas}' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.sas-icon-calendar-input {
+  &:before {
+    content: $sas-icon-calendar-input;
+  }
+}
+.sas-icon-phone {
+  &:before {
+    content: $sas-icon-phone;
+  }
+}
+.sas-icon-filter {
+  &:before {
+    content: $sas-icon-filter;
+  }
+}
+.sas-icon-remove {
+  &:before {
+    content: $sas-icon-remove;
+  }
+}
+.sas-icon-information {
+  &:before {
+    content: $sas-icon-information;
+  }
+}
+.sas-icon-trash {
+  &:before {
+    content: $sas-icon-trash;
+  }
+}
+.sas-icon-check {
+  &:before {
+    content: $sas-icon-check;
+  }
+}
+.sas-icon-calendar {
+  &:before {
+    content: $sas-icon-calendar;
+  }
+}
+.sas-icon-pencil {
+  &:before {
+    content: $sas-icon-pencil;
+  }
+}
+.sas-icon-sun {
+  &:before {
+    content: $sas-icon-sun;
+  }
+}
+.sas-icon-search {
+  &:before {
+    content: $sas-icon-search; 
+  }
+}
+.sas-icon-info-circle {
+  &:before {
+    content: $sas-icon-info-circle;
+    color: #000091;
+  }
+}
+.sas-icon-burger-menu {
+  &:before {
+    content: $sas-icon-burger-menu;
+  }
+}
+.sas-icon-back {
+  &:before {
+    content: $sas-icon-back;
+  }
+}
+.sas-icon-connection {
+  &:before {
+    content: $sas-icon-connection;
+  }
+}
+.sas-icon-emergency {
+  &:before {
+    content: $sas-icon-emergency;
+    color: #00457f;
+  }
+}
+.sas-icon-first {
+  &:before {
+    content: $sas-icon-first;
+  }
+}
+.sas-icon-last {
+  &:before {
+    content: $sas-icon-last;
+  }
+}
+.sas-icon-cnam {
+  &:before {
+    content: $sas-icon-cnam;
+    color: #005ca9;
+  }
+}
+

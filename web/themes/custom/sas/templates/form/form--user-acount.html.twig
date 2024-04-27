@@ -1,0 +1,26 @@
+{#
+/**
+ * @file
+ * Default theme implementation for a 'form' element.
+ *
+ * Available variables
+ * - attributes: A list of HTML attributes for the wrapper element.
+ * - children: The child elements of the form.
+ *
+ * @see template_preprocess_form()
+ *
+ * @ingroup themeable
+ */
+#}
+<div class="container-full">
+  <div id="form-ajax-replace" class="wrapper-page-identifiers sas">
+    {% block whole_content %}
+      <h1 class="title">{{ "Vos identifiants de connexion"|t }}</h1>
+      <p class="intro">{{ "Vous pouvez modifier ici les identifiants de connexion indiqués lors de votre inscription à SAS.Santé.fr."|t }}</p>
+      <form{{ attributes }}>
+        {{ children }}
+      </form>
+    {% endblock whole_content %}
+  </div>
+</div>
+{{ attach_library('sas/forms') }}

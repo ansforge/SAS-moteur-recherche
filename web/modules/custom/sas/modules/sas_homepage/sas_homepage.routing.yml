@@ -1,0 +1,8 @@
+# JSON Endpoint for all requests
+sas_homepage.json_endpoint:
+  path: '/sas/api/homepage'
+  defaults:
+    _controller: '\Drupal\sas_homepage\Controller\json_api\SasHomepageRequestController:getHomepageConfig'
+  requirements:
+    # Return homepage config which is available to all.
+    _permission: 'access content'

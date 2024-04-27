@@ -1,0 +1,100 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the SAS API Client module.
+ */
+
+/**
+ * Implements hook_requirements().
+ */
+function sas_api_client_requirements($phase) {
+  if ($phase == 'runtime') {
+    $requirements = [];
+
+    /** @var \Drupal\sas_api_client\Plugin\ClientEndpointPluginManager $sas_client */
+    $sas_client = \Drupal::service('sas_api_client.service');
+
+    /*
+     * Aggregator API
+     */
+    $messages = [];
+    $all_good = TRUE;
+
+    $response = $sas_client->aggregator('aggregator_login', ['api_user' => 'read']);
+    if ($response['token'] ?? NULL) {
+      $messages[] = 'Obtention du token reader : OK';
+    }
+    else {
+      $messages[] = 'Obtention du token reader : FAILED';
+      $all_good = FALSE;
+    }
+
+    $response = $sas_client->aggregator('practitioner', [
+      "tokens" => [
+        "id" => '123456789',
+      ],
+    ]);
+    if (($response['exist_in_directory'] ?? NULL) === FALSE) {
+      $messages[] = 'Check if a dummy practitioner exists : OK';
+    }
+    else {
+      $messages[] = 'Check if a dummy practitioner exists : FAILED';
+      $all_good = FALSE;
+    }
+
+    $requirements += [
+      'sas_api_client_cnx_aggreg' => [
+        'title' => t('SAS API Client: Aggregator API'),
+        'description' => ['#markup' => implode('<br />', $messages)],
+        'severity' => $all_good ? REQUIREMENT_OK : REQUIREMENT_ERROR,
+      ],
+    ];
+
+    /*
+     * SAS API
+     */
+    $messages = [];
+    $all_good = TRUE;
+
+    $response = $sas_client->sas_api('sas_api_login', ['api_user' => 'read']);
+    if ($response['token'] ?? NULL) {
+      $messages[] = 'Obtention du token reader : OK';
+    }
+    else {
+      $messages[] = 'Obtention du token reader : FAILED';
+      $all_good = FALSE;
+    }
+
+    $response = $sas_client->sas_api('sas_api_login', ['api_user' => 'write']);
+    if ($response['token'] ?? NULL) {
+      $messages[] = 'Obtention du token writer : OK';
+    }
+    else {
+      $messages[] = 'Obtention du token writer : FAILED';
+      $all_good = FALSE;
+    }
+
+    $response = $sas_client->sas_api_config('config', [
+      'tokens' => ['id' => 'homepage'],
+    ]);
+    if (($response['name'] ?? NULL) === 'homepage') {
+      $messages[] = 'Retrieve the homepage config as a read test : OK';
+    }
+    else {
+      $messages[] = 'Retrieve the homepage config as a read test : FAILED';
+      $all_good = FALSE;
+    }
+
+    $requirements += [
+      'sas_api_client_cnx_sas_api' => [
+        'title' => t('SAS API Client: SAS API'),
+        'description' => ['#markup' => implode('<br />', $messages)],
+        'severity' => $all_good ? REQUIREMENT_OK : REQUIREMENT_ERROR,
+      ],
+    ];
+
+    return $requirements;
+  }
+  return [];
+}

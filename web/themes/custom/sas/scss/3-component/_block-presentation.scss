@@ -1,0 +1,57 @@
+.block-presentation {
+  padding: 44px 35px 16px;
+  background: linear-gradient(90deg, $sas-blue3 0%, $blue 100%);
+  color: $white;
+  font-family: $font-mont;
+  font-size: torem(21);
+
+  @media screen and (min-width: $screen-md-min) {
+    padding: 25px 25px 16px;
+    height: 100%;
+    font-size: torem(15);
+  }
+
+  @media screen and (min-width: 1400px) {  
+    padding: 44px 55px 16px;
+  }
+
+  .wrapper-dahsboard-delegataire & {
+    @media screen and (max-width: $screen-sm-max) {
+      font-size: torem(15);
+    }
+  }
+
+  .title {
+    margin: 0;
+    font-family: $font-frank;
+    font-size: torem(27);
+    font-weight: 800;
+    line-height: torem(32);
+    text-align: center;
+    overflow-wrap: break-word;
+
+    &.title-delegataire {
+      font-size: torem(19.5);
+
+      @media screen and (min-width: $screen-md-min) {
+        font-size: torem(32);
+      }
+    }
+  }
+
+  .email {
+    text-align: center;
+  }
+
+  .intro {
+    margin: 16px 0;
+  }
+
+  .desc {
+    margin: 32px 0 0;
+
+    p {
+      margin: 0;
+    }
+  }
+}

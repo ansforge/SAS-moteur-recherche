@@ -1,0 +1,197 @@
+<?php
+
+/**
+ * @file
+ * Contains sas_entity_snp_user.install.
+ */
+
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\sas_entity_snp_user\Enum\SnpUserDataConstant;
+
+/**
+ * Add new fields for CNAM features.
+ */
+function sas_entity_snp_user_update_8001() {
+  $entity_type_id = 'sas_snp_user_data';
+
+  $field_definitions['participation_sas_via'] = BaseFieldDefinition::create('integer')
+    ->setDescription(t("Store if user has an appointment software."));
+
+  $field_definitions['structure_finess'] = BaseFieldDefinition::create('string')
+    ->setDescription(t("Store user structure FINESS"))
+    ->setSettings([
+      'max_length' => 50,
+    ]);
+
+  $field_definitions['has_software'] = BaseFieldDefinition::create('boolean')
+    ->setDescription(t("Store if user has an appointment software."));
+
+  $field_definitions['editor_software'] = BaseFieldDefinition::create('map')
+    ->setDescription(t("Store user appointment software editor."));
+
+  $field_definitions['hours_available'] = BaseFieldDefinition::create('boolean')
+    ->setDescription(t("Store if user declare to have at least two hours available for SAS."));
+
+  $field_definitions['settings_updated'] = BaseFieldDefinition::create('changed')
+    ->setDescription(t("Store last settings update date"))
+    ->setRequired(TRUE);
+
+  $field_definitions['rpps_key_location'] = BaseFieldDefinition::create('map')
+    ->setDescription(t("Store user pro sheet for cpts."));
+
+  foreach ($field_definitions as $key => $field_definition) {
+    \Drupal::entityDefinitionUpdateManager()->installFieldStorageDefinition($key, $entity_type_id, $entity_type_id, $field_definition);
+  }
+}
+
+function sas_entity_snp_user_update_8002() {
+  $fields = [
+    'participation_sas_via' => 0,
+    'structure_finess' => '',
+    'has_software' => FALSE,
+    'editor_software' => [],
+    'hours_available' => FALSE,
+    'settings_updated' => time(),
+    'rpps_key_location' => [],
+  ];
+
+  foreach ($fields as $field => $default) {
+    $entity_definition_update_manager = \Drupal::service('entity.definition_update_manager');
+
+    $field_definition = $entity_definition_update_manager->getFieldStorageDefinition($field, 'sas_snp_user_data');
+    $field_definition->setSetting('default_value', $default);
+    $entity_definition_update_manager->updateFieldStorageDefinition($field_definition);
+  }
+
+}
+
+/**
+ * Unset update 8004.
+ */
+function sas_entity_snp_user_update_8004() {
+  \Drupal::logger('Sas snp user data')
+    ->notice(t('Unset update 8003.'));
+}
+
+/**
+ * Change rpps_key_location field type and rename it to cpts_locations.
+ */
+function sas_entity_snp_user_update_8005() {
+
+  $entity_type = 'sas_snp_user_data';
+  $new_field_name = 'cpts_locations';
+  $old_field_name = 'rpps_key_location';
+
+  $new_field = BaseFieldDefinition::create('string_long')
+    ->setDescription(t("Store CPTS locations"))
+    ->setSettings([
+      'case_sensitive' => TRUE,
+    ]);
+  \Drupal::entityDefinitionUpdateManager()->installFieldStorageDefinition('cpts_locations', $entity_type, $entity_type, $new_field);
+
+  \Drupal::database()->update($entity_type)
+    ->expression($new_field_name, $old_field_name)
+    ->condition('participation_sas', 1)
+    ->condition('participation_sas_via', 2)
+    ->execute();
+
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  $definition = $update_manager->getFieldStorageDefinition($old_field_name, $entity_type);
+  $update_manager->uninstallFieldStorageDefinition($definition);
+}
+
+/**
+ * Reset cpts_locations data with good serialization format.
+ */
+function sas_entity_snp_user_update_8006() {
+  /** @var \Drupal\sas_entity_snp_user\Entity\SasSnpUserData[] $user_settings */
+  $user_settings = \Drupal::entityTypeManager()->getStorage('sas_snp_user_data')->loadByProperties([
+    'participation_sas' => 1,
+    'participation_sas_via' => SnpUserDataConstant::SAS_PARTICIPATION_MY_CPTS,
+  ]);
+
+  if (!empty($user_settings)) {
+    foreach ($user_settings as $user_setting) {
+      if (
+        $user_setting->hasField('cpts_locations') &&
+        !$user_setting->get('cpts_locations')->isEmpty()
+      ) {
+        $cpts_locations = unserialize(
+          $user_setting->get('cpts_locations')->value,
+          ['allowed_classes' => FALSE]
+        );
+        $new_cpts_locations = [];
+
+        if (!empty($cpts_locations)) {
+          foreach ($cpts_locations as $data) {
+            if (preg_match('/.+\s\(([0-9]+)\)/', $data, $matches)) {
+              $new_cpts_locations[] = $matches[1];
+            }
+          }
+
+          if (!empty($new_cpts_locations)) {
+            $user_setting->get('cpts_locations')->setValue(serialize($new_cpts_locations));
+            $user_setting->save();
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Add new field for SOS médecin features.
+ */
+function sas_entity_snp_user_update_8007() {
+  $entity_type_id = 'sas_snp_user_data';
+
+  $field_definitions['siret'] = BaseFieldDefinition::create('string')
+    ->setDescription(t("Store siret of structure."))
+    ->setSettings([
+      'max_length' => 50,
+    ]);
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('siret', $entity_type_id, $entity_type_id, $field_definitions['siret']);
+}
+
+/**
+ * Delete fields from entity_type.
+ */
+function sas_entity_snp_user_update_8008() {
+  $fieldToDelete = \Drupal::entityDefinitionUpdateManager()
+    ->getFieldStorageDefinition('editor_software', 'sas_snp_user_data');
+  \Drupal::entityDefinitionUpdateManager()
+    ->uninstallFieldStorageDefinition($fieldToDelete);
+}
+
+/**
+ * Implements hook_update_N().
+ */
+function sas_entity_snp_user_update_9001() {
+  $schema = \Drupal::database()->schema();
+  $spec = [
+    'fields' => [
+      'user_id' => [
+        'description' => 'The user ID of the sas_snp_user_data entity.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+    ],
+  ];
+  $schema->addIndex('sas_snp_user_data', 'user_id', ['user_id'], $spec);
+}
+
+/**
+ * Delete fields from entity_type.
+ */
+function sas_entity_snp_user_update_9002() {
+  $update_manager = Drupal::service('entity.definition_update_manager');
+
+  $fields = ['user_type', 'date_accept_cgu', 'cgu_accepted'];
+  foreach ($fields as $field) {
+    $definition = $update_manager->getFieldStorageDefinition($field, 'sas_snp_user_data');
+    $update_manager->uninstallFieldStorageDefinition($definition);
+  }
+  return t('Entity sas_snp_user_data: fields was uninstalled');
+}

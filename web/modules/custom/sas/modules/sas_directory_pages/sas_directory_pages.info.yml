@@ -1,0 +1,14 @@
+name: 'SAS Directory Pages'
+type: module
+description: 'Module handling SAS versions of single/full page of the directory (Annuaire)'
+core_version_requirement: ^8 || ^9 || ^10
+package: 'ANS - SAS'
+dependencies:
+  - drupal:node
+  - sante_directory_pages:sante_directory_pages
+  - sas:sas_api_client
+  - sas:sas_core
+  - sas:sas_snp
+  - sas:sas_vuejs
+  - sas:sas_config
+  - sas:sas_user_dashboard

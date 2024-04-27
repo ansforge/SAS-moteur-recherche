@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @file
+ * Contains sas_api.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function sas_api_client_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the sas_api module.
+    case 'help.page.sas_api_client':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Administrate SAS API Client endpoints.') . '</p>';
+      return $output;
+
+    default:
+  }
+}

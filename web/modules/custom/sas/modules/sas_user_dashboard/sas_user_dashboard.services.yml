@@ -1,0 +1,33 @@
+services:
+  sas_user_dashboard.dashboard:
+    class: Drupal\sas_user_dashboard\Services\DashboardUsers
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@sas_snp.availability_block_provider'
+      - '@sas_structure.helper'
+      - '@sas_structure.settings_helper'
+      - '@current_route_match'
+      - '@current_user'
+      - '@sas_structure.sos_medecin'
+
+  sas_user_dashboard.event_subscriber:
+    class: Drupal\sas_user_dashboard\EventSubscriber\SasUserDashboardSubscriber
+    arguments:
+      - '@sas_core.service'
+      - '@current_user'
+      - '@current_route_match'
+      - '@path.matcher'
+      - '@sas_keycloak.psc_user'
+      - '@sas_user.effector_helper'
+      - '@sas_user_settings.helper'
+    tags:
+      - {name: event_subscriber}
+
+  sas_user_dashboard.sos_doctors:
+     class: Drupal\sas_user_dashboard\Services\SasDashboardSosDoctors
+     arguments:
+       - '@sas_snp.content_helper'
+       - '@sas_structure.settings_helper'
+       - '@sas_structure.sos_medecin'
+       - '@sas_structure.sos_doctors_interfaced_helper'

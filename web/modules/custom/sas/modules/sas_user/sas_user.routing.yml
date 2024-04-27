@@ -1,0 +1,113 @@
+sas_user.admin_user:
+  path: '/admin/sas/users'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+    _title: 'SAS - Users'
+  requirements:
+    _sas_context_access_check: 'TRUE'
+    _role: 'sas_administrateur+sas_administrateur_national+sas_gestionnaire_de_comptes'
+
+sas_user.entity_autocomplete_sas:
+  path: '/entity_reference_autocomplete/sas/{type}'
+  defaults:
+    _controller: '\Drupal\sas_user\Controller\EntityAutocompleteSasController::handleAutocomplete'
+  requirements:
+    _sas_context_access_check: 'TRUE'
+    _permission: 'create new sas user'
+  options:
+    _admin_route: TRUE
+
+# SAS user create
+sas_user.admin_create:
+  path: '/admin/people/create/sas'
+  defaults:
+    _entity_form: 'user.sas_register_form'
+  requirements:
+    _sas_context_access_check: 'TRUE'
+    _permission: 'create new sas user'
+  options:
+    _admin_route: TRUE
+
+entity.user.sas_edit:
+  path: '/user/{user}/sas-edit'
+  defaults:
+    _entity_form: 'user.sas_profile_form'
+  requirements:
+    _entity_access: 'user.sas_edit'
+    _sas_context_access_check: 'TRUE'
+    user: \d+
+  options:
+    _admin_route: TRUE
+
+sas_user.adding_delegataire:
+  path: '/sas/demande-de-delegation'
+  defaults:
+    _form: '\Drupal\sas_user\Form\SasUserAddingDelegataire'
+    _title: 'demande ajout de délégataire'
+  requirements:
+    _role: 'sas_effecteur+sas_gestionnaire_de_structure'
+    _sas_context_access_check: 'TRUE'
+
+sas_user.autocomplete_city:
+  path: '/autocomplete/city'
+  defaults:
+    _controller: '\Drupal\sas_user\Controller\EntityAutocompleteCity::handleAutocomplete'
+    _format: json
+  requirements:
+    _user_is_logged_in: 'TRUE'
+    _sas_context_access_check: 'TRUE'
+
+entity.user.sas_resend_email:
+  path: '/user/{user}/resend'
+  defaults:
+    _form: '\Drupal\sas_user\Form\SasResendForm'
+    _title: "Renvoyer l'email de bienvenue"
+  requirements:
+    _entity_access: 'user.sas_resend_email'
+    _permission: 'resend sas welcome email'
+    user: \d+
+  options:
+    _sas_context_access_check: 'TRUE'
+    _admin_route: TRUE
+    user: \d+
+
+entity.user.sas_toggle_statut:
+  path: '/user/{user}/togglestatut'
+  defaults:
+    _form: '\Drupal\sas_user\Form\SasToggleStatutForm'
+    _title: "Changer le statut de l'utilisateur"
+  requirements:
+    _entity_access: 'user.sas_toggle_statut'
+    _permission: 'toggle sas user statut'
+    user: \d+
+  options:
+    _sas_context_access_check: 'TRUE'
+    _admin_route: TRUE
+    user: \d+
+
+sas_user.api.current_user:
+  path: '/sas/json-api/user/current'
+  defaults:
+    _title: 'Endpoint Current User SAS'
+    _controller: '\Drupal\sas_user\Controller\JsonApiUserController::apiCurrentUser'
+  requirements:
+    _sas_context_access_check: 'TRUE'
+    _user_is_logged_in: 'TRUE'
+    _format: 'json'
+
+sas_user.api.sas_usr_roles:
+  path: '/sas/json-api/user/roles'
+  defaults:
+    _title: 'Endpoint SAS User roles'
+    _controller: '\Drupal\sas_user\Controller\JsonApiUserController::apiUserRoles'
+  requirements:
+    _sas_context_access_check: 'TRUE'
+    _format: 'json'
+
+sas_user.rpps_adeli_user:
+  path: '/sas/json-api/rpps-adeli/user/autocomplete'
+  defaults:
+    _controller: '\Drupal\sas_user\Controller\RppsAdeliUserAutocomplete::autocompleteUserList'
+    _format: json
+  requirements:
+    _permission: 'access content'

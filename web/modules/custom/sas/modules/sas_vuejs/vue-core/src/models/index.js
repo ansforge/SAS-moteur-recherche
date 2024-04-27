@@ -1,0 +1,25 @@
+// eslint-disable-next-line import/prefer-default-export
+export { default as SearchModel } from '@/models/search/Search.model';
+export { default as ScheduleFormatModel } from '@/models/search/ScheduleFormat.model';
+export { default as UserModel } from '@/models/user/User.model';
+export { default as RoleModel } from '@/models/user/Role.model';
+export { default as SlotsModel } from '@/models/search/Slots.model';
+export { default as SlotModel } from '@/models/search/Slot.model';
+export { default as CalendarDayNameModel } from '@/models/search/SnpCalendarDayName.model';
+export { default as CalendarSlotListModel } from '@/models/search/SnpCalendarSlotList.model';
+export { default as CalendarSlotDataModel } from '@/models/search/SnpCalendarSlotData.model';
+export { default as HomeContentModel } from '@/models/home/HomeContent.model';
+export { default as PayloadModel } from '@/models/filters/Payload.model';
+export { default as FiltersModel } from '@/models/filters/Filters.model';
+export { default as SnpPopinConfigModel } from '@/models/calendar/SnpPopinConfig.model';
+export { default as FormCreateDispoSNP } from '@/models/calendar/FormCreateDispo.model';
+export { default as SnpIndispoModel } from '@/models/calendar/SnpIndispo.model';
+export { default as AddressModel } from '@/models/search/AddressCoordinates.model';
+export { default as ThemesModel } from '@/models/faq/Themes.model';
+export { default as FormationContentModel } from '@/models/formation/FormationContent.model';
+export { default as EffectorSettingsModel } from '@/models/dashboard/EffectorSettings.model';
+export { default as EditorListModel } from '@/models/dashboard/EditorList.model';
+export { default as SolrPageDataModel } from '@/models/search/SolrPayloadPageData.model';
+export { default as ComboboxAccessibility } from '@/models/rgaa/ComboboxAccessibility.model';
+export { default as AggregatorPayload } from '@/models/payload/AggregatorPayload.model';
+export { default as AggregatorPractitioner } from '@/models/payload/AggregatorPractitioner.model';

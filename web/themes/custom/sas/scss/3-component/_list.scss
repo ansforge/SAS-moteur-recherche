@@ -1,0 +1,27 @@
+//List Dashboard délégataire
+.list-border {
+  margin: 0 0 11px;
+
+  .list-border-item {
+    padding: 1rem 0;
+    border-top: 1px solid $grey3;
+
+    &:last-child {
+      border-bottom: 1px solid $grey3;
+    }
+
+    a {
+      font-size: torem(16);
+      text-decoration: underline;
+      color: $blue2;
+    }
+  }
+}
+
+//Search list
+.autocomplete-items .search-item {
+  &:hover,
+  &.focus {
+    background-color: $grey39;
+  }
+}

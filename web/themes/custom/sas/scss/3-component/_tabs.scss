@@ -1,0 +1,93 @@
+.tabs {
+  &-content {
+    background-color: $white;
+  }
+  .tabs-content-header {
+    th {
+      border: 1px solid $sas-grey7;
+      padding: 15px;
+      min-width: 150px;
+    }
+    tr {
+      border-right: 1px solid red;
+    }
+  }
+  .tabs-content-body {
+    font-family: $font-mont;
+    td {
+      border: 1px solid $sas-grey7;
+      min-width: 235px;
+      vertical-align: top;
+
+      .availabilities-calendar {
+        .availabilities-slot {
+          min-width: 214px;
+          margin: 10px;
+        }
+      }
+    }
+    .infos-ps {
+      padding: 30px 15px 30px 30px;
+      min-width: 355px;
+      overflow: hidden;
+    }
+  }
+  .informations {
+    list-style: none;
+    padding: 0;
+
+    li {
+      margin-bottom: 15px;
+    }
+
+    .informations-ps {
+      font-size: torem(16);
+      font-weight: 600;
+      color: $blue2;
+      text-decoration: underline;
+    }
+    .informations-job {
+      font-size: torem(12);
+      font-weight: 700;
+      color: $grey22;
+      padding-bottom: 10px;
+    }
+    .informations-address {
+      font-size: torem(14);
+      font-weight: 400;
+      color: $black;
+      position: relative;
+      overflow-wrap: break-word;
+      max-width: 212px;
+      margin-top: 20px;
+
+      &::before {
+        content: $icon-pin;
+        font-family: $icomoon-font-family;
+        font-size: torem(20);
+        margin-right: 10px;
+      }
+    }
+    .informations-phone {
+      i {
+        margin-right: 10px;
+      }
+      a {
+        color: $blue2;
+      }
+    }
+    .informations-distance {
+      line-height: 1.3;
+      display: flex;
+      justify-content: flex-start;
+      font-size: torem(14);
+      i {
+        font-size: torem(17);
+        padding-right: 11px;
+      }
+    }
+    & + button {
+      margin-top: 30px;
+    }
+  }
+}

@@ -1,0 +1,14 @@
+services:
+  sas_api_client.service:
+    class: Drupal\sas_api_client\Plugin\ClientEndpointPluginManager
+    parent: default_plugin_manager
+  sas_api_client.is_interfaced.commands:
+    class: \Drupal\sas_api_client\Commands\IsInterfacedCommands
+    arguments: ['@plugin.manager.simple_cron']
+    tags:
+      - { name: drush.command }
+  sas_api_client.analytics.log:
+    class: Drupal\sas_api_client\Service\SasAnalyticsLogService
+    arguments:
+      - '@logger.factory'
+      - '@sas_api_client.service'

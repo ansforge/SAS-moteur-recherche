@@ -1,0 +1,23 @@
+sas_territoire_autocomplete:
+  js:
+    assets/js/sas_user.territoire_widget.js: {}
+  css:
+    component:
+      assets/css/sas_user.territoire_widget.css: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/once
+    - core/jquery.once.bc
+
+sas_roles_regulators_info:
+  js:
+    assets/js/sas_user.roles_infos.js: {}
+  css:
+    component:
+      assets/css/sas_user.roles_infos.css: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/once
+    - core/jquery.once.bc

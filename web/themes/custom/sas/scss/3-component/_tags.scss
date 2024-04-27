@@ -1,0 +1,72 @@
+//Tag Disponibility with green chip
+.tag-with-chip {
+  @include btn($sas-blue8, $sas-blue8, transparent, transparent, $sas-blue8, $sas-blue8);
+  font-family: $font-mont;
+  font-weight: 800;
+  letter-spacing: inherit;
+  cursor: inherit !important; // sass-lint:disable-line no-important
+
+  .chip {
+    height: 14px;
+    width: 14px;
+    background-color: $sas-green8;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 15px;
+    vertical-align: middle;
+    &.chip-blue {
+      background-color: $sas-blue10;
+    }
+    &.chip-orange {
+      background-color: $sas-orange;
+    }
+  }
+
+  &.active {
+    border-color: $blue3;
+    background: $blue3;
+    color: $white;
+  }
+}
+
+//Tag letter grey
+.tag-letter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 16px;
+  width: 16px;
+  min-width: 16px;
+  border-radius: 50%;
+  background: $sas-grey5;
+  font-family: $font-mont;
+  font-size: torem(8);
+  font-weight: 700;
+}
+
+
+.filters-btn {
+  .tag-with-chip {
+    padding: 10px 20px;
+    color: $sas-blue8;
+    border-color: $sas-blue8;
+  }
+}
+
+/* Tags parameters */
+
+.tag-params {
+  display: flex;
+  align-items: center;
+
+  i {
+    margin-right: 6px;
+
+    &.icon-plus {
+      color: $sas-green12;
+    }
+    &.icon-close {
+      color: $sas-red6;
+    }
+  }
+}

@@ -1,0 +1,83 @@
+/**
+ * @file
+ * Default Html Tags Styling
+ */
+
+
+/* ---------------- DRUPAL DEFAULT -----------------*/
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+html,
+body {
+  position: relative;
+  padding: 0;
+  margin: 0;
+
+  &.modal-open {
+    overflow: hidden;
+  }
+
+}
+
+body {
+  background: $white;
+}
+
+.container-full,
+.container-dashboard {
+  margin: 0 auto;
+  padding: 0 15px;
+  width: 100%;
+
+  @media screen and (min-width: $screen-md-min) {
+    padding: 0 40px;
+  }
+  @media screen and (min-width: $screen-header-user-min) {
+    max-width: 100%;
+    padding: 0 80px;
+  }
+}
+
+.page-title {
+  margin: 0 0 25px;
+  font-size: torem(36);
+  font-family: $font-frank;
+  font-weight: 800;
+  text-align: left;
+
+  @media screen and (min-width: $screen-sm-min) {
+    margin: 55px 0 25px;
+  }
+
+  @media screen and (min-width: $screen-md-min) {
+    margin: 44px 0 40px;
+  }
+}
+
+.txt-bold-big,
+%txt-bold-big {
+  font-family: $font-mont;
+  font-size: torem(21);
+  font-weight: 700;
+}
+
+.list-flex {
+  display: flex;
+  align-items: center;
+
+  li {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.txi-8 {
+  text-indent: 8px;
+}
+
+.txt-red {
+  color: $sas-red6;
+}

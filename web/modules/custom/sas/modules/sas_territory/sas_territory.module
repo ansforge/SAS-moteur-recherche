@@ -1,0 +1,112 @@
+<?php
+
+/**
+ * @file
+ * Contains sas_user.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\sas_user\Batch\SasTerritoryUsersDelete;
+use Drupal\sas_user\Batch\SasTerritoryUsersUpdate;
+use Drupal\taxonomy\TermInterface;
+
+/**
+ * Implements hook_help().
+ */
+function sas_territory_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the sante_homepage module.
+    case 'help.page.sas_territory':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Sas core') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_taxonomy_term_presave().
+ */
+function sas_territory_taxonomy_term_presave($term) {
+  $bundle = $term->bundle();
+
+  switch ($bundle) {
+    case "sas_territoire":
+      $dpts = \Drupal::service('term.territory')->sasGetDptsByTerritory($term);
+
+      if (!empty($dpts)) {
+        $cp_list = Drupal::service('term.territory')
+          ->sasGetPostalCodesByDpt($dpts);
+        $term->set('field_sas_postal_codes', implode(',', $cp_list));
+      }
+
+      // Synchronise term with SAS-API.
+      $sas_api_id = $term->hasField('field_sas_api_id_territory') && !$term->get('field_sas_api_id_territory')->isEmpty()
+        ? \Drupal::service('territory.manager')->synchronizeWithSasApi($term, 'update')
+        : \Drupal::service('territory.manager')->synchronizeWithSasApi($term, 'create');
+
+      // Store SAS-API term id in Drupal term.
+      if (!empty($sas_api_id)) {
+        $term->set('field_sas_api_id_territory', $sas_api_id);
+      }
+      break;
+
+    case "cities":
+      if (!empty($term->get('field_insee')->value)) {
+        $term->set('field_insee', str_pad($term->get('field_insee')->value, 5, '0', STR_PAD_LEFT));
+      }
+      if (!empty($term->get('field_postal_code')->value)) {
+        $term->set('field_postal_code', str_pad($term->get('field_postal_code')->value, 5, '0', STR_PAD_LEFT));
+      }
+      break;
+  }
+}
+
+/**
+ * Implements hook_entity_insert().
+ */
+function sas_territory_taxonomy_term_insert(TermInterface $term) {
+  if ($term->bundle() === 'sas_territoire') {
+    batch_set(SasTerritoryUsersUpdate::getBatch($term));
+  }
+}
+
+/**
+ * Implements hook_entity_update().
+ */
+function sas_territory_taxonomy_term_update(TermInterface $term) {
+  if ($term->bundle() === 'sas_territoire') {
+    batch_set(SasTerritoryUsersUpdate::getBatch($term));
+  }
+}
+
+/**
+ * Implements hook_taxonomy_term_delete().
+ */
+function sas_territory_taxonomy_term_delete(TermInterface $term) {
+  if ($term->bundle() === 'sas_territoire') {
+    batch_set(SasTerritoryUsersDelete::getBatch($term));
+    \Drupal::service('territory.manager')->synchronizeWithSasApi($term, 'delete');
+  }
+}
+
+/**
+ * Implements hook_views_data_alter().
+ */
+function sas_territory_views_data_alter(array &$data) {
+
+  // Add filter for node field_address.
+  $data['node__field_address']['sas_territory'] = [
+    'title' => t('Territoires SAS'),
+    'filter' => [
+      'title' => t('Territoires SAS'),
+      'group' => t('Content'),
+      'help' => t('Filter des contenus par territoire SAS.'),
+      'field' => 'field_address_postal_code',
+      'id' => 'sas_territory_filter',
+    ],
+  ];
+
+}

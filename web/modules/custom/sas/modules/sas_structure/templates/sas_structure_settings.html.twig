@@ -1,0 +1,22 @@
+{#
+/**
+ * @file sas_structure_settings.html.twig
+ * Default theme implementation to present Sas structure settings data.
+ *
+ * This template is used when viewing Sas structure settings pages.
+ *
+ *
+ * Available variables:
+ * - content: A list of content items. Use 'content' to print all content, or
+ * - attributes: HTML attributes for the container element.
+ *
+ * @see template_preprocess_sas_structure_settings()
+ *
+ * @ingroup themeable
+ */
+#}
+<div{{ attributes.addClass('sas_structure_settings') }}>
+  {% if content %}
+    {{- content -}}
+  {% endif %}
+</div>

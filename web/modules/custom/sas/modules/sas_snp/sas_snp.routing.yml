@@ -1,0 +1,86 @@
+entity.node.sas_snp_availability:
+  path: '/sas-snp/{node}'
+  defaults:
+    _controller: '\Drupal\sas_snp\Controller\SasSnpController::snpPage'
+    _title: 'Disponibilités'
+  options:
+    query:
+      back_url: ""
+  requirements :
+    node: \d+
+    _entity_access: 'node.view'
+
+sas_snp.sas_api_create_snp:
+  path: '/sas/json-api/slot/{node}'
+  methods:  [POST, PUT, DELETE]
+  defaults:
+    _title: 'SAS-API - Drupal SAS-API proxy create.'
+    _controller: '\Drupal\sas_snp\Controller\SasSnpController::slot'
+  requirements:
+    node: \d+
+    _entity_access: 'node.view'
+    _format: 'json'
+
+sas_snp.sas_api_delete_snp:
+  path: '/sas/json-api/delete-slot/{node}'
+  methods:  [POST]
+  defaults:
+    _title: 'SAS-API - Drupal SAS-API proxy delete snp.'
+    _controller: '\Drupal\sas_snp\Controller\SasSnpController::deleteSlot'
+  requirements:
+    node: \d+
+    _entity_access: 'node.view'
+    _format: 'json'
+
+sas_snp.sas_api_unavailability:
+  path: '/sas/json-api/unavailability/{node}'
+  methods:  [GET, POST]
+  defaults:
+    _title: 'SAS-API - Drupal SAS-API proxy unavailability.'
+    _controller: '\Drupal\sas_snp\Controller\SasSnpController::unavailability'
+  requirements:
+    node: \d+
+    _entity_access: 'node.view'
+    _format: 'json'
+
+sas_snp.sas_api_additional_information:
+  path: '/sas/json-api/additional-information/{node}'
+  methods:  [GET, POST]
+  defaults:
+    _title: 'SAS-API - Drupal SAS-API proxy additional information.'
+    _controller: '\Drupal\sas_snp\Controller\SasSnpController::additionalInformation'
+  requirements:
+    node: \d+
+    _entity_access: 'node.view'
+    _format: 'json'
+
+sas_snp.sas_api_get_slots_by_ps:
+  path: '/sas/json-api/get-slots-by-ps'
+  methods: [POST]
+  defaults:
+    _title: 'SAS-API - Get slots by practitioners IDs for search page'
+    _controller: '\Drupal\sas_snp\Controller\SasSnpController::getSlotsByPs'
+  requirements:
+    _permission: 'access protected drupal api'
+    _format: 'json'
+
+sas_snp.sas_api_additional_information_config:
+  path: '/sas/json-api/additional-information/config/{node}'
+  methods:  [GET]
+  defaults:
+    _title: 'SAS-API - Drupal SAS-API proxy additional information config.'
+    _controller: '\Drupal\sas_snp\Controller\SasSnpController::additionalInformationConfig'
+  requirements:
+    node: \d+
+    _entity_access: 'node.view'
+    _format: 'json'
+
+sas_snp.sas_api_get_slots_by_schedule:
+  path: '/sas/json-api/get-slots-by-schedule/{schedule_id}/without-unavailabilities'
+  methods: [GET]
+  defaults:
+    _title: 'SAS-API - Get slots without unavailability by schedule IDs for profound page'
+    _controller: '\Drupal\sas_snp\Controller\SasUnavailabilityController::getSlotsByScheduleWithoutUnavailability'
+  requirements:
+    _permission: 'access protected drupal api'
+    _format: 'json'

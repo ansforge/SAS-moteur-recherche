@@ -1,0 +1,8 @@
+name: 'SAS API Server'
+type: module
+description: 'Expose SAS-API endpoints for Drupal'
+core_version_requirement: '^9 || ^10'
+package: 'ANS - SAS'
+dependencies:
+  - sas:sas_api_client
+  - sas:sas_core

@@ -1,0 +1,73 @@
+.block-message {
+  position: relative;
+  padding: 25px 35px 25px 80px;
+  margin-bottom: 32px;
+  background: $sas-grey1;
+  font-family: $font-mont;
+  font-size: torem(15);
+
+  &:before {
+    content: '!';
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    left: 30px;
+    top: 30px;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: $sas-grey4;
+    color: $white;
+  }
+
+  p {
+    margin-top: 0;
+  }
+}
+
+/* Notices success or error */
+
+.notice-wrapper {
+  .notice-success {
+    background: $sas-green11;
+
+    .notice-message {
+      @include msg-status;
+      display: flex;
+      justify-content: center;
+    }
+  }
+  .notice-error {
+    background: $sas-red5;
+    border-radius: 10px;
+
+    .notice-message {
+      @include msg-status;
+      display: flex;
+      justify-content: center;
+    }
+  }
+}
+
+//Error - Success Drupal (Form add Delegataire)
+.messages--error,
+.messages--status {
+  margin: 80px 0 10px;
+  padding: 10px 10px 10px 50px;
+  font-family: $font-frank;
+  font-size: torem(15);
+  background-position: 8px 8px;
+  background-repeat: no-repeat;
+  border: 1px solid $sas-red2;
+  color: $sas-red4;
+  background-color: $sas-red3;
+  background-image: url('../images/message-error.png');
+
+}
+.messages--status {
+  border-color: $sas-green13;
+  color: $sas-green14;
+  background-color: $sas-green15;
+  background-image: url('../images/message-ok.png');
+}

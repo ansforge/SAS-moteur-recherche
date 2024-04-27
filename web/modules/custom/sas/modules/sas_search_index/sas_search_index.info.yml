@@ -1,0 +1,8 @@
+name: 'SAS search - Index'
+type: module
+description: 'Manage search indexation feature for SAS.'
+core_version_requirement: '^9 || ^10'
+package: 'ANS - SAS'
+dependencies:
+  - search_api:search_api
+  - search_api_solr:search_api_solr

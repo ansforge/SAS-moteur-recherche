@@ -1,0 +1,5 @@
+entity.sas_structure_settings.add_form:
+  route_name: entity.sas_structure_settings.add_form
+  title: 'Add Sas structure settings'
+  appears_on:
+    - entity.sas_structure_settings.collection

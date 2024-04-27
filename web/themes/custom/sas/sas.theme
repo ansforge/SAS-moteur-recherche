@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @file
+ */
+
+use Drupal\node\NodeInterface;
+use Drupal\sas_snp\Enum\SnpConstant;
+
+/**
+ * Implements preprocess function preprocess_html.
+ *
+ * @see template_preprocess_html
+ */
+function sas_preprocess_html(&$variables) {
+  if (($node = \Drupal::routeMatch()->getParameter('node')) || ($node = \Drupal::routeMatch()->getParameter('node_preview'))) {
+    if ($node instanceof NodeInterface) {
+      if ($node->bundle() == SnpConstant::SAS_TIME_SLOTS) {
+        $variables['head_title']['title'] = 'Saisie Disponibilités';
+      }
+    }
+  }
+
+}

@@ -1,0 +1,34 @@
+manage any sas user:
+  title: 'manage any sas user'
+  description: 'manage any SAS user.'
+manage sas user territorial:
+  title: 'Manage sas user territorial'
+  description: 'Manage SAS user territorial.'
+create new sas user:
+  title: 'create new sas user'
+  description: 'create new SAS user.'
+view sas delegation:
+  title: 'view sas delegation'
+  description: 'View SAS delegations.'
+resend sas welcome email:
+  title: 'resend sas welcome email'
+  description: 'Resend SAS welcome email with link to reset password.'
+add sas regulator synchronisation error entities:
+  title: 'Create new SAS regulator synchronisation error entities'
+
+administer sas regulator synchronisation error entities:
+  title: 'Administer SAS regulator synchronisation error entities'
+  description: 'Allow to access the administration form to configure SAS regulator synchronisation error entities.'
+  restrict access: true
+
+delete sas regulator synchronisation error entities:
+  title: 'Delete SAS regulator synchronisation error entities'
+
+edit sas regulator synchronisation error entities:
+  title: 'Edit SAS regulator synchronisation error entities'
+
+view published sas regulator synchronisation error entities:
+  title: 'View published SAS regulator synchronisation error entities'
+
+view unpublished sas regulator synchronisation error entities:
+  title: 'View unpublished SAS regulator synchronisation error entities'

@@ -1,0 +1,19 @@
+add sas user settings entities:
+  title: 'Create new Sas user settings entities'
+
+administer sas user settings entities:
+  title: 'Administer Sas user settings entities'
+  description: 'Allow to access the administration form to configure Sas user settings entities.'
+  restrict access: true
+
+delete sas user settings entities:
+  title: 'Delete Sas user settings entities'
+
+edit sas user settings entities:
+  title: 'Edit Sas user settings entities'
+
+view published sas user settings entities:
+  title: 'View published Sas user settings entities'
+
+view unpublished sas user settings entities:
+  title: 'View unpublished Sas user settings entities'

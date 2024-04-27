@@ -1,0 +1,112 @@
+services:
+  sas_user.redirect:
+    class: Drupal\sas_user\EventSubscriber\SasUserSubscriber
+    arguments:
+      - '@sas_core.service'
+      - '@current_route_match'
+      - '@current_user'
+    tags:
+      - { name: event_subscriber }
+
+  sas_user.route_subscriber:
+    class: Drupal\sas_user\Routing\SasUserRouteSubscriber
+    tags:
+      - { name: event_subscriber }
+    arguments:
+      - '@sas_core.service'
+
+  user.auth:
+    class: Drupal\sas_user\SasUserAuth
+    arguments:
+      - '@entity_type.manager'
+      - '@password'
+      - '@sas_core.service'
+
+  sas_user.helper:
+    class: Drupal\sas_user\Service\SasUserHelper
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@term.territory'
+      - '@sas_keycloak.psc_user'
+      - '@sas_user.effector_helper'
+      - '@current_user'
+
+  sas_user.effector_helper:
+    class: Drupal\sas_user\Service\SasEffectorHelper
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@current_user'
+      - '@sas_keycloak.psc_user'
+      - '@sas_snp_user_data.helper'
+
+  sas_user.delegataire_helper:
+    class: Drupal\sas_user\Service\SasDelegataireHelper
+    arguments:
+      - '@entity_type.manager'
+
+  sas_user.structure_manager_helper:
+    class: Drupal\sas_user\Service\SasStructureManagerHelper
+    arguments:
+      - '@sas_structure.cpts_helper'
+
+  sas_user.rpps_adeli_migration_csv_file:
+    class: Drupal\sas_export\SasCsvFileBase
+    arguments:
+      - '@file_system'
+      - 'sas_user'
+      - 'rpps-adeli-migration'
+
+  sas_user.rpps_export_csv_file:
+    class: Drupal\sas_export\SasCsvFileBase
+    arguments:
+      - '@file_system'
+      - 'sas_user'
+      - 'rpps_export_csv_file'
+
+  sas_user.settings_rpps_adeli_migration_csv_file:
+    class: Drupal\sas_export\SasCsvFileBase
+    arguments:
+      - '@file_system'
+      - 'sas_user'
+      - 'settings-rpps-adeli-migration'
+
+  sas_user.aggreg_regulator_sync:
+    class: Drupal\sas_user\Service\AggregRegulatorSyncHelper
+    arguments:
+      - '@queue'
+      - '@logger.factory'
+      - '@sas_api_client.service'
+      - '@sas_keycloak.user_info'
+
+  sas_user.account_forms_helper:
+    class: Drupal\sas_user\Service\SasAccountFormsHelper
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@sas_keycloak.user_helper'
+      - '@sas_keycloak.manager'
+      - '@sas_keycloak.user_info'
+      - '@sas_keycloak.mail'
+
+  sas_user.sas_user_access_check:
+    class: Drupal\sas_user\Access\IsSasUserAccessCheck
+    arguments:
+      - '@sas_user.helper'
+      - '@sas_keycloak.psc_user'
+    tags:
+      - { name: access_check, applies_to: _is_sas_user_access_check }
+
+  sas_user.data_access:
+    class: Drupal\sas_user\Access\SasUserDataAccess
+    arguments:
+      - '@current_route_match'
+      - '@sas_user_dashboard.dashboard'
+      - '@sas_user.effector_helper'
+      - '@sas_user.delegataire_helper'
+      - '@sas_keycloak.psc_user'
+      - '@entity_type.manager'
+      - '@sas_snp_user_data.helper'
+    tags:
+      - { name: access_check, applies_to: _sas_user_data_access_check }

@@ -1,0 +1,52 @@
+.wrapper-toolbar {
+  border-radius: 0 0 4px 4px;
+  box-shadow: none;
+
+  @media screen and (max-width: $screen-md-max) {
+    display: none;
+  }
+
+  @media screen and (min-width: $screen-sm-min) {
+    background: $blue2;
+  }
+
+  @media screen and (min-width: $screen-md-min) {
+    padding: 0 15px;
+  }
+
+  .back {
+    a {
+      font-size: torem(12);
+      font-weight: 400;
+    }
+    .icon {
+      transform: rotate(180deg);
+      font-size: torem(12);
+      &.icon-arrow {
+        position: relative;
+        top: 2px;
+      }
+    }
+  }
+  .toolbar-menu {
+    min-width: 172px;
+    justify-content: flex-end;
+
+    li:first-child {
+      .btn-outils {
+        border-left: 0;
+      }
+    }
+  }
+
+  .btn-outils {
+    font-size: torem(25);
+    .icon-a-plus {
+      font-size: inherit;
+    }
+    @media screen and (min-width: $screen-sm-min) {
+      font-size: torem(25);
+      border-right: 0;
+    }
+  }
+}

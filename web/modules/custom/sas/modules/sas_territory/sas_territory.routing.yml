@@ -1,0 +1,9 @@
+sas_territory.api.territory_list:
+  path: '/sas/json-api/territories'
+  defaults:
+    _title: 'Endpoint SAS territory list'
+    _controller: '\Drupal\sas_territory\Controller\JsonApiTerritoryController::territoryList'
+  requirements:
+    _sas_context_access_check: 'TRUE'
+    _user_is_logged_in: 'TRUE'
+    _format: 'json'

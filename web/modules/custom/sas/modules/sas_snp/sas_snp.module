@@ -1,0 +1,196 @@
+<?php
+
+/**
+ * @file
+ * Contains sas_snp.module.
+ */
+
+use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\node\NodeInterface;
+use Drupal\sas_snp\Enum\SnpConstant;
+use Drupal\sas_snp\SnpNodeAccessControlHandler;
+
+/**
+ * Implements hook_help().
+ */
+function sas_snp_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the sas_snp module.
+    case 'help.page.sas_snp':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('SAS SNP') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function sas_snp_theme() {
+  return [
+    'availability-block' => [
+      'variables' => [
+        'link' => NULL,
+        'availability_block' => NULL,
+        'class' => NULL,
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_entity_extra_field_info().
+ */
+function sas_snp_entity_extra_field_info() {
+  $extra = [];
+
+  $content_type_view = [
+    'professionnel_de_sante',
+    'health_institution',
+    'finess_institution',
+    'service_de_sante',
+  ];
+
+  foreach ($content_type_view as $content_type) {
+    $extra['node'][$content_type]['display']['link_availability_page'] = [
+      'label' => 'Lien page disponibilités',
+      'visible' => FALSE,
+      'weight' => 1000,
+    ];
+  }
+
+  $extra['node']['sas_time_slots']['display']['snp_time_slots_block'] = [
+    'label' => 'Block plages horaires',
+    'visible' => FALSE,
+    'weight' => 1000,
+  ];
+
+  return $extra;
+}
+
+/**
+ * Implements hook_entity_view().
+ */
+function sas_snp_entity_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+
+  if (!\Drupal::service('sas_core.service')->isSasContext()) {
+    return;
+  }
+
+  if ($display->getComponent('link_availability_page')) {
+    // The addition of block build is done in preprocess plugins for PS & Etab.
+    $cacheableMetadata = new CacheableMetadata();
+    $cacheableMetadata->addCacheContexts(['user']);
+    $cacheableMetadata->merge(CacheableMetadata::createFromRenderArray($build))->applyTo($build);
+  }
+
+  if ($display->getComponent('snp_time_slots_block')) {
+    // @todo A DEPLACER DANS LE &BUILD.
+    $schedule_id = !$entity->get('field_sas_time_slot_schedule_id')->isEmpty()
+      ? $entity->get('field_sas_time_slot_schedule_id')->first()->getValue()['value']
+      : NULL;
+
+    $is_cds = FALSE;
+    $timezone = $full_address = NULL;
+
+    /** @var \Drupal\Core\Entity\EntityInterface $entity */
+    if ($entity instanceof EntityInterface && $entity->bundle() == SnpConstant::SAS_TIME_SLOTS) {
+      /** @var \Drupal\node\NodeInterface $node_ps */
+      $node_ps = current($entity->get('field_sas_time_slot_ref')->referencedEntities());
+      $full_address = $node_ps->get('field_address')->first()->getValue()['full_address'];
+      $is_cds = \Drupal::service('sas_structure.helper')->isCds($node_ps);
+      $timezone = \Drupal::service('sas_geolocation.timezone')->getPlaceTimezone($node_ps);
+    }
+
+    $build['#attached']['library'][] = 'sas_vuejs/time-slot-schedule';
+    $build['#attached']['drupalSettings']['sas_vuejs']['parameters'] = [
+      'time-slot-schedule' => [
+        'schedule_id' => $schedule_id,
+        'full_address' => $full_address,
+        'node_id' => $entity->id(),
+        'is_cds' => $is_cds,
+        'timezone' => $timezone,
+      ],
+    ];
+  }
+
+  if (
+    $entity instanceof EntityInterface &&
+    in_array($entity->bundle(), SnpConstant::getSasBunles())
+  ) {
+    $build['#attached']['drupalSettings']['sas_vuejs']['parameters'] = [
+      'time-slot-schedule' => [
+        'timezone' => \Drupal::service('sas_geolocation.timezone')->getPlaceTimezone($entity),
+      ],
+    ];
+  }
+}
+
+/**
+ * Implements hook_entity_type_build().
+ */
+function sas_snp_entity_type_build(array &$entity_types) {
+  /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
+  $entity_types['node']->setLinkTemplate('sas-snp-availability', '/sas-snp/{node}');
+}
+
+/**
+ * Implements hook_entity_type_alter().
+ */
+function sas_snp_entity_type_alter(array &$entity_types) {
+  $entity_types['node']->setHandlerClass('access', SnpNodeAccessControlHandler::class);
+}
+
+/**
+ * Implements hook_node_presave().
+ */
+function sas_snp_node_presave(NodeInterface $node) {
+  if (!\Drupal::service('sas_core.service')->isSasContext()) {
+    return;
+  }
+
+  if ($node->bundle() == SnpConstant::SAS_TIME_SLOTS
+    && !$node->get('field_has_snp')->isEmpty()
+  ) {
+    /** @var \Drupal\sas_snp\Service\SnpUnavailabilityHelper $snp_unavailability_helper */
+    $snp_unavailability_helper = \Drupal::service('sas_snp.unavailability_helper');
+    $is_in_vacation = $snp_unavailability_helper->isInVacationNextThreeDays($node);
+
+    /** @var \Drupal\sas_snp\Service\SnpContentHelperInterface $snp_content_helper */
+    $snp_content_helper = \Drupal::service('sas_snp.content_helper');
+    $parent_node = $snp_content_helper->getParent($node);
+
+    /** @var \Drupal\sas_snp\Manager\SasAvailabilityManager $availability_manager */
+    $availability_manager = \Drupal::service('sas_snp.availability_manager');
+    if ($is_in_vacation) {
+      $availability_manager->updateHasSnpAvailability($parent_node->id(), FALSE);
+    }
+  }
+}
+
+/**
+ * Implements hook_node_update().
+ */
+function sas_snp_node_update(NodeInterface $node) {
+
+  if (!\Drupal::service('sas_core.service')->isSasContext()) {
+    return;
+  }
+  if ($node->bundle() == SnpConstant::SAS_TIME_SLOTS) {
+
+    /** @var \Drupal\node\NodeInterface $node_ps */
+    $node_ps = current($node->get('field_sas_time_slot_ref')->referencedEntities());
+    if (empty($node_ps) || !$node_ps->isPublished()) {
+      return;
+    }
+
+    // Force indexation of professional sheet.
+    Drupal::service('sas_search_index.helper')->indexSpecificItem($node_ps->id());
+  }
+}

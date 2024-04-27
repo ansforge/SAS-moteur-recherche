@@ -1,0 +1,46 @@
+.context-sas-recherche {
+  --sas-header-height: 135px;
+
+  .main-header {
+    height: var(--sas-header-height);
+  }
+}
+
+
+#sas-search-wrapper {
+  background-color: $grey2;
+  padding-bottom: 150px;
+}
+
+.search-page-container {
+  --sas-search-page-width-margin: 10vw; // It should stays with vw unit
+
+  margin: 0 var(--sas-search-page-width-margin);
+}
+
+
+.search-header {
+  padding-top: 52px;
+  margin-bottom: 22px;
+  font-family: $font-mont;
+
+  h1 {
+    max-width: 1100px;
+    line-height: normal;
+    font-size: torem(30);
+    display: flex;
+    margin: 0 0 9px;
+    align-items: baseline;
+  }
+
+  .tooltip .tooltip__initiator {
+    font-size: torem(21);
+    margin-left: 4px;
+  }
+
+  .search-header--subtitle {
+    font-weight: 700;
+    font-size: torem(14);
+    font-style: italic;
+  }
+}

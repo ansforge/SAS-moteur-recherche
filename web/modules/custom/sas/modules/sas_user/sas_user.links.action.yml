@@ -1,0 +1,22 @@
+sas_user.user_add:
+  route_name: sas_user.admin_create
+  title: 'Ajouter un utilisateur'
+  appears_on:
+    - view.sas_userlist.sas_user_admin
+    - view.sas_userlist.sas_user_territorial
+
+sas_user.admin_export:
+  route_name: view.sas_userlist.sas_user_admin_export
+  route_parameters:
+    _format: csv
+  title: 'Exporter'
+  appears_on:
+    - view.sas_userlist.sas_user_admin
+
+sas_user.territorial_export:
+  route_name: view.sas_userlist.sas_user_territorial_export
+  route_parameters:
+    _format: csv
+  title: 'Exporter'
+  appears_on:
+    - view.sas_userlist.sas_user_territorial

@@ -1,0 +1,192 @@
+.btn-highlight,
+%btn-highlight {
+  @include btn($white, $white, $sas-blue4, $sas-blue4, $sas-blue4, $sas-blue4);
+  padding: 10px 20px;
+  border-radius: 30px;
+  line-height: torem(19.5);
+  font-family: $font-mont;
+
+  @media screen and (max-width: $screen-sm-max) {
+    min-width: 10.125rem;
+  }
+
+  &.disabled,
+  &:disabled {
+    background: $sas-grey6;
+    border-color: $sas-grey6;
+    cursor: initial !important; // sass-lint:disable-line no-important
+  }
+}
+
+.btn-highlight-outline,
+%btn-highlight-outline {
+  @include btn($sas-blue4, $sas-blue4, transparent, transparent, $sas-blue4, $sas-blue4);
+  padding: 10px 20px;
+  border-radius: 30px;
+  line-height: torem(19.5);
+  font-family: $font-mont;
+}
+
+.btn-home,
+%btn-home {
+  @include btn($blue2, $blue2, $white, $white, $white, $white);
+  width: 280px;
+  height: 58px;
+  border: 0;
+  border-radius: 30px;
+  font-size: torem(16);
+
+}
+
+.btn-highlight,
+.btn-highlight-outline {
+  &.with-icon {
+    .icon {
+      margin-right: 10px;
+    }
+  }
+
+  &.only-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    border-radius: 50%;
+    font-size: torem(15);
+    letter-spacing: normal;
+  }
+}
+
+
+.btn-delete {
+  display: flex;
+  align-items: center;
+  border: 0;
+  padding: 0;
+  background: none;
+  color: $blue2;
+  // important because jqueryui css is after our css
+  font-family: $font-mont !important; // sass-lint:disable-line no-important
+  font-size: torem(15) !important; // sass-lint:disable-line no-important
+  font-weight: 400;
+  text-align: left;
+
+  span {
+    text-decoration: underline;
+  }
+
+  &:before {
+    content: $icon-cross_out_bold; // sass-lint:disable-line variable-name-format
+    font-family: $icomoon-font-family;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
+    border: 1px solid $sas-blue4;
+    border-radius: 50%;
+    color: $sas-blue4;
+    font-weight: 700;
+    font-size: torem(10);
+  }
+}
+
+.btn-add,
+%btn-add {
+  display: flex;
+  align-items: center;
+  border: 0;
+  padding: 0;
+  background: none;
+  color: $blue2;
+  // important because jqueryui css is after our css
+  font-family: $font-mont !important; // sass-lint:disable-line no-important
+  font-size: torem(15) !important; // sass-lint:disable-line no-important
+  font-weight: 400;
+  text-align: left;
+
+  span {
+    text-decoration: underline;
+  }
+
+  &:before {
+    content: $icon-ok;
+    font-family: $icomoon-font-family;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    width: 42px;
+    min-width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: $sas-blue4;
+    color: $white;
+    font-size: torem(16);
+  }
+}
+
+.btn-remove {
+  @extend %btn-add;
+
+  &:before {
+    content: $sas-icon-remove;
+    font-family: $icomoon-font-family-sas;
+    font-size: torem(3);
+  }
+}
+.outline-blue {
+  @include btn-sas($sas-blue4, $white, $white, $sas-blue4);
+
+  &.active {
+    background: $sas-blue4;
+    color: $white;
+  }
+}
+.btn-dsfr {
+  font-size: torem(16);
+  font-family: $font-maria;
+  background: $blue31;
+  color: $sas-grey11;
+  text-align: center;
+  height: auto;
+  justify-content: center;
+  padding: 8px;
+  width: 100%;
+}
+
+.link-dsfr {
+  text-transform: uppercase;
+  font-size: torem(16);
+  font-family: $font-maria;
+  color: $blue31;
+  position: relative;
+  text-decoration: underline;
+  text-underline-offset: 5px; // sass-lint:disable-line no-misspelled-properties
+}
+
+.list,
+.table {
+  padding: 12px 25px;
+  letter-spacing: 0;
+}
+
+.btn-link {
+  background: transparent;
+  border: 0;
+  color: $blue2;
+  text-decoration: underline;
+  font-weight: 600;
+  font-size: torem(16);
+}
+
+a[target='_blank'] {
+  &::after {
+    content: none;
+  }
+}

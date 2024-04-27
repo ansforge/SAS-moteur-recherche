@@ -1,0 +1,16 @@
+add sas structure settings entities:
+  title: 'Create new Sas structure settings entities'
+
+administer sas structure settings entities:
+  title: 'Administer Sas structure settings entities'
+  description: 'Allow to access the administration form to configure Sas structure settings entities.'
+  restrict access: true
+
+delete sas structure settings entities:
+  title: 'Delete Sas structure settings entities'
+
+edit sas structure settings entities:
+  title: 'Edit Sas structure settings entities'
+
+view sas structure settings entities:
+  title: 'View Sas structure settings entities'

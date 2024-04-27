@@ -1,0 +1,48 @@
+services:
+  sas_search.solr_query_manager:
+    class: 'Drupal\sas_search\Service\SasSolrQueryManager'
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+      - '@cache.default'
+      - '@logger.factory'
+      - '@request_stack'
+      - '@transliteration'
+      - '@sas_search.helper'
+
+  sas_search.solr_practitioner_query_manager:
+    class: 'Drupal\sas_search\Service\SasSolrPractitionerQueryManager'
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+      - '@cache.default'
+      - '@logger.factory'
+      - '@request_stack'
+      - '@transliteration'
+
+  sas_search.manager:
+    class: 'Drupal\sas_search\Service\SasSearchManager'
+    arguments:
+      - '@sante_search_solr.localisation_helpers'
+      - '@sante_search_solr.forge_request'
+      - '@sante_search_solr.manager'
+      - '@state'
+      - '@request_stack'
+      - '@entity_type.manager'
+      - '@cache.data'
+      - '@sante_search_solr.etablishment_helpers'
+      - '@sas_search.solr_query_manager'
+      - '@sas_search.solr_practitioner_query_manager'
+      - '@sas_geolocation.helper'
+
+  sas_search.helper:
+    class: 'Drupal\sas_search\Service\SasSearchHelper'
+    arguments:
+      - '@config.factory'
+      - '@entity_type.manager'
+      - '@cache.default'
+      - '@current_user'
+      - '@sas_user.helper'
+      - '@database'
+      - '@sas_api_client.service'
+      - '@term.territory'

@@ -1,0 +1,9 @@
+sas_orientation.sas_api_create_orientation:
+  path: '/sas/json-api/orientation'
+  methods:  [POST]
+  defaults:
+    _title: 'SAS-API - Create an orientation.'
+    _controller: '\Drupal\sas_orientation\Controller\SasOrientationController::createOrientation'
+  requirements:
+    _permission: 'create sas orientation'
+    _format: 'json'

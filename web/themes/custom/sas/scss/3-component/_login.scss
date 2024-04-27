@@ -1,0 +1,153 @@
+//Header
+.ans-openid-connect-login-form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+
+  @media screen and (min-width: $screen-sm-min) {
+    width: 320px;
+    padding: 30px;
+  }
+
+  i {
+    margin-right: 26px;
+    font-size: torem(20);
+    font-weight: 400;
+  }
+  span {
+    line-height: 1.2;
+  }
+
+  .form-submit {
+    border: 0;
+    background: none;
+    color: $blue;
+    text-transform: uppercase;
+    font-family: $font-frank;
+    font-size: torem(11);
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+  }
+}
+
+#block-saslogin {
+  justify-content: flex-end;
+  display: flex;
+}
+
+.account-panel {
+  display: flex;
+  margin-left: 30px;
+
+  @media screen and (max-width: 1474px) {
+    justify-content: flex-end;
+    width: auto;
+  }
+
+  .account-panel-opener {
+    font-family: $font-maria;
+    font-size: torem(14);
+    color: $blue31;
+    font-weight: 600;
+    text-transform: none;
+    padding: 0;
+    margin: 0;
+    height: auto;
+    width: auto;
+    &:before {
+      display: none;
+    }
+    @media screen and (max-width: $screen-md-max) {
+      body:not(.user-logged-out) & {
+        display: none;
+      }
+    }
+    .ans-openid-connect-login-form {
+      padding: 0;
+      width: auto;
+      &:before {
+        display: none;
+      }
+      .form-submit {
+        font-family: $font-maria;
+        font-size: torem(14);
+        color: $blue31;
+        text-transform: none;
+      }
+    }
+    a {
+      color: $blue31;
+    }
+
+    .account-panel-title {
+      @media screen and (min-width: 1400px) {
+        display: block;
+      }
+    }
+    &[aria-expanded='true'] {
+      background: none;
+      color: $blue31;
+    }
+  }
+
+  &.psc {
+    justify-content: flex-end;
+    .account-panel-opener {
+      &:before {
+        content: $icon-disconnect;
+        background-image: none;
+      }
+    }
+  }
+  &.without-keycloak {
+    height: 100%;
+    width: auto;
+
+    .account-panel-opener {
+      a {
+        text-decoration: none;
+      }
+    }
+  }
+
+  @media screen and (max-width: $screen-md-max) {
+    &.connected {
+      position: absolute;
+    }
+    .user-logged-out & {
+      position: relative;
+      .account-panel-opener {
+        position: relative;
+        .btn-openid {
+          position: relative;
+          top: 32px;
+          span {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+
+  .account-panel-opener[aria-expanded='false'],
+  .account-panel-opener[aria-expanded='false']::before,
+  .keycloak-wrapper[aria-expanded='false']::before,
+  .keycloak-wrapper[aria-expanded='false'] .btn-openid {
+    color: $blue31;
+  }
+
+  #js-account-panel-opener,
+  .btn-openid {
+    justify-content: center;
+    @media screen and (min-width: $screen-lg-min) {
+      display: flex;
+    }
+    i {
+      margin-right: 10px;
+      font-size: torem(20);
+      font-family: $icomoon-font-family-sas !important; // sass-lint:disable-line no-important
+    }
+  }
+}

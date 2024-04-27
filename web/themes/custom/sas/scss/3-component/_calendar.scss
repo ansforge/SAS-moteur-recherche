@@ -1,0 +1,262 @@
+.calendar-header {
+  background: $blue2;
+  margin: 20px 0 30px;
+  padding: 25px;
+  border-radius: 4px;
+
+  .page-title {
+    font-family: $font-mont;
+    color: $white;
+    font-size: torem(30);
+    margin: 0 0 25px;
+  }
+
+  .wrapper-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px; // sass-lint:disable-line no-misspelled-properties
+    justify-content: end;
+
+    @media screen and (max-width: $screen-sm-max) {
+      justify-content: start;
+    }
+
+    i {
+      display: none;
+    }
+
+    & > button {
+      font-weight: 600;
+    }
+  }
+}
+
+.calendar-header-content {
+  @media screen and (max-width: $screen-sm-max) {
+    flex-direction: column;
+  }
+}
+
+.calendar-header-address {
+  margin-right: 20px;
+  @media screen and (max-width: $screen-sm-max) {
+    margin-right: 0;
+    margin-bottom: 20px;
+  }
+  p {
+    font-family: $font-mont;
+    margin: 0;
+    color: $white;
+    font-size: torem(14);
+    font-weight: 300;
+
+    strong {
+      font-weight: 600;
+      display: block;
+      font-size: torem(16);
+      margin-bottom: 4px;
+    }
+  }
+}
+
+.calendar-table {
+  .wrapper-calendar-pagination {
+    position: sticky;
+    top: 190px;
+    z-index: 31;
+    &:before {
+      content: '';
+      background-color: $white;
+      position: absolute;
+      height: 10px;
+      left: 0;
+      right: 0;
+      top: -11px;
+    }
+  }
+}
+
+.calendar-legend {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 0 0 2.1875rem;
+  font-family: $font-mont;
+
+  .tag-with-chip {
+    padding: 12px 20px;
+    color: $sas-grey4;
+    margin-right: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .desc {
+    max-width: 400px;
+    font-size: torem(13.5);
+  }
+}
+
+.wrapper-calendar {
+  margin-top: 3rem;
+
+  @media screen and (max-width: $screen-sm-max) {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    padding-left: 58px;
+    border-collapse: separate;
+  }
+
+  th,
+  td {
+    position: relative;
+    height: 69px;
+    width: 120px;
+    min-width: 100px;
+    border-bottom: 1px solid $sas-grey9;
+    border-right: 1px solid $sas-grey9;
+    font-family: $font-mont;
+
+    &:first-child {
+      border-left: 1px solid $sas-grey9;
+    }
+  }
+  th {
+    height: 55px;
+    font-size: torem(16);
+    font-family: $font-mont;
+    font-weight: 600;
+    position: sticky;
+    top: 255px;
+    z-index: 30;
+    background: $white;
+    &:first-child:before {
+      content: '';
+      background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 1) 45%,
+        rgba(255, 255, 255, 0) 100%
+      );
+      position: absolute;
+      height: 55px;
+      width: 58px;
+      left: -59px;
+      top: 0;
+    }
+  }
+
+  td:first-child .time {
+    position: absolute;
+    top: -10px;
+    left: -58px;
+    width: 58px;
+    padding-right: 15px;
+    font-size: torem(14);
+    font-weight: 600;
+    color: $sas-grey10;
+  }
+
+  .slotBox {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    height: 100%;
+    min-height: 28px;
+    padding: 0 10px;
+    border: 1px solid white;
+    cursor: pointer;
+    background: $sas-green8;
+    border-radius: 4px;
+    animation: fadeIn 0.5s;
+    font-family: $font-mont;
+    font-size: torem(14);
+    font-weight: 600;    
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+
+    &.slot-is-full {
+      background: $sas-orange;
+      &:hover {
+        background: $sas-orange2;
+      }
+    }
+
+    .wrapper-slot-options {
+      display: none;
+      position: absolute;
+      top: 6px;
+      right: 10px;
+
+      button {
+        padding: 0;
+        border: 0;
+        background: none;
+        color: $white;
+      }
+
+      .icon,
+      .sas-icon {
+        margin-left: 10px;
+      }
+    }
+
+    &:hover {
+      background: $sas-green9;
+      z-index: 3;
+
+      .wrapper-slot-options {
+        display: block;
+      }
+    }
+
+    &.disabled {
+      background: $sas-grey5;
+      cursor: inherit;
+    }
+  }
+
+  .unavailable {
+    &:after {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      background: rgba(221, 221, 221, 0.6);
+      z-index: 2;
+      pointer-events: none;
+    }
+  }
+}
+
+.info-local-hour {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-bottom: 15px;
+
+  span {
+    font-family: $font-mont;
+    font-size: torem(14);
+    font-weight: 600;
+    font-style: italic;
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}

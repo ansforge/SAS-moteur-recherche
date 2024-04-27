@@ -1,0 +1,22 @@
+<?php
+
+/**
+ * @file
+ * Contains sas_user_settings.module.
+ */
+
+/**
+ * Implements hook_help().
+ */
+function sas_user_settings_help($route_name) {
+  switch ($route_name) {
+    // Main module help for the sas_user_settings module.
+    case 'help.page.sas_user_settings':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('sas user settings entity') . '</p>';
+      return $output;
+
+    default:
+  }
+}

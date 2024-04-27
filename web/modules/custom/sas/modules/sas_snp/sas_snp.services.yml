@@ -1,0 +1,55 @@
+services:
+  sas_snp.manager:
+    class: Drupal\sas_snp\SnpService
+    arguments:
+      - '@entity_type.manager'
+      - '@sas_api_client.service'
+      - '@sas_structure.sos_medecin'
+      - '@sas_user.effector_helper'
+      - '@sas_snp.content_helper'
+      - '@sas_snp.availability_manager'
+      - '@sas_snp.unavailability_helper'
+      - '@sas_user.structure_manager_helper'
+
+  sas_snp.content_helper:
+    class: Drupal\sas_snp\Service\SnpContentHelper
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+      - '@path.current'
+      - '@database'
+
+  sas_snp.availability_block_provider:
+    class: Drupal\sas_snp\Service\AvailabilityBlockProvider
+    arguments: ['@current_user', '@plugin.manager.block']
+
+  sas_snp.slots_formatter:
+    class: Drupal\sas_snp\Service\SnpSlotsFormatter
+
+  sas_snp.cli.update_snp:
+    class: Drupal\sas_snp\Commands\SasUpdateSnpCommands
+    arguments:
+      - '@database'
+      - '@sas_core.service'
+      - '@entity_type.manager'
+      - '@sas_snp.unavailability_helper'
+    tags:
+      - { name: drush.command }
+
+  sas_snp.unavailability_helper:
+    class: Drupal\sas_snp\Service\SnpUnavailabilityHelper
+    arguments:
+      - '@database'
+      - '@entity_type.manager'
+      - '@sas_geolocation.timezone'
+
+  sas_snp.availability_manager:
+    class: Drupal\sas_snp\Manager\SasAvailabilityManager
+    arguments:
+      - '@database'
+      - '@sas_search_index.helper'
+
+  sas_snp.interfaced_helper:
+    class: Drupal\sas_snp\Service\InterfacedHelper
+    arguments:
+      - '@database'

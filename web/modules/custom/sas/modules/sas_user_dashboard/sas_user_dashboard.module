@@ -1,0 +1,56 @@
+<?php
+
+/**
+ * @file
+ * Contains sas_user.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function sas_user_dashboard_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the sante_homepage module.
+    case 'help.page.sas_user_dashboard':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Sas user dashboard') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function sas_user_dashboard_theme($existing, $type, $theme, $path) {
+  return [
+    'sas-user-dashboard-gestionnaire-de-structure' => [
+      'variables' => [
+        'role' => NULL,
+        'general_info' => NULL,
+        'paragraph' => NULL,
+        'results' => [],
+        'sos_medecin_assos' => [],
+        'editor' => NULL,
+        'forfait_reo_enabled' => NULL,
+        'participation_sas' => NULL,
+        'cpts_list' => [],
+      ],
+    ],
+    'sas-user-dashboard-delegataire' => [
+      'variables' => [
+        'general_info' => NULL,
+        'paragraph' => NULL,
+        'last_name' => NULL,
+        'first_name' => NULL,
+        'email' => NULL,
+        'structures' => [],
+        'professionals' => [],
+      ],
+    ],
+  ];
+}

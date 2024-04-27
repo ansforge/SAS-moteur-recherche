@@ -1,0 +1,203 @@
+/**
+ * @file
+ * Footer Styling
+ */
+
+footer {
+  a[target='_blank'] {
+    position: relative;
+    white-space: nowrap;
+    &::after {
+      position: absolute;
+      right: -17px;
+      bottom: -2px;
+      margin-left: 5px;
+      font-family: $icomoon-font-family;
+      color: $grey9;
+      font-size: torem(12);
+      content: $icon-ext-link;
+    }
+  }
+}
+
+.wrapper-footer-below-bottom {
+  background-color: $white;
+}
+
+.wrapper-footer-bottom {
+  font-family: $font-maria;
+  background-color: $grey53;
+  padding: 30px 0 96px;
+  font-size: torem(12);
+  font-weight: 400;
+  letter-spacing: 0.8px;
+  border-top: 2px solid $blue31;
+
+  .container {
+    max-width: 100%;
+
+    @media screen and (min-width: $screen-md-min) {
+      display: flex;
+      flex-wrap: wrap;
+    }
+  }
+
+  .menu-title {
+    margin-bottom: 12px;
+    color: $black3;
+    font-weight: 700;
+  }
+  .menu-list {
+    margin-bottom: 12px;
+  }
+  .menu-item {
+    position: relative;
+    margin-bottom: 12px;
+    a {
+      color: $grey8;
+      text-decoration: none;
+      &:hover,
+      &:focus {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  @media screen and (max-width: $screen-sm-max) {
+    padding: 30px 0;
+  }
+
+  .footer-menu-wrapper {
+    #block-sas-footer-menu {
+      width: 100%;
+    }
+    @media screen and (min-width: $screen-lg-min) {
+      display: flex;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+  }
+
+  .footer-menu-section-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 34px; // sass-lint:disable-line no-misspelled-properties
+    justify-content: center;
+
+    @media screen and (max-width: $screen-sm-max) {
+      flex-direction: column;
+      gap: 16px; // sass-lint:disable-line no-misspelled-properties
+    }
+    .footer-menu-section {
+      flex: 1;
+      max-width: 324px;
+      width: 100%;
+    }
+  }
+}
+
+.footer-ministere-content {
+  justify-content: space-between;
+  align-items: center;
+
+  @media screen and (max-width: $screen-sm-max) {
+    flex-direction: column;
+    align-items: flex-start;
+    padding-bottom: 7px;
+  }
+
+  .footer-ministere-text {
+    color: $grey9;
+    font-family: $font-maria;
+    font-size: torem(12);
+    font-weight: 400;
+    @media screen and (max-width: $screen-sm-max) {
+      width: 100%;
+    }
+    p {
+      margin: 0 0 18px;
+      font-size: torem(14);
+      @media screen and (max-width: $screen-sm-max) {
+        margin-bottom: 24px;
+      }
+    }
+    ul {
+      margin: 0;
+      padding: 0;
+      @media screen and (max-width: $screen-sm-max) {
+        flex-wrap: wrap;
+      }
+      li {
+        list-style-type: none;
+        margin-right: 42px;
+        @media screen and (max-width: $screen-sm-max) {
+          margin-right: 22px;
+          margin-bottom: 16px;
+          width: calc(50% - 22px);
+        }
+        a {
+          color: $grey16;
+          font-weight: 700;
+          text-decoration: none;
+          &:active,
+          &:hover {
+            text-decoration: underline;
+          }
+          &:after {
+            color: $grey16;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Below footer Nav
+.footer-below-menu {
+  border-top: 1px solid $grey11;
+  padding: 17px 0 33px;
+  color: $grey9;
+  font-family: $font-maria;
+  font-size: torem(12);
+  font-weight: 400;
+  ul.below-nav {
+    margin: 0 0 24px;
+    padding: 0;
+    display: flex;
+    @media screen and (max-width: $screen-sm-max) {
+      flex-wrap: wrap;
+    }
+    li {
+      list-style-type: none;
+      position: relative;
+      padding-right: 16px;
+      margin-right: 16px;
+      @media screen and (max-width: $screen-sm-max) {
+        margin-bottom: 16px;
+      }
+      &:after {
+        content: '';
+        height: 16px;
+        width: 1px;
+        background: $grey11;
+        position: absolute;
+        right: 0;
+      }
+      a {
+        color: $grey9;
+        text-decoration: none;
+        &:active,
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+
+  .licence-mention {
+    margin: 0;
+    a {
+      color: $grey9;
+    }
+  }
+}

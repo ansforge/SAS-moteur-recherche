@@ -1,0 +1,51 @@
+services:
+  sas_structure.helper:
+    class: Drupal\sas_structure\Service\StructureHelper
+    arguments:
+      - '@database'
+      - '@entity_type.manager'
+      - '@cache.data'
+      - '@sas_structure.sos_medecin'
+
+  sas_structure.settings_helper:
+    class: Drupal\sas_structure\Service\StructureSettingsHelper
+    arguments:
+      - '@entity_type.manager'
+      - '@sas_structure.helper'
+      - '@sas_structure.sos_medecin'
+      - '@current_user'
+
+  sas_structure.finess_structure_helper:
+    class: Drupal\sas_structure\Service\FinessStructureHelper
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@sas_structure.helper'
+
+  sas_structure.sos_medecin:
+    class: Drupal\sas_structure\Service\SosMedecinHelper
+    arguments:
+      - '@entity_type.manager'
+      - '@cache.data'
+
+  sas_structure.autocomplete:
+    class: Drupal\sas_structure\Service\StructureAutocompleteService
+    arguments:
+      - '@sas_structure.finess_structure_helper'
+      - '@sas_structure.sos_medecin'
+
+  sas_structure.cpts_helper:
+    class: Drupal\sas_structure\Service\CptsHelper
+    arguments:
+      - '@entity_type.manager'
+      - '@sas_user.effector_helper'
+      - '@sas_structure.finess_structure_helper'
+      - '@sas_snp_user_data.helper'
+      - '@cache.data'
+      - '@database'
+      - '@path.current'
+
+  sas_structure.sos_doctors_interfaced_helper:
+    class: Drupal\sas_structure\Service\SosDoctorsIsInterfacedHelper
+    arguments:
+      - '@database'

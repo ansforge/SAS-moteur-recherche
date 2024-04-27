@@ -1,0 +1,19 @@
+# JSON Endpoint for all requests
+sas_geolocation.json_endpoint:
+  path: 'sas/api/map_configurations'
+  defaults:
+    _controller: '\Drupal\sas_geolocation\Controller\json_api\SasMapRequestController:getMapConfig'
+  requirements:
+    # Return mapbox/maptiler config which is available to all.
+    _access: 'TRUE'
+    _format: 'json'
+
+sas_geolocation.timezone:
+  path: 'sas/api/timezone/{node}'
+  defaults:
+    _controller: '\Drupal\sas_geolocation\Controller\json_api\SasTimezoneController:getPlaceTimezone'
+  requirements:
+    # Return timezone for a given place which is available to all.
+    _access: 'TRUE'
+    _format: 'json'
+    node: \d+

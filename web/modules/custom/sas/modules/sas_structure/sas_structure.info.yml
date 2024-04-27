@@ -1,0 +1,9 @@
+name: 'SAS Structure'
+type: module
+description: 'Specific features for SAS structure management'
+core_version_requirement: '^9 || ^10'
+package: 'ANS - SAS'
+
+dependencies:
+  - drupal:user
+  - sas:sas_search_index

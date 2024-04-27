@@ -1,0 +1,9 @@
+name: 'SAS Geolocation'
+type: module
+description: 'Provides geolocation features and services for SAS.'
+core_version_requirement: '^9 || ^10'
+package: 'SAS'
+dependencies:
+  - sante_address:sante_address
+  - sante_mapbox:sante_mapbox
+  - sas:sas_territory

@@ -1,0 +1,52 @@
+sas_search.search_page:
+  path: '/sas/recherche'
+  defaults:
+    _title: 'Page de recherche SAS'
+    _controller: '\Drupal\sas_search\Controller\SasSearchController::build'
+  requirements:
+    _permission: 'access search'
+
+sas_search.api.request:
+  path: '/sas/json-api/search/request'
+  defaults:
+    _title: 'Endpoint recherche SAS'
+    _controller: '\Drupal\sas_search\Controller\JsonApiSearchRequestController::getResults'
+  requirements:
+    _permission: 'access protected drupal api'
+    _format: 'json'
+
+sas_search.api.request-pref-doctor:
+  path: '/sas/json-api/search/request/pref-doctor'
+  defaults:
+    _title: 'Endpoint recherche SAS for pref doctor'
+    _controller: '\Drupal\sas_search\Controller\JsonApiSearchRequestController::getPrefDoctorResults'
+  requirements:
+    _permission: 'access protected drupal api'
+    _format: 'json'
+
+sas_search.api.suggestions:
+  path: '/sas/json-api/search/suggestions'
+  defaults:
+    _title: 'Endpoint Suggestions SAS'
+    _controller: '\Drupal\sas_search\Controller\JsonApiSearchRequestController::getSuggestions'
+  requirements:
+    _sas_context_access_check: 'TRUE'
+    _format: 'json'
+
+sas_search.api.structure-mapping:
+  path: '/sas/json-api/search/structure-mapping'
+  defaults:
+    _title: 'Endpoint Structure mapping SAS'
+    _controller: '\Drupal\sas_search\Controller\JsonApiSearchRequestController::isStructureMapping'
+  requirements:
+    _sas_context_access_check: 'TRUE'
+    _format: 'json'
+
+sas_search.api.search-settings:
+  path: '/sas/json-api/search/dictionnary'
+  defaults:
+    _title: 'Endpoint Dictionnary SAS'
+    _controller: '\Drupal\sas_search\Controller\JsonApiSearchRequestController::searchDictionnary'
+  requirements:
+    _sas_context_access_check: 'TRUE'
+    _format: 'json'

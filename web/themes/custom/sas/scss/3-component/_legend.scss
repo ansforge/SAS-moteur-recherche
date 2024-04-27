@@ -1,0 +1,60 @@
+.legend-table {
+  display: flex;
+  align-items: center;
+  margin-bottom: torem(20);
+  font-family: $font-mont;
+
+  > * {
+    margin-right: torem(24);
+  }
+  > :last-child {
+    margin-right: 0;
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    font-weight: 700;
+    font-size: torem(12);
+    line-height: normal;
+    color: $sas-grey4;
+    padding: 0;
+    background-color: transparent;
+  }
+
+  .chip {
+    display: inline-block;
+    margin-right: torem(12);
+    aspect-ratio: 1/1;
+    width: torem(14);
+    border-radius: 50%;
+    &.chip-blue {
+      background-color: $sas-blue10;
+    }
+    &.chip-green {
+      background-color: $sas-green8;
+    }
+  }
+
+  .legend-modalities {
+    display: contents;
+
+    > * {
+      margin-right: torem(12);
+    }
+    > :last-child {
+      margin-right: 0;
+    }
+
+    .legend-modality {
+      display: inline-flex;
+      align-items: center;
+      line-height: normal;
+      font-size: torem(12);
+
+      .tag-letter {
+        margin-right: torem(8);
+      }
+    }
+  }
+}

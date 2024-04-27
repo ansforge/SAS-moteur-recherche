@@ -1,0 +1,11 @@
+sas_api_server.api:
+  path: '/sas/api/{api_type}/{endpoint}/{id}'
+  methods:  [GET, POST, PUT, DELETE]
+  defaults:
+    id: NULL
+    _title: 'SAS-API - Drupal SAS-API proxy.'
+    _controller: '\Drupal\sas_api_server\Controller\SasApiServerController::call'
+  requirements:
+    api_type: (aggregator|analytics|sas-api|sas-api-config)
+    _permission: 'access content'
+    _format: 'json'

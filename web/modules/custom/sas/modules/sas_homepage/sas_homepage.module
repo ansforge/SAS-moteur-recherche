@@ -1,0 +1,114 @@
+<?php
+
+/**
+ * @file
+ * Contains sas_user.module.
+ */
+
+use Drupal\block\Entity\Block;
+use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\sas_snp\Enum\SnpConstant;
+use Drupal\user\Entity\Role;
+
+/**
+ * Implements hook_theme().
+ */
+function sas_homepage_theme($existing, $type, $theme, $path) {
+  return [
+    'sas_information_banner' => [
+      'variables' => [
+        'message' => NULL,
+      ],
+    ],
+    'sas_information_banner_offline' => [
+      'variables' => [
+        'message' => NULL,
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function sas_homepage_preprocess_page(&$variables) {
+  $currentRoute = \Drupal::service('current_route_match')->getRouteName();
+  $isFront = \Drupal::service('path.matcher')->isFrontPage();
+  $sasContext = \Drupal::service('sas_core.service')->isSasContext();
+  if ($sasContext && $isFront && $currentRoute !== 'user.login') {
+    $variables['page']['content'] = [];
+    $variables['page']['content']['homepage'] = [
+      '#type' => 'html_tag',
+      '#tag' => 'div',
+      '#attributes' => [
+        'id' => 'sas-home-wrapper',
+      ],
+      '#attached' => [
+        'library' => [
+          'sas_vuejs/home-page',
+        ],
+      ],
+    ];
+
+    $currentUser = \Drupal::currentUser();
+    if ($currentUser->isAuthenticated()) {
+      /** @var \Drupal\user\UserDataInterface $userData */
+      $userData = \Drupal::service('user.data');
+      $display = $userData->get('sas_user', $currentUser->id(), 'sas_welcome_display');
+
+      if (!$display) {
+        $cacheableMetadata = new CacheableMetadata();
+        $cacheableMetadata->addCacheableDependency(\Drupal::config('sas_config.user_account'));
+        $cacheableMetadata->setCacheMaxAge(0);
+        $sasWelcomeText = \Drupal::config('sas_config.user_account')->get('texts.first_login') ?? [];
+        $sas_roles = array_filter($currentUser->getRoles(TRUE), static fn ($value) => preg_match('/^sas_(.*)$/', $value));
+        $all_roles = array_keys(Role::loadMultiple());
+        // Order roles by weight.
+        $sas_roles = array_intersect($all_roles, $sas_roles);
+
+        $texts_per_roles = [
+          SnpConstant::SAS_ADMINISTRATEUR => SnpConstant::SAS_ADMINISTRATEUR,
+          SnpConstant::SAS_ADMINISTRATEUR_NATIONAL => SnpConstant::SAS_ADMINISTRATEUR,
+          SnpConstant::SAS_GESTIONNAIRE_DE_COMPTES => SnpConstant::SAS_ADMINISTRATEUR,
+          SnpConstant::SAS_REGULATEUR_OSNP => SnpConstant::SAS_REGULATEUR_OSNP,
+          SnpConstant::SAS_IOA => SnpConstant::SAS_REGULATEUR_OSNP,
+          SnpConstant::SAS_DELEGATAIRE => SnpConstant::SAS_DELEGATAIRE,
+          SnpConstant::SAS_EFFECTEUR => SnpConstant::SAS_EFFECTEUR,
+          SnpConstant::SAS_GESTIONNAIRE_STRUCTURE => SnpConstant::SAS_GESTIONNAIRE_STRUCTURE,
+        ];
+
+        $variables['page']['content']['popin'] = [
+          '#markup' => new FormattableMarkup('<div id="sas-welcome-popin" class="sas-welcome-popin" style="display: none;"><p>@welcome_text</p></div>', [
+            '@welcome_text' => t(nl2br($sasWelcomeText[$texts_per_roles[reset($sas_roles)]]) ?? ''),
+          ]),
+          '#attached' => [
+            'library' => ['sas_homepage/welcome-popin'],
+          ],
+        ];
+
+        $userData->set('sas_user', $currentUser->id(), 'sas_welcome_display', TRUE);
+
+        $cacheableMetadata->applyTo($variables['page']['content']['popin']);
+
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_block_access().
+ */
+function sas_homepage_block_access(Block $block, $operation, AccountInterface $account) {
+  if ($operation == 'view') {
+    if ($block->id() == 'sasheadermenu') {
+      $psc_user = \Drupal::service('sas_keycloak.psc_user');
+      // Hide the block for specific user roles anonymous & psc.
+      // @todo ajouter du cache, et un cache custom context psc
+      return AccessResult::forbiddenIf($psc_user->isValid());
+    }
+  }
+  return AccessResult::neutral();
+}

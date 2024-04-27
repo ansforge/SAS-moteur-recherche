@@ -1,0 +1,142 @@
+.kc-form {
+  display: flex;
+  font-family: $font-maria;
+
+  h2 {
+    color: $blue3;
+    text-transform: uppercase;
+  }
+
+  .logo-sas {
+    font-size: torem(16);
+    p strong {
+      font-size: torem(16);
+    }
+  }
+
+  .kc-row {
+    width: 100%;
+    margin-right: auto;
+    margin-left: auto;
+  }
+  .kc-col {
+    min-height: 100vh;
+    flex: 1;
+    padding: 25px 10px;
+    position: relative;
+  }
+  .kc-back {
+    position: absolute;
+    top: 30px;
+    left: 50px;
+    z-index: 1;
+    a {
+      color: $white;
+      font-size: torem(12);
+      text-decoration: none;
+      &:hover {
+        text-decoration: underline;
+      }
+      svg {
+        margin-right: 12px;
+      }
+    }
+  }
+  .kc-form-left {
+    display: flex;
+    align-items: center;
+    color: $white;
+    font-size: 1.15em;
+    background-color: $blue2;
+    &::after {
+      content: url('../images/ico-user.svg');
+      padding: 20px;
+      position: absolute;
+      top: calc(50% - 42px);
+      right: -42px;
+      border-radius: 50%;
+      border: solid 2px $white;
+      background-color: $blue2;
+      z-index: 1;
+    }
+    .kc-row {
+      width: 80%;
+      max-width: 500px;
+    }
+
+    h2 {
+      color: $white;
+      font-size: torem(29);
+      line-height: 1.4;
+      text-transform: uppercase;
+      text-align: center;
+    }
+  }
+  .kc-form-right {
+    display: flex;
+    flex-direction: column;
+    order: 1;
+    justify-content: center;
+    background-color: $white;
+    .kc-row {
+      max-width: 400px;
+      align-items: start;
+    }
+  }
+  .kc-content {
+    display: flex;
+    flex-direction: column;
+    .message {
+      margin: 4vh 0;
+    }
+    p {
+      margin-bottom: 35px;
+      font-size: torem(16);
+      font-family: $font-mont;
+      strong {
+        font-weight: 700;
+      }
+    }
+    button {
+      margin: 0 auto;
+    }
+    .ans-openid-connect-login-form {
+      @extend .btn-highlight; // sass-lint:disable-line placeholder-in-extend
+      width: auto;
+      display: flex;
+      &:before {
+        margin-right: 10px;
+      }
+      .form-submit {
+        color: $white;
+        font-size: torem(14);
+        font-family: $font-mont;
+        font-weight: 600;
+      }
+    }
+  }
+
+  @media only screen and (max-width: $screen-sm-max) {
+    .kc-back {
+      padding-bottom: 15px;
+      a {
+        color: $black;
+      }
+      svg path {
+        fill: $black;
+      }
+    }
+    .kc-form-left {
+      display: none;
+    }
+    .kc-form-right {
+      padding: 45px 25px 25px;
+      .kc-row {
+        max-width: 100%;
+      }
+    }
+    .logo-sas {
+      border: 0;
+    }
+  }
+}

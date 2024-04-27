@@ -1,0 +1,13 @@
+name: 'Sas Snp'
+type: module
+description: 'Sas Snp'
+core_version_requirement: '^9 || ^10'
+package: 'ANS - SAS'
+
+dependencies:
+  - drupal:node
+  - sas:sas_core
+  - sas:sas_orientation
+  - sas:sas_search_index
+  - sas:sas_structure
+  - sas:sas_vuejs

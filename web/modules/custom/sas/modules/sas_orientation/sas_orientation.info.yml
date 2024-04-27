@@ -1,0 +1,8 @@
+name: 'SAS Orientation'
+type: module
+description: 'Administrate SAS-API orientations'
+core_version_requirement: '^9 || ^10'
+package: 'ANS - SAS'
+
+dependencies:
+  - sas:sas_api_client
