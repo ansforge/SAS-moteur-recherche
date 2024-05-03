@@ -5,6 +5,7 @@
  * Contains sante_directory_pages.module.
  */
 
+use Drupal\sas_directory_pages\Entity\CareDealsSas;
 use Drupal\sas_directory_pages\Entity\FinessInstitutionSas;
 use Drupal\sas_directory_pages\Entity\HealthInstitutionSas;
 use Drupal\sas_directory_pages\Entity\ProfessionnelDeSanteSas;
@@ -27,5 +28,8 @@ function sas_directory_pages_entity_bundle_info_alter(array &$bundles): void {
   }
   if (isset($bundles['node']['service_de_sante'])) {
     $bundles['node']['service_de_sante']['class'] = ServiceDeSanteSas::class;
+  }
+  if (isset($bundles['node']['care_deals'])) {
+    $bundles['node']['care_deals']['class'] = CareDealsSas::class;
   }
 }

@@ -55,8 +55,9 @@ class SasSolrPractitionerQueryManager extends SasSolrQueryBase implements SasSol
       config_factory: $config_factory,
       cache: $cache,
       logger_factory: $logger_factory,
-      transliteration: $transliteration);
-    $this->request = $request_stack->getCurrentRequest();
+      transliteration: $transliteration,
+      request_stack: $request_stack
+    );
   }
 
   /**

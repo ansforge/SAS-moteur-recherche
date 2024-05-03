@@ -5,6 +5,7 @@ namespace Drupal\sas_structure\Entity;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityPublishedTrait;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 
@@ -47,7 +48,10 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     "delete-form" = "/admin/structure/sas_structure_settings/{sas_structure_settings}/delete",
  *     "collection" = "/admin/structure/sas_structure_settings",
  *   },
- *   field_ui_base_route = "sas_structure_settings.settings"
+ *   field_ui_base_route = "sas_structure_settings.settings",
+ *   constraints = {
+ *     "StructureSettingsValid" = {}
+ *   }
  * )
  */
 class SasStructureSettings extends ContentEntityBase {
@@ -189,6 +193,44 @@ class SasStructureSettings extends ContentEntityBase {
       ->setDisplayConfigurable('view', TRUE);
 
     return $fields;
+  }
+
+  public function postSave(EntityStorageInterface $storage, $update = TRUE) {
+    parent::postSave($storage, $update);
+
+    if ($this->get('id_type')->value == 'siret') {
+      // Charger les nodes des points fixes de garde liés au siret.
+      $siret = $this->get('structure_id')->value;
+      $nodes_pfg = \Drupal::service('sas_structure.sos_medecin')->getAssociationPfg($siret, FALSE);
+
+      // Indexer chaque node trouvé.
+      foreach ($nodes_pfg as $id) {
+        try {
+          \Drupal::service('sas_search_index.helper')->indexSpecificItem($id);
+        }
+        catch (\Exception $e) {
+          $this->getLogger('sas_structure.pfg-indexing')
+            ->error('Error while indexing structure pfd: ' . $e->getMessage());
+        }
+      }
+    }
+    elseif ($this->get('id_type')->value === 'finess') {
+      // Charger la structure liée au finess.
+      $finess_number = $this->get('structure_id')->value;
+      $node = \Drupal::service('sas_structure.finess_structure_helper')->getStructureByFiness($finess_number);
+
+      // Si un node est trouvé, l'indexer.
+      if ($node) {
+        try {
+          \Drupal::service('sas_search_index.helper')->indexSpecificItem($node->id());
+        }
+        catch (\Exception $e) {
+          $this->getLogger('sas_structure.finess-indexing')
+            ->error('Error while indexing finess structure: ' . $e->getMessage());
+        }
+      }
+    }
+
   }
 
 }

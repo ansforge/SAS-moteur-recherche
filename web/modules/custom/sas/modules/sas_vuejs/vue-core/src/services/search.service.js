@@ -6,7 +6,9 @@ import {
   SAS_AGGREGATOR,
   SAS_DASHBOARD_AGGREGATOR_SLOTS,
   SAS_STRUCTURE_MAPPING,
- } from '@/const';
+  SAS_AGGREGATOR_MARKETPLACE_EDITOR_LIST,
+  SAS_CPTS_LIST,
+} from '@/const';
 
 export default class SearchClass {
   static async getPrefDoctor(currentParams) {
@@ -19,12 +21,16 @@ export default class SearchClass {
     }
   }
 
-  static async getSearchResults(payload) {
+  /**
+   * This function is both used by regular and CPTS search
+   * @param {string} payload
+   */
+  static async getSearchResults(payload, baseUrl = SAS_SOLR) {
     // have to remove all quotations marks added by the payload model
     const currentParams = decodeURI(new URLSearchParams(payload).toString());
 
     try {
-      const result = await ApiPlugin.get(`${SAS_SOLR}?${currentParams}`);
+      const result = await ApiPlugin.get(`${baseUrl}?${currentParams}`);
       return result?.data;
     } catch (e) {
       console.error('Error fetching getResults \n', e);
@@ -39,7 +45,7 @@ export default class SearchClass {
         payload,
         {
           headers: {
-            Authorization: `bearer ${ cookie.getCookie('sas_aggregator_token')}`,
+            Authorization: `bearer ${cookie.getCookie('sas_aggregator_token')}`,
           },
         },
       );
@@ -57,7 +63,7 @@ export default class SearchClass {
         payload,
         {
           headers: {
-            Authorization: `bearer ${ cookie.getCookie('sas_aggregator_token')}`,
+            Authorization: `bearer ${cookie.getCookie('sas_aggregator_token')}`,
           },
         },
       );
@@ -96,6 +102,38 @@ export default class SearchClass {
     } catch (e) {
       console.error('Error fetching getResults \n', e);
       return {};
+    }
+  }
+
+  static async fetchMarketPlaceActiveEdtiorsList() {
+    try {
+      const res = await ApiPlugin.get(
+        `${SAS_AGGREGATOR_MARKETPLACE_EDITOR_LIST}?enabled=1&format=marketplace_short_description`,
+        {
+          headers: {
+            Authorization: `bearer ${ cookie.getCookie('sas_aggregator_token')}`,
+          },
+        },
+      );
+      return res.data || [];
+    } catch (e) {
+      console.error('Error fetching market place editor list \n', e);
+      return [];
+    }
+  }
+
+  /**
+   * fetch the list of cpts attached to the given code insee
+   * @param {String} inseeCode
+   * @returns {Promise<import('@/types').CPTSCard[]>} array of CPTS
+   */
+  static async fetchCPTSListByInseeCode(inseeCode) {
+    try {
+      const result = await ApiPlugin.get(`${SAS_CPTS_LIST}?code_insee=${inseeCode}`);
+      return result?.data || [];
+    } catch (e) {
+      console.error(`Error fetching CPTS list with ${inseeCode}\n`, e);
+      return [];
     }
   }
 }

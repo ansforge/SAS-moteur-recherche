@@ -33,9 +33,21 @@ import {
 } from '@/stores';
 import { useLeafletMap } from '@/composables';
 
+/**
+ * @typedef {Object} Props
+ * @property {import('@/types').ICard[]} pins
+ * @property {string[]} highlightedPinsId
+ * @property {boolean} isPageOne
+ * @property {boolean} isClusterDisplayed
+ */
+
 export default {
   props: {
-    currentDisplayedList: {
+    pins: {
+      type: Array,
+      default: () => ([]),
+    },
+    highlightedPinsId: {
       type: Array,
       default: () => ([]),
     },
@@ -55,7 +67,7 @@ export default {
     'mouseleave-map-marker',
     'mouseenter-map-marker',
   ],
-  setup(props, { emit }) {
+  setup(/** @type {Props} */props, { emit }) {
     const searchDataStore = useSearchData();
     const userDataStore = useUserData();
     const geolocationStore = useGeolocationData();
@@ -64,16 +76,20 @@ export default {
       hasFailed: geolocationHasFailed,
     } = storeToRefs(geolocationStore);
 
+    /** @type {import('vue').Ref<import('leaflet').Map>} */
+    const currentMap = ref({});
+
     const {
       drawBluePoint,
       deleteBluePoint,
       drawCircleInMap,
       fitCircleInMap,
       getLayer,
-     } = useLeafletMap(window.L);
+     } = useLeafletMap({
+      L: window.L,
+      map: currentMap,
+    });
 
-    /** @type {import('vue').Ref<import('leaflet').Map>} */
-    const currentMap = ref({});
     const showRelaunchBtn = ref(false);
 
     const cardsOnMap = ref([]);
@@ -86,10 +102,6 @@ export default {
 
     const currentUser = computed(() => userDataStore.currentUser);
 
-    // all cards to be displayed
-    const currentPoints = computed(() => searchDataStore.currentList.reduce((acc, curr) => acc.concat(curr), []));
-
-    // center point
     const centerPoint = computed(() => {
       if (geolocationHasFailed.value) {
         // zoom on FRA
@@ -104,20 +116,6 @@ export default {
         lng: geolocation.value.longitude,
       };
     });
-
-    const drawCircle = (options) => {
-      if (!currentMap.value) return false;
-
-      drawCircleInMap(currentMap.value, options);
-      return true;
-    };
-
-    const deleteBluePointLayer = () => {
-      if (!currentMap.value) return false;
-
-      deleteBluePoint(currentMap.value);
-      return true;
-    };
 
     /**
      * Fit the viewport to contain the currently drawn circle. Do nothing if no circle have been drawn yet
@@ -252,7 +250,7 @@ export default {
     function createSingleMarker(marker, map) {
       let timeoutId = null;
       let isPopupShown = false;
-      const currentCard = currentPoints.value.find((card) => card?.its_nid === marker?.properties?.id) || {};
+      const currentCard = props.pins.find((card) => card?.its_nid === marker?.properties?.id) || {};
 
       // eslint-disable-next-line new-cap
       const popup = new window.L.popup({
@@ -374,7 +372,7 @@ export default {
       // If the user isn't authorized or if the search isn't a precise one, do nothing
       if (!currentUser.value.isRegulateurOSNPorIOA || geolocation.value?.type !== geolocationStore.GEOLOCATION_TYPE.ADDRESS) return;
 
-      drawBluePoint(currentMap.value, {
+      drawBluePoint({
         latitude: geolocation.value.latitude,
         longitude: geolocation.value.longitude,
         streetLabel: geolocationStore.streetLabel,
@@ -580,13 +578,13 @@ export default {
 
       // group markers by latlng
       filteredMarkers.forEach((card) => {
-        if (card.locs_field_geolocalisation_latlon) {
-          if (!groupByCoords[card.locs_field_geolocalisation_latlon]) {
-            groupByCoords[card.locs_field_geolocalisation_latlon] = [];
-          }
-          groupByCoords[card.locs_field_geolocalisation_latlon].push(card);
-          cardsOnMap.value.push(card.its_nid);
+        if (!card.locs_field_geolocalisation_latlon || card.type === 'cpts') return;
+
+        if (!groupByCoords[card.locs_field_geolocalisation_latlon]) {
+          groupByCoords[card.locs_field_geolocalisation_latlon] = [];
         }
+        groupByCoords[card.locs_field_geolocalisation_latlon].push(card);
+        cardsOnMap.value.push(card.its_nid);
       });
 
       // create a point for every latlng
@@ -629,10 +627,10 @@ export default {
      * @param {Number} currentIds
      */
     function isElementVisible(currentIds) {
-      return currentIds.some((currId) => props.currentDisplayedList.includes(currId));
+      return currentIds.some((currId) => props.highlightedPinsId.includes(currId));
     }
 
-    watch(() => props.currentDisplayedList, setCurrentDisplayedMarkers);
+    watch(() => props.highlightedPinsId, setCurrentDisplayedMarkers);
 
     /**
      * manage marker-is-displayed class on markers
@@ -643,7 +641,7 @@ export default {
 
         if (
           el.dataset.markerId
-          && props.currentDisplayedList.includes(parseInt(el.dataset.markerId, 10))
+          && props.highlightedPinsId.includes(parseInt(el.dataset.markerId, 10))
         ) {
           el.classList.add('marker-is-displayed');
         }
@@ -663,7 +661,7 @@ export default {
      * emit current bounds on relaunch search btn click
      */
     function researchInBounds() {
-      const { latitude, longitude, radius } = fitCircleInMap(currentMap.value);
+      const { latitude, longitude, radius } = fitCircleInMap();
 
       emit('research-in-bounds', { latitude, longitude, radius });
       showRelaunchBtn.value = false;
@@ -704,7 +702,7 @@ export default {
 
     // when new points to display change, add them to the map
     watch(
-[currentPoints, searchDataStore.currentSelectedFilters],
+[() => props.pins, searchDataStore.currentSelectedFilters],
       // eslint-disable-next-line no-unused-vars
       ([newCards, newFilters], [prevCards, prevFilters]) => {
         if (_isEmpty(currentMap.value)) return;
@@ -730,7 +728,6 @@ export default {
 
     return {
       showRelaunchBtn,
-      currentPoints,
       currentMap,
       centerPoint,
       currentBounds,
@@ -740,8 +737,8 @@ export default {
       researchInBounds,
 
       // actions
-      deleteBluePointLayer,
-      drawCircle,
+      deleteBluePoint,
+      drawCircleInMap,
       fitBoundsToCircle,
     };
   },

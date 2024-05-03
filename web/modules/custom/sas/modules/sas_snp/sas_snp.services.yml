@@ -23,9 +23,6 @@ services:
     class: Drupal\sas_snp\Service\AvailabilityBlockProvider
     arguments: ['@current_user', '@plugin.manager.block']
 
-  sas_snp.slots_formatter:
-    class: Drupal\sas_snp\Service\SnpSlotsFormatter
-
   sas_snp.cli.update_snp:
     class: Drupal\sas_snp\Commands\SasUpdateSnpCommands
     arguments:

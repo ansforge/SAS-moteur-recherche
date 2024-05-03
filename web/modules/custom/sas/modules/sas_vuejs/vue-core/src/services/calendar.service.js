@@ -1,7 +1,14 @@
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import { SAS_API, SAS_API_CONFIG, SAS_JSON_API } from '@/const';
 import { ApiPlugin } from '@/plugins';
+import DashboardClass from '@/services/dashboard.service';
+import {
+  SAS_API,
+  SAS_API_CONFIG,
+  SAS_JSON_API,
+  SAS_API_DRUPAL,
+  SAS_ADDITIONAL_INFO,
+} from '@/const';
 
 dayjs.extend(utc);
 
@@ -31,10 +38,10 @@ export default class CalendarClass {
       console.warn('No schedule id was sent to getSlotsByScheduleId');
       return [];
     }
-   let res = null;
-   const today = dayjs().format('YYYY-MM-DD');
-   const uri = config.context !== 'calendar' ? `${SAS_JSON_API}/get-slots-by-schedule/${config.scheduleId}/without-unavailabilities` : `${SAS_API}/schedule/${config.scheduleId}`;
-   try {
+    let res = null;
+    const today = dayjs().format('YYYY-MM-DD');
+    const uri = config.context !== 'calendar' ? `${SAS_JSON_API}/get-slots-by-schedule/${config.scheduleId}/without-unavailabilities` : `${SAS_API}/schedule/${config.scheduleId}`;
+    try {
       res = await ApiPlugin.get(
         uri,
         {
@@ -62,9 +69,9 @@ export default class CalendarClass {
       console.warn('No schedule id was sent to getAllSlotsByScheduleIds');
       return [];
     }
-   let res = null;
-   const today = dayjs().format('YYYY-MM-DD');
-   try {
+    let res = null;
+    const today = dayjs().format('YYYY-MM-DD');
+    try {
       res = await ApiPlugin.post(
         `${SAS_API}/get_slots_by_schedule_ids`,
         {
@@ -105,21 +112,39 @@ export default class CalendarClass {
     }
   }
 
-  static async getInformationText(nodeId) {
+  static async fetchAdditionalInformationText(nodeId, idNat) {
     try {
-      const res = await ApiPlugin.get(`${SAS_JSON_API}/additional-information/${nodeId}`);
-      return res.data?.['additional_information'] || '';
+      const res = await ApiPlugin.get(
+        `${SAS_API_DRUPAL}${SAS_ADDITIONAL_INFO}?nid=${nodeId}&national_id=${idNat}`,
+      );
+      return res.data?.additional_info ?? '';
     } catch (e) {
-      console.error('Errors on getInformationText', e);
+      console.error('Error fetching additional information text', e);
       return '';
     }
   }
 
-  static async postInformationText(nodeId, text) {
+  /**
+   * Submits additional info message
+   * @param {Object} params
+   * {nid: null | number , additional_data: string, national_id: string }
+   * @returns {Object}
+   */
+  static async submitAdditionalInformationText(params) {
+    const token = await DashboardClass.getDrupalToken();
+
     try {
-      const res = await ApiPlugin.post(`${SAS_JSON_API}/additional-information/${nodeId}`, {
-        additional_information: text,
-      });
+      const res = await ApiPlugin.post(
+        `${SAS_API_DRUPAL}${SAS_ADDITIONAL_INFO}`,
+        params,
+        {
+          headers: {
+            common: {
+              'X-CSRF-TOKEN': token,
+            },
+          },
+        },
+      );
       return res?.data || null;
     } catch (e) {
       throw new Error(e);
@@ -129,7 +154,7 @@ export default class CalendarClass {
   static async postIndispo(nodeId, vacationMode = false, dates = []) {
     try {
       const res = await ApiPlugin.post(
-        `${SAS_JSON_API }/unavailability/${nodeId}`,
+        `${SAS_JSON_API}/unavailability/${nodeId}`,
         {
           vacation_mode: vacationMode,
           dates,
@@ -175,12 +200,12 @@ export default class CalendarClass {
     }
   }
 
-  static async getAdditionnalInformationMessage(nodeId) {
+  static async fetchAdditionalInformationAlertMsg(nodeId) {
     try {
       const res = await ApiPlugin.get(`${SAS_JSON_API}/additional-information/config/${nodeId}`);
       return res.data || '';
     } catch (e) {
-      console.error('Errors on getAdditionnalInformationMessage', e);
+      console.error('Error fetching additional information alert message', e);
       return '';
     }
   }

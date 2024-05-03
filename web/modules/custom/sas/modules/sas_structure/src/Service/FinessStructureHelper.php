@@ -2,9 +2,11 @@
 
 namespace Drupal\sas_structure\Service;
 
+use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
+use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Core\Database\Connection;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 use Drupal\sas_structure\Enum\StructureConstant;
 
@@ -81,7 +83,8 @@ class FinessStructureHelper implements FinessStructureHelperInterface {
 
     $query->condition(
       field: 'n.type',
-      value: StructureConstant::STRUCTURE_CONTENT_TYPES,
+      value: $type === StructureConstant::STRUCTURE_TYPE_CPTS ?
+        StructureConstant::CPTS_CONTENT_TYPE : StructureConstant::STRUCTURE_CONTENT_TYPES,
       operator: 'IN'
     );
 
@@ -89,7 +92,10 @@ class FinessStructureHelper implements FinessStructureHelperInterface {
       $query->condition(field: 'n.status', value: NodeInterface::PUBLISHED);
     }
 
-    $query->condition(field: 'n.title', value: '%' . $text . '%', operator: 'LIKE');
+    $db_or = $query->orConditionGroup();
+    $db_or->condition(field: 'n.title', value: '%' . $text . '%', operator: 'LIKE');
+    $db_or->condition(field: 'fif.field_identifiant_finess_value', value: '%' . $text . '%', operator: 'LIKE');
+    $query->condition($db_or);
     $query->fields(table_alias: 'n', fields: ['nid', 'title']);
     $query->addField(
       table_alias: 'fif',
@@ -109,15 +115,32 @@ class FinessStructureHelper implements FinessStructureHelperInterface {
    *
    * @return \Drupal\node\Entity\Node|null
    */
-  public function getStructureByFiness(string $num_finess): ?Node {
-    $query = $this->entityTypeManager->getStorage('node')->getQuery()->accessCheck()
+  public function getStructureByFiness(
+    string $num_finess,
+    string $structure_content_type = NULL
+  ): ?EntityInterface {
+
+    try {
+      $node_storage = $this->entityTypeManager->getStorage('node');
+    }
+    catch (InvalidPluginDefinitionException | PluginNotFoundException $e) {
+      return NULL;
+    }
+
+    $query = $node_storage->getQuery()->accessCheck()
       ->condition('field_identifiant_finess', $num_finess)
       ->range(0, 1);
-    $nids = $query->execute();
-    if (!empty($nids)) {
-      $node_id = reset($nids);
-      return $this->entityTypeManager->getStorage('node')->load($node_id);
+
+    if (!empty($structure_content_type)) {
+      $query->condition('type', $structure_content_type);
     }
+
+    $nids = $query->execute();
+
+    if (!empty($nids)) {
+      return $node_storage->load(reset($nids));
+    }
+
     return NULL;
   }
 

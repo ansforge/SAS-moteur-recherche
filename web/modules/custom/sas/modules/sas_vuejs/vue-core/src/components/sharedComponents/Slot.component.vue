@@ -77,9 +77,9 @@
         </span>
       </template>
 
-      <template v-if="source !== 'schedule' || source !== 'deepPage'">
+      <template v-if="source !== 'schedule' && source !== 'deepPage'">
         <!--        COUNTER PLAGE          -->
-        <div v-if="(slotData.max_patients && slotData.max_patients !== -1)">
+        <template v-if="(slotData.max_patients && slotData.max_patients !== -1)">
           <!--        MODALITES SNP          -->
           <div class="slot-content">
             <div class="slot-legend has-counter">
@@ -99,7 +99,7 @@
               </ul>
             </div>
           </div>
-        </div>
+        </template>
 
         <!--slot legend-->
         <div v-else class="slot-content">
@@ -143,6 +143,19 @@ import 'dayjs/locale/fr';
 dayjs.extend(isBetween);
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
+
+/**
+ * @typedef {object} Props
+ * @property {import('@/types').ICard} currentData
+ * @property {import('@/types').User} currentUser
+ * @property {import('@/types').Slot} slotData
+ * @property {import('@/types').Source} source
+ * @property {string} start
+ * @property {string} end
+ * @property {object} firstDay
+ * @property {SnpPopinConfigModel} popinCreateDispoConfig
+ * @property {Function} popinDeleteConfig
+ */
 
 export default {
   components: {
@@ -193,15 +206,15 @@ export default {
       default: () => ({}),
     },
   },
-  setup(props) {
+  setup(/** @type {Props} */props) {
     // fetchSlots is call in schedule context to refresh slots after submit
-    const fetchSlots = checkSourceFromSchedule() ? inject('fetchSlots') : undefined;
+    const fetchSlots = props.source === 'schedule' ? inject('fetchSlots') : undefined;
 
-    const popinTitle = computed(() => (checkSourceFromSchedule() ? props.popinDeleteConfig.title : ''));
+    const popinTitle = computed(() => (props.source === 'schedule' ? props.popinDeleteConfig.title : ''));
 
-    const popinSubtitle = computed(() => (checkSourceFromSchedule() ? props.popinDeleteConfig.subtitle : ''));
+    const popinSubtitle = computed(() => (props.source === 'schedule' ? props.popinDeleteConfig.subtitle : ''));
 
-    const columns = computed(() => (checkSourceFromSchedule() ? props.currentData.getColumns(props.firstDay) : {}));
+    const columns = computed(() => (props.source === 'schedule' ? props.currentData.getColumns(props.firstDay) : {}));
 
     const openModal = ref(false);
     const showModalOrientation = computed(() => (
@@ -223,12 +236,8 @@ export default {
       };
     });
 
-    function checkSourceFromSchedule() {
-      return props.source === 'schedule';
-    }
-
     // slot class handling
-    const slotClass = computed(() => props.slotData.getSlotClass(props.currentUser, checkSourceFromSchedule()));
+    const slotClass = computed(() => props.slotData.getSlotClass(props.currentUser, props.source === 'schedule'));
 
     // slot style handling
     function generateSlotStyle(slot) {

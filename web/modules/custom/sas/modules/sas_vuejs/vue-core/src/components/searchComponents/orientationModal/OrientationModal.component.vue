@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue';
+import { ref, computed, inject } from 'vue';
 
 import dayjs from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
@@ -33,7 +33,7 @@ import RegistrationTab from '@/components/searchComponents/orientationModal/orie
 import ConfirmationTab from '@/components/searchComponents/orientationModal/orientationTab/ConfirmationTab.component.vue';
 import NotificationTab from '@/components/searchComponents/orientationModal/orientationTab/NotificationTab.component.vue';
 
-import { useSearchData, useUserData } from '@/stores';
+import { useSearchData, useUserData, useCardCollection } from '@/stores';
 import { useOrientation, useSearchHelper } from '@/composables';
 
 dayjs.extend(timezone);
@@ -71,20 +71,31 @@ export default {
       default: true,
     },
   },
-  emits: ['close', 'refreshSlots'],
+  emits: ['close'],
   setup(props, { emit }) {
+    /**
+     * @type {string}
+     */
+    const collectionId = inject('collectionId', null);
+
+    const collectionStore = useCardCollection();
+
+    /**
+     * We put the shallowReactivity to false right now because we need to watch the `slotData.orientation_count`
+     * I would have prefer to make properties reactive because of that but it's simpler this way
+     */
+    const collection = collectionStore.getCollection(collectionId, { shallowReactivity: false });
+
     const searchDataStore = useSearchData();
     const userDataStore = useUserData();
 
     const { getDetailsPageUrl } = useSearchHelper();
     const {
-      checkNullValue,
       formatDateTime,
       setOrientationRegistration,
     } = useOrientation();
 
     const isLoading = ref(false);
-    const isSasOverbookingFilterChecked = computed(() => searchDataStore.customFilters['bs_sas_overbooking'] !== undefined);
     const openModal = ref(props.open);
     const componentName = ref(RegistrationTab.name);
     const payload = ref({});
@@ -152,8 +163,8 @@ export default {
         // All other case :
         payload.value.recipient = {
           type: cardData.ss_field_identifiant_rpps || cardData.ss_field_personne_adeli_num ? 1 : 2,
-          effector_rpps: checkNullValue(cardData.ss_field_identifiant_rpps),
-          effector_adeli: checkNullValue(cardData.ss_field_personne_adeli_num),
+          effector_rpps: cardData.ss_field_identifiant_rpps || null,
+          effector_adeli: cardData.ss_field_personne_adeli_num || null,
           // eslint-disable-next-line no-nested-ternary
           structure_finess: cardData.ss_field_identifiant_finess
             ? cardData.ss_field_identifiant_finess
@@ -167,8 +178,8 @@ export default {
 
       // Then add common keys/values for recipient's payload
       payload.value.recipient.name = cardData.tm_X3b_und_title[0];
-      payload.value.recipient.address = checkNullValue(cardData.ss_field_address);
-      payload.value.recipient.structure_siret = checkNullValue(cardData.ss_field_identif_siret);
+      payload.value.recipient.address = cardData.ss_field_address || null;
+      payload.value.recipient.structure_siret = cardData.ss_field_identif_siret || null;
       payload.value.recipient.county = cardData.tm_X3b_und_field_department && cardData.tm_X3b_und_field_department.length ? cardData.tm_X3b_und_field_department[0] : '';
       payload.value.recipient.county_number = cardData.ss_field_department_code;
       payload.value.recipient.structure_type = cardData.tm_X3b_und_establishment_type_names && cardData.tm_X3b_und_establishment_type_names[0]
@@ -184,6 +195,7 @@ export default {
       getOrientationPayload();
       response.value = await setOrientationRegistration(payload.value);
       componentProps.value = createProps(date, false, response.value.notification);
+
       isLoading.value = false;
     }
 
@@ -196,9 +208,8 @@ export default {
       if (componentProps.value.type !== 'surnumeraire') {
         refreshSlots();
       }
+
       emit('close');
-      componentName.value = RegistrationTab.name;
-      componentProps.value = createProps(new Date());
     };
 
     // update slots list after orientation feature
@@ -216,6 +227,43 @@ export default {
         status: response.value.notification.status,
       };
       searchDataStore.setNewAllResultsWithSlots(newSlotData, isFilteredSearch.value);
+      refreshAgnosticCollectionWithSingleSlot({
+        doctorNid: props.cardData.its_nid,
+        slotToUpdate: response.value?.currentData?.slot,
+      });
+    }
+
+    function refreshAgnosticCollectionWithSingleSlot({ doctorNid, slotToUpdate }) {
+      /** @type {import('@/types').Card} */
+      const doctorWithSlotToUpdate = collection.value?.get(doctorNid);
+
+      if (!doctorWithSlotToUpdate || !slotToUpdate) {
+        return;
+      }
+
+      for (const day in doctorWithSlotToUpdate.slotList) {
+        if (doctorWithSlotToUpdate.slotList[day].length === 0) {
+          continue;
+        }
+
+        const targetedSlotIndex = doctorWithSlotToUpdate.slotList[day].findIndex((slot) => slot.id === slotToUpdate.id);
+        if (targetedSlotIndex === -1) {
+          continue;
+        }
+
+        const targetedSlot = doctorWithSlotToUpdate.slotList[day][targetedSlotIndex];
+        const isSlot = targetedSlot.max_patients === -1;
+        const fullTimeSlot = targetedSlot.max_patients !== -1 && targetedSlot.max_patients <= slotToUpdate.orientation_count;
+
+        if (isSlot
+          || fullTimeSlot
+          ) {
+            doctorWithSlotToUpdate.slotList[day].splice(targetedSlotIndex, 1);
+        } else {
+          doctorWithSlotToUpdate.slotList[day][targetedSlotIndex].orientation_count = slotToUpdate.orientation_count;
+        }
+        return;
+      }
     }
 
     function fetchRecipientType(typeName) {
@@ -231,39 +279,20 @@ export default {
     }
 
     function createProps(date = dayjs(), update = false, notificationContent = {}) {
-      const showSasOverbooking = isSasOverbookingFilterChecked.value && userDataStore?.currentUser?.isRegulateurOSNP && props.cardData.bs_sas_participation;
       const isCPTS = props.cardData.its_sas_participation_via === 2;
-
-      const checkPsPhone = () => {
-        if (isCPTS && showSasOverbooking && !props.cardData.ss_sas_cpts_phone) {
-          return '';
-        }
-
-        return props.cardData.final_phone_number || '';
-      };
-
-      let cptsInfo = null;
-      if (isCPTS && !showSasOverbooking) {
-        // We only add the following CPTS informations if we are on the 1st level search
-        // This `if` clause is temporary, as the whole search level logic will disappear sooner or later.
-        cptsInfo = {
-          label: props.cardData.ss_sas_cpts_label,
-          phone: props.cardData.ss_sas_cpts_phone,
-        };
-      }
-
-      const phone = computed(() => (showSasOverbooking && props.cardData.ss_sas_cpts_phone
-          ? props.cardData.ss_sas_cpts_phone
-          : checkPsPhone()));
 
       const summary = computed(() => {
         const infos = [{
           label: fetchRecipientType('tm_X3b_und_field_profession_name') || fetchRecipientType('tm_X3b_und_establishment_type_names'),
-          phone: phone.value,
+          phone: props.cardData.final_phone_number || '',
         }];
 
-        if (cptsInfo) {
-          infos.push({ ...cptsInfo });
+        if (isCPTS) {
+          infos.push({
+            label: props.cardData.ss_sas_cpts_label,
+            // Temporary: cf. SAS-7743
+            // phone: props.cardData.sm_sas_cpts_phone?.[0],
+          });
         }
 
         return {

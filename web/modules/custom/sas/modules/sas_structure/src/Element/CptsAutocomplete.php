@@ -4,6 +4,7 @@ namespace Drupal\sas_structure\Element;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element\Textfield;
+use Drupal\sas_structure\Enum\StructureConstant;
 
 /**
  * Provides an entity autocomplete form element.
@@ -113,10 +114,17 @@ class CptsAutocomplete extends Textfield {
    *   Returns TRUE if the structure is a 'CPTS', FALSE otherwise.
    */
   protected static function isCptsValid(mixed $finess) {
+    $node = \Drupal::service('sas_structure.finess_structure_helper')
+      ->getStructureByFiness(
+        $finess,
+        StructureConstant::CONTENT_TYPE_HEALTH_INSTITUTION
+      );
 
-    $node = \Drupal::service('sas_structure.finess_structure_helper')->getStructureByFiness($finess);
+    if (empty($node)) {
+      return FALSE;
+    }
+
     return \Drupal::service('sas_structure.helper')->isCpts($node);
-
   }
 
   /**
@@ -148,14 +156,11 @@ class CptsAutocomplete extends Textfield {
    *   CPTS Label.
    */
   public static function getCptsAutocompleteLabel(string $finess): string {
-    $node = \Drupal::service('sas_structure.finess_structure_helper')->getStructureByFiness($finess);
-    $title = '';
-    if ($node->getTitle() !== NULL) {
-      $title = $node->getTitle();
-    }
+    $node = \Drupal::service('sas_structure.finess_structure_helper')->getStructureByFiness($finess, StructureConstant::CONTENT_TYPE_HEALTH_INSTITUTION);
+
     return sprintf(
       '%s (%s)',
-      $title ?? 'CPTS name not found',
+      !empty($node) ? $node->getTitle() : t('!! CPTS non trouvée !!'),
       $finess
     );
   }

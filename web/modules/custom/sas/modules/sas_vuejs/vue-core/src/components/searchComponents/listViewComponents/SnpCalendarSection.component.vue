@@ -6,7 +6,7 @@
       <tr class="title">
         <th>{{ fetchDayName() }}</th>
       </tr>
-      <SkeletonWrapper :loading="loading">
+      <SkeletonWrapper :loading>
         <template #loading>
           <tr v-for="j in 2" :key="j" class="availabilities-slot" style="background-color: unset;">
             <Skeleton height="49px" custom-style="border-radius: 5px;" />
@@ -25,7 +25,7 @@
               v-for="item in dayVal"
               :source="currentPage"
               :slot-data="item"
-              :key="`slot-${item.slotGuid ? item.slotGuid : item.id}`"
+              :key="`slot-${item.slotGuid ?? item.id}`"
               :current-data="currentData"
               :current-user="currentUser"
               @click="openModal(item)"

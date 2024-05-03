@@ -22,6 +22,7 @@ import { computed } from 'vue';
  *
  * @example
  * <Switch
+ *   :current="errorCode"
  *   :cases="[
  *     {
  *       id: 'divide-by-zero',
@@ -32,7 +33,6 @@ import { computed } from 'vue';
  *       value: `You can't pass a floating number`,
  *     },
  *   ]"
- *   :current="errorCode"
  * >
  *   <template #default="props">
  *     <p v-if="props.case" class="error-message">
@@ -50,7 +50,7 @@ export default {
       validator: (cases) => (cases.every((item) => (!!Object.getOwnPropertyDescriptor(item, 'id')))),
     },
     current: {
-      type: String,
+      type: null,
       required: true,
     },
   },

@@ -33,7 +33,13 @@ services:
       - '@sante_search_solr.etablishment_helpers'
       - '@sas_search.solr_query_manager'
       - '@sas_search.solr_practitioner_query_manager'
-      - '@sas_geolocation.helper'
+  
+  sas_search.cpts.manager:
+    class: 'Drupal\sas_search\Service\SasCptsSearchManager'
+    arguments:
+      - '@request_stack'
+      - '@sas_search.solr_cpts_query_manager'
+      - '@sas_search.solr_cpts_effector_query_manager'
 
   sas_search.helper:
     class: 'Drupal\sas_search\Service\SasSearchHelper'
@@ -46,3 +52,23 @@ services:
       - '@database'
       - '@sas_api_client.service'
       - '@term.territory'
+
+  sas_search.solr_cpts_query_manager:
+    class: 'Drupal\sas_search\Service\SasSolrCptsQueryManager'
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+      - '@cache.default'
+      - '@logger.factory'
+      - '@request_stack'
+      - '@transliteration'
+
+  sas_search.solr_cpts_effector_query_manager:
+    class: 'Drupal\sas_search\Service\SasSolrCptsEffectorQueryManager'
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+      - '@cache.default'
+      - '@logger.factory'
+      - '@request_stack'
+      - '@transliteration'

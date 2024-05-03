@@ -1,6 +1,6 @@
 <template>
   <div class="search-page-container">
-    <SearchHeader />
+    <SearchHeader :cards="currentCards" />
 
     <template v-if="!geolocationHasFailed">
       <div class="search-filters">
@@ -14,16 +14,45 @@
       </div>
 
       <ClusterBanner
-        v-if="isClusterDisplayed"
-        :clusterAddress="clusterAddress"
-        @return-to-list="forceResetClusters"
-      />
+        v-if="isClusterDisplayed || displayCptsListPage"
+        @return-to-list="goBackToSearchPage"
+      >
+        <Switch
+          :current="displayCptsListPage"
+          :cases="[
+            {
+              id: false,
+              value: `Résultats à l'adresse`,
+            },
+            {
+              id: true,
+              value: `Résultats pour`,
+            },
+          ]"
+        >
+          <template #default="props">
+            {{ props.case.value }} : <span> {{ clusterAddress }} </span>
+          </template>
+        </Switch>
+      </ClusterBanner>
 
       <TheLegend />
     </template>
 
     <div id="search-results" class="search-results" :class="{ 'mini-map': isActive }" aria-live="polite">
+      <CptsResults
+        v-if="displayCptsListPage"
+        :miniMap="isActive"
+        @cpts-all-pins-to-display="onCptsEffectorsPinsChange"
+        @cpts-highlighted-pins-id="onCptsEffectorsHighlightedPinsIdChange"
+        @mouseenter-list-card="handleMarkerHighlight"
+        @mouseleave-list-card="handleMarkerHighlight"
+        @change-to-overbooking-filter="onChangeToOverbookingFilter"
+        ref="cptsComponent"
+      />
+
       <SearchList
+        v-show="!displayCptsListPage"
         :cardList="cardsToDisplay"
         :miniMap="isActive"
         :showLoader="showLoader"
@@ -44,7 +73,8 @@
         </button>
 
         <Map
-          :currentDisplayedList="cardsToDisplay.map((card) => (card.its_nid))"
+          :pins="pinsToDisplay"
+          :highlightedPinsId="pinsIdToHighlight"
           :isPageOne="currentDisplayedLot === 1"
           :isClusterDisplayed="isClusterDisplayed"
           ref="map"
@@ -59,6 +89,7 @@
   <Teleport to=".search-list">
     <Pagination
       v-if="showPagination"
+      v-show="showPagination && !displayCptsListPage"
       :current-page="currentDisplayedLot"
       :previous-page="previousPage"
       :next-page="nextPage"
@@ -81,13 +112,15 @@ import { storeToRefs } from 'pinia';
 import _isEqual from 'lodash.isequal';
 import _isEmpty from 'lodash.isempty';
 
-import SearchHeader from '@/components/chargementProgressifComponents/SearchHeader.component.vue';
+import SearchHeader from '@/components/search/SearchHeader.component.vue';
 import Filter from '@/components/chargementProgressifComponents/searchComponents/filterComponents/Filter.component.vue';
 import TheLegend from '@/components/chargementProgressifComponents/TheLegend.component.vue';
 import SearchList from '@/components/chargementProgressifComponents/searchComponents/SearchList.component.vue';
 import Pagination from '@/components/chargementProgressifComponents/Pagination.component.vue';
-import Map from '@/components/chargementProgressifComponents/searchComponents/Map.component.vue';
+import Map from '@/components/search/Map.component.vue';
 import ClusterBanner from '@/components/searchComponents/listViewComponents/ClusterBanner.component.vue';
+import CptsResults from '@/components/chargementProgressifComponents/cptsComponents/CptsResults.component.vue';
+import Switch from '@/components/sharedComponents/Switch.component.vue';
 
 import { FiltersModel } from '@/models';
 
@@ -99,6 +132,8 @@ import {
   useSearchType,
   useFilterDictionnary,
   useGeolocationData,
+  useMarketPlaceEditorsList,
+  useCpts,
 } from '@/stores';
 
 import {
@@ -112,6 +147,7 @@ import {
   useSearchUtils,
   useSearchApiCalls,
   useScroll,
+  useCptsDisplay,
 } from '@/composables';
 
 import {
@@ -128,11 +164,20 @@ export default {
     SearchList,
     Map,
     ClusterBanner,
+    CptsResults,
+    Switch,
   },
   setup() {
     const { configureSearchPrefDoctor } = useSearchUtils();
     const { scrollToTop, scrollToElement } = useScroll();
     const { getSOLRresults, getApiResults } = useSearchApiCalls();
+    const {
+      initCPTSList,
+      findCPTSCardToReplace,
+      setCurrentCpts,
+      currentCptsCollection,
+    } = useCptsDisplay();
+
     const isActive = ref(false);
 
     // stores
@@ -143,6 +188,10 @@ export default {
     const searchTypeStore = useSearchType();
     const filterDictionnaryStore = useFilterDictionnary();
     const geolocationStore = useGeolocationData();
+    const marketPlaceEditorsListStore = useMarketPlaceEditorsList();
+    const cptsStore = useCpts();
+
+    const displayCptsListPage = computed(() => cptsStore.showCptsPage);
 
     const { hasFailed: geolocationHasFailed } = storeToRefs(geolocationStore);
 
@@ -156,6 +205,11 @@ export default {
     // cursor for current SOLR package
     const currentSolrArraySliceWithSlots = ref(1);
     const currentSolrArraySliceWithoutSlots = ref(1);
+
+    const currentCards = computed(() => (searchDataStore.isFiltered
+        ? searchDataStore.allResultsWithSlots
+        : searchDataStore.allResultsWithoutSlots
+    ));
 
     // starts at 1
     const currentDisplayedLot = ref(1);
@@ -368,7 +422,9 @@ export default {
             || res.slotList.afterTomorrow.length > 0
           )
         ));
-        searchDataStore.setAllResults(resultsWithSlots, true);
+
+        const listWithCPTS = findCPTSCardToReplace(resultsWithSlots);
+        searchDataStore.setAllResults(listWithCPTS, true);
         currentSolrArraySliceWithSlots.value += 1;
 
         if (shouldGetMoreResults.value) {
@@ -392,7 +448,8 @@ export default {
         const results = await getApiResults(solrUnfilteredSlicedRes.value[currentSolrArraySliceWithoutSlots.value], false);
 
         if (setResults) {
-          searchDataStore.setAllResults(results, false);
+          const listWithCPTS = findCPTSCardToReplace(results);
+          searchDataStore.setAllResults(listWithCPTS, false);
         }
       }
     }
@@ -419,6 +476,19 @@ export default {
     // if not enough results fetch more
     async function completeResults() {
       searchDataStore.isLoading = true;
+
+      const { currentSelectedFilters } = searchDataStore;
+
+      // if all cpts were found then we shouldn't launch api calls
+      if (
+        Object.values(currentSelectedFilters).length === 1
+        && currentSelectedFilters.itm_establishment_types?.length === 1
+        && currentSelectedFilters.itm_establishment_types.includes('222605')
+        && currentCptsCollection.value.cptsCollection?.length === cardsToDisplay.value.length
+      ) {
+        searchDataStore.isLoading = false;
+        return;
+      }
 
       if (
         searchDataStore.isFiltered
@@ -449,7 +519,7 @@ export default {
       }
 
       nextTick(() => {
-        const circleHasBeenDrawn = map.value.drawCircle({
+        const circleHasBeenDrawn = map.value.drawCircleInMap({
           latitude: geolocationStore.geolocation.latitude,
           longitude: geolocationStore.geolocation.longitude,
           radius: geolocationStore.geolocation.defaultRadius,
@@ -463,6 +533,9 @@ export default {
       });
 
       cookie.removeCookie('sas_aggregator_token');
+      // fetch CPTS list for the search
+      await initCPTSList();
+
       await initialize();
     });
 
@@ -494,6 +567,11 @@ export default {
       await lrmDataStore.setSpeciality();
       lrmDataStore.setPrefDoctorParam();
 
+      // set aggregator token
+      if (!cookie.getCookie('sas_aggregator_token')) {
+        await SettingService.getAggregatorToken();
+      }
+
       const configurationPromise = [];
 
       configurationPromise.push(UserService.getCurrentUser());
@@ -503,11 +581,7 @@ export default {
       configurationPromise.push(SettingService.getSasApiSettingsByParam('popin_snp'));
       configurationPromise.push(SettingService.getSasApiSettingsByParam('orientation_general'));
       configurationPromise.push(SettingService.getDictionaryFilter());
-
-      // set aggregator token
-      if (!cookie.getCookie('sas_aggregator_token')) {
-        configurationPromise.push(SettingService.getAggregatorToken());
-      }
+      configurationPromise.push(SearchService.fetchMarketPlaceActiveEdtiorsList());
 
       const configurationResponse = await Promise.all(configurationPromise);
 
@@ -525,6 +599,9 @@ export default {
 
       // set filter labels
       filterDictionnaryStore.setFilterTypeLabels(configurationResponse[6]);
+
+      // set market place editors list
+      marketPlaceEditorsListStore.setActiveEditorsList(configurationResponse[7]);
     }
 
     function adaptDisplayToCurrentUser() {
@@ -558,6 +635,7 @@ export default {
      */
     async function launchSearchWithCustomFilters(evtData) {
       currentDisplayedLot.value = 1;
+      cptsStore.cptsCollectionLvlTwo.resetCptsToFind();
 
       if (Object.values(evtData).length) {
         nextTick(async () => {
@@ -630,6 +708,7 @@ export default {
       // We clear both searches
       resetSearchElements(true);
       resetSearchElements(false);
+      setCurrentCpts(null);
 
       searchDataStore.resetFilters();
       currentDisplayedLot.value = 1;
@@ -668,7 +747,9 @@ export default {
         };
         delete geolocationStore.geolocation.fullAddress;
 
-        map.value.deleteBluePointLayer();
+        map.value.deleteBluePoint();
+
+        await initCPTSList();
 
         if (geolocationHadFailed) {
           await initialize();
@@ -680,16 +761,24 @@ export default {
 
     const idxBeforeCluster = ref(1);
     const isClusterDisplayed = computed(() => searchDataStore.currentClusterItems.length > 0);
-    const clusterAddress = computed(() => ((
-      isClusterDisplayed.value
-      && cardsToDisplay.value[0]?.ss_field_address
-    ) ? cardsToDisplay.value[0].ss_field_address : ''));
+    const clusterAddress = computed(() => {
+      if (displayCptsListPage.value) {
+        return cptsStore.currentSelectedCpts.tm_X3b_und_etb_title?.[0] ?? '';
+      }
+
+      return (isClusterDisplayed.value && cardsToDisplay.value[0]?.ss_field_address)
+      ? cardsToDisplay.value[0].ss_field_address
+      : '';
+    });
 
     /**
      * handle cluster click
      * @param {Object} evt
      */
     function onMapClusterClick(evt) {
+      // we don't handle cluster in CPTS page for now
+      if (displayCptsListPage.value) return;
+
       idxBeforeCluster.value = isClusterDisplayed.value
       ? idxBeforeCluster.value
       : currentDisplayedLot.value;
@@ -707,11 +796,15 @@ export default {
       });
     }
 
-    function forceResetClusters() {
-      currentDisplayedLot.value = idxBeforeCluster.value;
-      searchDataStore.setCurrentClusterItems([]);
+    function goBackToSearchPage() {
+      if (displayCptsListPage.value) {
+        setCurrentCpts(null);
+      } else {
+        currentDisplayedLot.value = idxBeforeCluster.value;
+        searchDataStore.setCurrentClusterItems([]);
 
-      nextTick(scrollToTop);
+        nextTick(scrollToTop);
+      }
     }
 
     /**
@@ -751,13 +844,17 @@ export default {
      */
     function onMapMarkerClick(markerData) {
       const highlightedCard = markerData?.content?.properties?.id || '';
-      const cardLotIndex = searchDataStore.currentList.findIndex((lot) => {
-        const hasCard = lot.findIndex((card) => card?.its_nid === highlightedCard);
-        return hasCard > -1;
-      });
 
-      if (cardLotIndex > -1) {
-        currentDisplayedLot.value = cardLotIndex + 1;
+      if (displayCptsListPage.value) {
+        cptsComponent.value.gotoPageWithCardOfNid(highlightedCard);
+      } else {
+        const cardLotIndex = searchDataStore.currentList.findIndex((lot) => {
+          const hasCard = lot.findIndex((card) => card?.its_nid === highlightedCard);
+          return hasCard > -1;
+        });
+        if (cardLotIndex > -1) {
+          currentDisplayedLot.value = cardLotIndex + 1;
+        }
       }
 
       nextTick(() => {
@@ -817,10 +914,32 @@ export default {
           filteredListTimeoutId = setTimeout(() => {
             isResultsReset.value = true;
             resetSearchElements(true);
+            cptsStore.cptsCollectionLvlOne.resetCptsToFind();
           }, 120000);
         }
       },
     );
+
+    // Cpts Map temporary patch
+    const cptsEffectorCards = ref([]);
+    function onCptsEffectorsPinsChange(cptsEffectors) {
+      cptsEffectorCards.value = cptsEffectors;
+    }
+
+    const pinsToDisplay = computed(() => (displayCptsListPage.value
+        ? cptsEffectorCards.value
+        : searchDataStore.currentList.reduce((acc, curr) => acc.concat(curr), [])));
+
+    const cptsEffectorHighlightedCardsId = ref([]);
+    function onCptsEffectorsHighlightedPinsIdChange(cptsEffectorsId) {
+      cptsEffectorHighlightedCardsId.value = cptsEffectorsId;
+    }
+
+    const pinsIdToHighlight = computed(() => (displayCptsListPage.value
+        ? cptsEffectorHighlightedCardsId.value
+        : cardsToDisplay.value.map((card) => (card.its_nid))));
+
+    const cptsComponent = ref(null);
 
     return {
       map,
@@ -843,14 +962,25 @@ export default {
       highlightCard,
       isClusterDisplayed,
       clusterAddress,
-      forceResetClusters,
+      goBackToSearchPage,
       updateCheckedFilter,
       showLoader,
       endOfDisplayedList,
       onChangeToOverbookingFilter,
       currentFilterFacets,
       geolocationHasFailed,
-      hasEnoughSolrResults,
+      displayCptsListPage,
+      setCurrentCpts,
+      currentCards,
+
+      // Cpts Map temporary patch
+      onCptsEffectorsPinsChange,
+      onCptsEffectorsHighlightedPinsIdChange,
+
+      pinsToDisplay,
+      pinsIdToHighlight,
+
+      cptsComponent,
     };
   },
 };

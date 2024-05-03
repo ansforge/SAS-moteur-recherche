@@ -180,6 +180,7 @@ class SasUserDataAccess implements AccessInterface {
     ) {
       $access = TRUE;
     }
+
     /*
      * Access for route :
      * - sas_user_dashboard.delegataire
@@ -222,7 +223,14 @@ class SasUserDataAccess implements AccessInterface {
     if (in_array(SasUserConstants::SAS_DELEGATE_ROLE, $account->getRoles())) {
       // For effector delegation.
       // National id can be passed in url argument or in query parameters.
-      $nationalId = empty($request->get('idNat')) ? $request->query->get('userId') : $request->get('idNat');
+      $nationalId = $request->get('idNat') ?? $request->query->get('userId') ?? $request->get('national_id');
+
+      // If $nationalId is empty, try to retrieve it from the request content.
+      if (empty($nationalId)) {
+        $content = $request->getContent();
+        $data = json_decode($content, TRUE);
+        $nationalId = $data['national_id'] ?? NULL;
+      }
       if (
         !empty($nationalId) &&
         !empty($delegated = $this->delegataireHelper->getEffectorDelegations($account->id())) &&

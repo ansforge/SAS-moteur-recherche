@@ -2,7 +2,7 @@
   <div class="consultation-table">
     <div class="wrapper availabilities-calendar">
       <SnpCalendarSection
-        :currentPage="currentPage"
+        :currentPage
         :day-val="showAll ? columns[0].slots : columns[0].slots.slice(0, limitCount)"
         :day-name="columns[0].label"
         :current-data="{}"
@@ -10,7 +10,7 @@
         @open-modal-orientation="$emit('open-modal-orientation', $event)"
       />
       <SnpCalendarSection
-        :currentPage="currentPage"
+        :currentPage
         :day-val="showAll ? columns[1].slots : columns[1].slots.slice(0, limitCount)"
         :day-name="columns[1].label"
         :current-data="{}"
@@ -18,7 +18,7 @@
         @open-modal-orientation="$emit('open-modal-orientation', $event)"
       />
       <SnpCalendarSection
-        :currentPage="currentPage"
+        :currentPage
         :day-val="showAll ? columns[2].slots : columns[2].slots.slice(0, limitCount)"
         :day-name="columns[2].label"
         :current-data="{}"

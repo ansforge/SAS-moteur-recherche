@@ -5,13 +5,11 @@ namespace Drupal\sas_search\Service;
 use Drupal\Component\Transliteration\TransliterationInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\sas_core\Enum\SasContent;
 use Drupal\sas_search\Enum\SasSearchConstant;
 use Drupal\sas_search\Enum\SasSolrQueryConstant;
 use Drupal\sas_search\SasSolrQueryBase;
-use Drupal\sas_snp\Enum\SnpConstant;
 use GuzzleHttp\Client;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -51,13 +49,6 @@ class SasSolrQueryManager extends SasSolrQueryBase implements SasSolrQueryManage
    * @var \Symfony\Component\HttpFoundation\Request|null
    */
   protected ?Request $request;
-
-  /**
-   * Pagination data.
-   *
-   * @var array
-   */
-  protected array $pagination;
 
   /**
    * Search radius to apply.
@@ -105,8 +96,9 @@ class SasSolrQueryManager extends SasSolrQueryBase implements SasSolrQueryManage
       config_factory: $config_factory,
       cache: $cache,
       logger_factory: $logger_factory,
-      transliteration: $transliteration);
-    $this->request = $request_stack->getCurrentRequest();
+      transliteration: $transliteration,
+      request_stack: $request_stack
+    );
     $this->sasSearchHelper = $sas_search_helper;
   }
 
@@ -156,28 +148,6 @@ class SasSolrQueryManager extends SasSolrQueryBase implements SasSolrQueryManage
     }
 
     return NULL;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  public function getPagination() {
-    if (!empty($this->pagination)) {
-      return $this->pagination;
-    }
-
-    $item_per_page = $this->request->get('qty') ?? SasSolrQueryConstant::DEFAULT_ITEM_PER_PAGE;
-    $page = $this->request->get('page') ?? SasSolrQueryConstant::DEFAULT_PAGE;
-    $offset = ($page - 1) * $item_per_page;
-
-    $pagination = [
-      'page' => $page,
-      'item_per_page' => $item_per_page,
-      'offset' => $offset,
-    ];
-
-    $this->pagination = $pagination;
-    return $this->pagination;
   }
 
   /**
@@ -335,26 +305,6 @@ class SasSolrQueryManager extends SasSolrQueryBase implements SasSolrQueryManage
     // For "maternité" search type.
     if ($this->getSearchType() === SasSolrQueryConstant::SEARCH_TYPE_MATERNITY) {
       $this->setQueryItem('fq=sm_field_maternite_level:[* TO *]');
-    }
-  }
-
-  /**
-   * Get Vacation filters to remove items that are not available.
-   *
-   * @SuppressWarnings(PHPMD.MissingImport)
-   */
-  protected function getVacationFilter(): void {
-    $this->setQueryItem('fq=-(bs_sas_vacation:"true")');
-
-    $time_start = new DrupalDateTime('now');
-    $time_start = $time_start->getTimestamp();
-    $time_end = (new DrupalDateTime('now'))->add(new \DateInterval('P2D'));
-    $time_end = $time_end->getTimestamp();
-    for ($i = 0; $i < SnpConstant::SAS_MAX_VACATION_SLOT_NB; $i++) {
-      $this->setQueryItem(sprintf(
-        'fq=-(its_sas_vacation_slot_start_%d:[* TO "%s"] AND its_sas_vacation_slot_end_%d:["%s" TO *])',
-        $i, $time_start, $i, $time_end
-      ));
     }
   }
 

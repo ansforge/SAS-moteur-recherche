@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { computed, toRefs } from 'vue';
+import { computed } from 'vue';
 import dayjs from 'dayjs';
 import 'dayjs/locale/fr';
 import Notification from '@/components/sharedComponents/Notification.component.vue';
@@ -71,13 +71,11 @@ export default {
       return dateText;
     });
 
-    const { name, infos } = toRefs(props.summary);
-
-    const recipientType = computed(() => (infos.value?.[0]?.label));
+    const recipientType = computed(() => (props.summary.infos?.[0]?.label));
 
     return {
       dateLabel,
-      name,
+      name: props.summary.name,
       recipientType,
     };
   },

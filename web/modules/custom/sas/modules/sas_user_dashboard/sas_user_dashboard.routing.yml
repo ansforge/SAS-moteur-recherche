@@ -23,3 +23,16 @@ sas_user_dashboard.delegataire:
   requirements:
     _sas_user_data_access_check: 'TRUE'
     user: \d+
+
+sas_user_dashboard.information_complementaire_form:
+  path: '/sas/dashboard/gestionnaire/information-complementaire/{node}'
+  defaults:
+    _form: '\Drupal\sas_user_dashboard\Form\SasCptsInformationComplementaireForm'
+    _title: 'Informations Complémentaires'
+  requirements:
+    _permission: 'access content'
+  options:
+    _sas_context_access_check: 'TRUE'
+    parameters:
+      node:
+        type: 'entity:node'

@@ -23,3 +23,7 @@ export const SAS_LRM_SEARCH_TRACKING = '/sas/api/analytics/log_create';
 export const SAS_AGGREGATOR_EDITOR_LIST = '/aggregator/api-sas/v1/editors?group=id-name&is_active=1';
 export const SAS_AGGREGATOR_EDITOR_EFFECTOR = '/aggregator/api-sas/v1/practitioner-editors';
 export const SAS_AGGREGATOR_USER_EDITOR_LIST = '/aggregator/api-sas/v1/practitioners/national-id';
+export const SAS_CPTS_LIST = '/sas/api/drupal/search/cpts';
+export const SAS_CPTS_EFECTOR_LIST = '/sas/api/drupal/search/cpts/effectors';
+export const SAS_ADDITIONAL_INFO = '/drupal/additional-data';
+export const SAS_AGGREGATOR_MARKETPLACE_EDITOR_LIST = '/aggregator/marketplace/api/v1/editors';

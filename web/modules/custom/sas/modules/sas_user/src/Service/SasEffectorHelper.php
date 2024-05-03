@@ -155,13 +155,13 @@ class SasEffectorHelper implements SasEffectorHelperInterface {
     $query = $this->database->select('node__field_identifiant_active_rpps', 'nfar');
     $query->addField('nfar', 'entity_id');
     $query->condition('nfar.field_identifiant_active_rpps_value', $activity_rpps_list, 'IN');
-    $result = $query->execute()->fetchAllKeyed();
+    $result = $query->execute()->fetchCol();
 
     if (empty($result)) {
       return [];
     }
 
-    return array_keys($result);
+    return $result;
   }
 
   /**

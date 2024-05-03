@@ -2,6 +2,7 @@
 
 namespace Drupal\sas_structure\Service;
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\user\UserInterface;
 
 /**
@@ -43,5 +44,23 @@ interface CptsHelperInterface {
    * @return array List of NIDs.
    */
   public function getNidsFromUserSettings(array $users_data): array;
+
+  /**
+   * Get Insee code of city associated to CPTS in intervention zone.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $structure
+   *
+   * @return array
+   */
+  public function getCptsInseeList(EntityInterface $structure): array;
+
+  /**
+   * Get CPTS phone list from associated care deals.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $structure
+   *
+   * @return array
+   */
+  public function getCptsCareDealPhones(EntityInterface $structure): array;
 
 }

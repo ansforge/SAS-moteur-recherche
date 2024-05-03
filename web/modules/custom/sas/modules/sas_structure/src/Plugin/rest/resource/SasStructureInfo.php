@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
  *   id = "sas_structure_info",
  *   label = @Translation("SAS Structure - Basic information"),
  *   uri_paths = {
- *     "canonical" = "/sas/api/drupal/structure/{id_type}/{id}/info"
+ *     "canonical" = "/sas/api/drupal/structure/{id_structure}/{id}/info"
  *   }
  * )
  */
@@ -62,21 +62,21 @@ class SasStructureInfo extends SasResourceBase {
   /**
    * Responds to entity GET requests.
    *
-   * @param string $id_type
-   *   Type of id provided. (finess/siret)
+   * @param string $id_structure
+   *   Type of id provided. (cpts/msp/sos)
    * @param string $id
    *   Structure id.
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    *   Returns user data.
    */
-  public function get(string $id_type, string $id): JsonResponse {
+  public function get(string $id_structure, string $id): JsonResponse {
     $response = new CacheableJsonResponse();
     $cacheableMetadata = new CacheableMetadata();
     $response->addCacheableDependency($cacheableMetadata);
 
-    if (in_array($id_type, StructureConstant::getIdTypes())) {
-      $data = $this->structureHelper->getStructureBasicInfo($id_type, $id);
+    if (in_array($id_structure, StructureConstant::getStructureTypes())) {
+      $data = $this->structureHelper->getStructureBasicInfo($id_structure, $id);
       if (empty($data)) {
         $response->setStatusCode(Response::HTTP_NOT_FOUND);
       }

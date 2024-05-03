@@ -6,9 +6,12 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 use Drupal\sas_directory_pages\Entity\Feature\SasSnpHelperTrait;
+use Drupal\sas_directory_pages\Entity\HealthInstitutionSas;
 use Drupal\sas_directory_pages\Entity\ProfessionnelDeSanteSas;
 use Drupal\sas_entity_snp_user\Enum\SnpUserDataConstant;
 use Drupal\sas_entity_snp_user\Service\SasSnpUserDataHelperInterface;
+use Drupal\sas_structure\Enum\StructureConstant;
+use Drupal\sas_structure\Service\FinessStructureHelperInterface;
 use Drupal\sas_structure\Service\SosMedecinHelperInterface;
 use Drupal\sas_structure\Service\StructureHelperInterface;
 use Drupal\sas_structure\Service\StructureSettingsHelperInterface;
@@ -67,6 +70,13 @@ class SasUserSettings extends SasProcessorBase {
   protected ?SosMedecinHelperInterface $sosMedecinHelper;
 
   /**
+   * Finess Structeure service.
+   *
+   * @var \Drupal\sas_structure\Service\FinessStructureHelperInterface
+   */
+  protected FinessStructureHelperInterface $finessStructureHelper;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
@@ -77,6 +87,7 @@ class SasUserSettings extends SasProcessorBase {
     $processor->structureHelper = $container->get('sas_structure.helper');
     $processor->structureSettingsHelper = $container->get('sas_structure.settings_helper');
     $processor->sosMedecinHelper = $container->get('sas_structure.sos_medecin');
+    $processor->finessStructureHelper = $container->get('sas_structure.finess_structure_helper');
     return $processor;
   }
 
@@ -134,7 +145,7 @@ class SasUserSettings extends SasProcessorBase {
         'description' => $this->t('Property solr to store CPTS phone number.'),
         'type' => 'string',
         'sanitized' => TRUE,
-        'is_list' => FALSE,
+        'is_list' => TRUE,
         'processor_id' => $this->getPluginId(),
       ]);
 
@@ -201,7 +212,8 @@ class SasUserSettings extends SasProcessorBase {
     $field_participation = $this->getField($fields, 'sas_participation');
     $field_participation_via = $this->getField($fields, 'sas_participation_via');
 
-    $overbooking_status = $emergency_reo_status = $editor_disable = $participation = FALSE;
+    $overbooking_status = $participation = FALSE;
+    $cpts = [];
 
     if ($entity instanceof ProfessionnelDeSanteSas) {
       $id_nat = $entity->getNationalId();
@@ -260,7 +272,11 @@ class SasUserSettings extends SasProcessorBase {
       $field_editor_disabled->addValue($editor_disable);
       $field_cpts_finess->addValue($cpts['finess'] ?? NULL);
       $field_cpts_label->addValue($cpts['label'] ?? NULL);
-      $field_cpts_phone->addValue($cpts['phone'] ?? NULL);
+      if (!empty($cpts['phone'])) {
+        foreach ($cpts['phone'] as $phone) {
+          $field_cpts_phone->addValue($phone);
+        }
+      }
       $field_participation->addValue($participation);
       $field_participation_via->addValue($participation_via ?? 0);
     }
@@ -373,11 +389,11 @@ class SasUserSettings extends SasProcessorBase {
 
       if (!empty($data['cpts_locations'][0]['value']) && in_array($rpps, $data['cpts_locations'][0]['value'])) {
         $cpts['finess'] = $finess;
-        $structure_data = $this->structureHelper->getStructureDataByFiness($finess);
+        $structure = $this->finessStructureHelper->getStructureByFiness($finess, StructureConstant::CONTENT_TYPE_HEALTH_INSTITUTION);
 
-        if (!empty($structure_data)) {
-          $cpts['label'] = $structure_data->title ?? NULL;
-          $cpts['phone'] = $structure_data->field_telephone_fixe_value ?? NULL;
+        if ($structure instanceof HealthInstitutionSas && $this->structureHelper->isCpts($structure)) {
+          $cpts['label'] = $structure->getTitle() ?? NULL;
+          $cpts['phone'] = $structure->getFreeAccessPhones() ?? NULL;
         }
       }
     }

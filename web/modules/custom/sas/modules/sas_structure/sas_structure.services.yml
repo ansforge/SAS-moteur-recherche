@@ -41,11 +41,21 @@ services:
       - '@sas_user.effector_helper'
       - '@sas_structure.finess_structure_helper'
       - '@sas_snp_user_data.helper'
-      - '@cache.data'
-      - '@database'
+      - '@sas_structure.helper'
       - '@path.current'
 
   sas_structure.sos_doctors_interfaced_helper:
     class: Drupal\sas_structure\Service\SosDoctorsIsInterfacedHelper
     arguments:
       - '@database'
+      - '@sas_structure.helper'
+      - '@path.current'
+        
+  sas_structure.sas_structure_settings.normalizer:
+    class: Drupal\sas_structure\Normalizer\SasStructureSettingsNormalizer
+    arguments:
+      - '@entity_type.manager'
+      - '@entity_type.repository'
+      - '@entity_field.manager'
+    tags:
+      - { name: normalizer, priority: 2 }

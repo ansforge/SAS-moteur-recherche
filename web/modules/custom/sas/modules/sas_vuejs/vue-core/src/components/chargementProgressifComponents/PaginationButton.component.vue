@@ -1,5 +1,5 @@
 <template>
-  <li :class="buttonInfo.class">
+  <li>
     <button
       type="button"
       v-bind="buttonAttribut"

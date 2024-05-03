@@ -5,11 +5,17 @@ namespace Drupal\sas_search;
 use Drupal\Component\Transliteration\TransliterationInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Logger\LoggerChannelInterface;
+use Drupal\sas_search\Enum\SasSolrQueryConstant;
+use Drupal\sas_snp\Enum\SnpConstant;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class SasSolrQueryBase.
@@ -48,24 +54,38 @@ abstract class SasSolrQueryBase implements SasSolrQueryInterface {
   protected TransliterationInterface $transliteration;
 
   /**
+   * @var \Symfony\Component\HttpFoundation\Request|null
+   */
+  protected ?Request $request;
+
+  /**
    * Solr query parameters.
    *
    * @var array
    */
   protected array $query = [];
 
+  /**
+   * Pagination data.
+   *
+   * @var array
+   */
+  protected array $pagination;
+
   public function __construct(
     Client $http_client,
     ConfigFactoryInterface $config_factory,
     CacheBackendInterface $cache,
     LoggerChannelFactoryInterface $logger_factory,
-    TransliterationInterface $transliteration
+    TransliterationInterface $transliteration,
+    RequestStack $request_stack
   ) {
     $this->httpClient = $http_client;
     $this->configFactory = $config_factory;
     $this->cache = $cache;
     $this->logger = $logger_factory->get('sas_search');
     $this->transliteration = $transliteration;
+    $this->request = $request_stack->getCurrentRequest();
   }
 
   /**
@@ -73,9 +93,12 @@ abstract class SasSolrQueryBase implements SasSolrQueryInterface {
    */
   public function checkQueryParameters(): ?array {
 
-    foreach (self::MANDATORY_PARAMS as $name) {
+    foreach (static::MANDATORY_PARAMS as $name) {
       if (empty($this->request->get($name))) {
-        return $this->getErrorResult(400, sprintf('Parameter "%s" is missing.', $name));
+        return $this->getErrorResult(
+          Response::HTTP_BAD_REQUEST,
+          sprintf('Parameter "%s" is missing.', $name)
+        );
       }
     }
 
@@ -101,6 +124,48 @@ abstract class SasSolrQueryBase implements SasSolrQueryInterface {
    */
   public function setQueryItem(string $value): void {
     $this->query[] = $value;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public function getPagination() {
+    if (!empty($this->pagination)) {
+      return $this->pagination;
+    }
+
+    $item_per_page = $this->request->get('qty') ?? SasSolrQueryConstant::DEFAULT_ITEM_PER_PAGE;
+    $page = $this->request->get('page') ?? SasSolrQueryConstant::DEFAULT_PAGE;
+    $offset = ($page - 1) * $item_per_page;
+
+    $pagination = [
+      'page' => $page,
+      'item_per_page' => $item_per_page,
+      'offset' => $offset,
+    ];
+
+    $this->pagination = $pagination;
+    return $this->pagination;
+  }
+
+  /**
+   * Get Vacation filters to remove items that are not available.
+   *
+   * @SuppressWarnings(PHPMD.MissingImport)
+   */
+  protected function getVacationFilter(): void {
+    $this->setQueryItem('fq=-(bs_sas_vacation:"true")');
+
+    $time_start = new DrupalDateTime('now');
+    $time_start = $time_start->getTimestamp();
+    $time_end = (new DrupalDateTime('now'))->add(new \DateInterval('P2D'));
+    $time_end = $time_end->getTimestamp();
+    for ($i = 0; $i < SnpConstant::SAS_MAX_VACATION_SLOT_NB; $i++) {
+      $this->setQueryItem(sprintf(
+        'fq=-(its_sas_vacation_slot_start_%d:[* TO "%s"] AND its_sas_vacation_slot_end_%d:["%s" TO *])',
+        $i, $time_start, $i, $time_end
+      ));
+    }
   }
 
   /**

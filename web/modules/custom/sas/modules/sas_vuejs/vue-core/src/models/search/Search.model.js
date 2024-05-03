@@ -6,7 +6,7 @@ import isBetween from 'dayjs/plugin/isBetween';
 
 import SlotModel from '@/models/search/Slot.model';
 import { phoneHelper } from '@/helpers';
-import { useSasOrientationData } from '@/stores';
+import { useSasOrientationData } from '../../stores/useSasOrientationData.store';
 import ScheduleFormatModel from './ScheduleFormat.model';
 
 dayjs.extend(utc);
@@ -15,16 +15,12 @@ dayjs.extend(isToday);
 dayjs.extend(isBetween);
 
 export default class SearchClass {
-  constructor(searchRequestRes = [], aggregRes = {}, sasRes = {}, popinSnpSettingsData = {}, preferredDoctorSettings = {}) {
+  constructor(searchRequestRes = [], aggregRes = {}, sasRes = {}, popinSnpSettingsData = {}) {
     this.searchRequestRes = searchRequestRes;
 
     this.aggregRes = aggregRes;
     this.sasRes = sasRes;
     this.popinSnpSettingsData = popinSnpSettingsData;
-
-    if (preferredDoctorSettings?.showFlag) {
-      preferredDoctorSettings.data.map((x) => this.searchRequestRes.unshift(x));
-    }
   }
 
   getSearchResultsData() {
@@ -183,10 +179,10 @@ export default class SearchClass {
     });
 
     // add cpts flag to itm_establishment_types
-    const isCPTS = (card.its_sas_participation_via === 2 && card.ss_sas_cpts_finess);
-    if (isCPTS) {
-      card.itm_establishment_types.push(222605);
-    }
+    const isCPTS = (
+      card.its_sas_participation_via === 2
+      && (card.ss_sas_cpts_finess?.length > 0 || card.ss_field_identifiant_finess?.length > 0)
+    );
 
     newCard = {
       ...card,
@@ -212,6 +208,7 @@ export default class SearchClass {
     // SAS-4046
     if (aggregAction === 'create') {
       delete newCard.dist;
+      delete newCard.ss_sas_additional_info;
     }
 
     return newCard;
@@ -228,12 +225,13 @@ export default class SearchClass {
   }
 
   /**
-   * Order by the cards by the first available slot && sas participation
+   * Order by the cards by sas participation
    * Niveau 1 : LRM
-   * Niveau 2 : Par participation au SAS par disponibilité
-   * Niveau 3 : reste de l'offre de soins par disponibilité
+   * Niveau 2 : Par participation au SAS
+   * Niveau 3 : reste de l'offre de soins
    */
-  sortCardsByFirstSlot = (cards) => {
+  // eslint-disable-next-line class-methods-use-this
+  sortCardsByFirstSlot(cards) {
     const cardsWithSlots = cards.filter((card) => (
       card.slotList
       && (
@@ -253,9 +251,9 @@ export default class SearchClass {
     ));
 
     // sort by slot && with sas participation
-    const cardsWithSasParticipation = cardsWithSlots.filter((card) => card.bs_sas_participation).sort(this.#sortCardsBySlot);
+    const cardsWithSasParticipation = cardsWithSlots.filter((card) => card.bs_sas_participation);
     // sort by slot && without sas participation
-    const cardsWithoutSasParticipation = cardsWithSlots.filter((card) => !card.bs_sas_participation).sort(this.#sortCardsBySlot);
+    const cardsWithoutSasParticipation = cardsWithSlots.filter((card) => !card.bs_sas_participation);
 
     // sort with sas participation
     const cardsNoSlotsWithSasParticipation = cardsWithoutSlots.filter((card) => card.bs_sas_participation);
@@ -263,7 +261,7 @@ export default class SearchClass {
     const cardsNoSlotsWithoutSasParticipation = cardsWithoutSlots.filter((card) => !card.bs_sas_participation);
 
     return cardsWithSasParticipation.concat(cardsWithoutSasParticipation, cardsNoSlotsWithSasParticipation, cardsNoSlotsWithoutSasParticipation);
-  };
+  }
 
   getSlotsTime(data, isAggregator, slotTimeZone) {
     let result = {
@@ -432,36 +430,6 @@ export default class SearchClass {
   };
 
   /**
-   *
-   * @param {Slot} itemA
-   * @param {Slot} itemB
-   * @returns Boolean
-   */
-  // eslint-disable-next-line class-methods-use-this
-  #sortCardsBySlot = (itemA, itemB) => {
-    let aTimeStamps = [];
-    let bTimeStamps = [];
-
-    const aToday = itemA.slotList.today;
-    const aTomorrow = itemA.slotList.tomorrow;
-    const aAfterTomorrow = itemA.slotList.afterTomorrow;
-
-    const bToday = itemB.slotList.today;
-    const bTomorrow = itemB.slotList.tomorrow;
-    const bAfterTomorrow = itemB.slotList.afterTomorrow;
-
-    aTimeStamps = aToday.map((v) => new Date(v.dateByTimezone));
-    aTimeStamps = aTimeStamps.concat(aTomorrow.map((v) => new Date(v.dateByTimezone)));
-    aTimeStamps = aTimeStamps.concat(aAfterTomorrow.map((v) => new Date(v.dateByTimezone)));
-
-    bTimeStamps = bToday.map((v) => new Date(v.dateByTimezone));
-    bTimeStamps = bTimeStamps.concat(bTomorrow.map((v) => new Date(v.dateByTimezone)));
-    bTimeStamps = bTimeStamps.concat(bAfterTomorrow.map((v) => new Date(v.dateByTimezone)));
-
-    return Math.min(...aTimeStamps) - Math.min(...bTimeStamps);
-  };
-
-  /**
    * formats opening/closing hours
    * @param {Array} horaires
    * @param {String} slotTimezone
@@ -571,7 +539,7 @@ export default class SearchClass {
         break;
     }
 
-    return sasOrientationData.sasParticipationLabel + suffix;
+    return `${sasOrientationData.sasParticipationLabel ?? ''}${suffix}`;
   };
 
   // eslint-disable-next-line class-methods-use-this

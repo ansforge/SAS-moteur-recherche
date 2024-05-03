@@ -21,7 +21,12 @@
     </i>
 
     <!--logo type card-->
-    <i v-if="!showSasParticipation && !showSasForfait" class="icon" :class="defaultPicto.icon" aria-hidden="true">
+    <i
+      v-if="!showSasParticipation && !showSasForfait"
+      class="icon"
+      :class="defaultPicto.icon"
+      aria-hidden="true"
+    >
       <span class="sr-only">{{ defaultPicto.iconText }}</span>
     </i>
 

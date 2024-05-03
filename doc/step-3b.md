@@ -4,7 +4,7 @@ Après récupération de la liste des professionnels de santé selon géolocalis
 
 <img src="./img/step-3b-1.png" height="50%" width="50%" title="Recherche des disponibilités" />
 
-- [{Chargement progressif - Disponibilités}](../web/modules/custom/sas/modules/sas_vuejs/vue-core/src/pages/chargement-progressif/Search.page.vue#L353)  
+- [{Chargement progressif - Disponibilités}](../web/modules/custom/sas/modules/sas_vuejs/vue-core/src/pages/chargement-progressif/Search.page.vue#L407)  
 >**[Page] fetchBatchApi()** = récupère la liste des disponibilités correspondant aux professionnels de santé dans le périmètre de recherche
 ```javascript
     /**
@@ -44,7 +44,9 @@ Après récupération de la liste des professionnels de santé selon géolocalis
             || res.slotList.afterTomorrow.length > 0
           )
         ));
-        searchDataStore.setAllResults(resultsWithSlots, true);
+
+        const listWithCPTS = findCPTSCardToReplace(resultsWithSlots);
+        searchDataStore.setAllResults(listWithCPTS, true);
         currentSolrArraySliceWithSlots.value += 1;
 
         if (shouldGetMoreResults.value) {
@@ -115,7 +117,7 @@ La requête aux APIs agrégateur et calendrier SAS :
 ```
 
 Le payload de la requête à l'API calendrier SAS est construit à partir de la liste des professionnels de santé et des dates de début/fin de période :
-- [{Disponibilités - Construction payload API SAS}](../web/modules/custom/sas/modules/sas_vuejs/vue-core/src/composables/usePayload.composable.js#L79)
+- [{Disponibilités - Construction payload API SAS}](../web/modules/custom/sas/modules/sas_vuejs/vue-core/src/composables/usePayload.composable.js#L59)
 >**[Composable] usePayload.createSasApiPayload()** = construit la liste des professionnels de santé non interfacés du lot courant avec leurs éléments de signalétique `results`
 ```javascript
   /**
@@ -141,7 +143,7 @@ Le payload de la requête à l'API calendrier SAS est construit à partir de la 
 ```
 
 Les résultats sont obtenus par l'appel de l'API calendrier SAS pour le payload précédemment construit fourni en entrée et dates de début et fin de période :
-- [{Disponibilités - Appel API SAS}](../web/modules/custom/sas/modules/sas_vuejs/vue-core/src/services/search.service.js#L71)
+- [{Disponibilités - Appel API SAS}](../web/modules/custom/sas/modules/sas_vuejs/vue-core/src/services/search.service.js#L77)
 >**[Service] SearchService.getSasResults()** = récupère la liste des créneaux disponibles auprès du calendrier SAS pour le lot courant de professionnels de santé non interfacés
 ```javascript
   static async getSasResults(sasApiPayload, start, end) {
@@ -165,7 +167,7 @@ Les résultats sont obtenus par l'appel de l'API calendrier SAS pour le payload 
 ```
 
 Le payload de la requête à l'API agrégateur est construit à partir de la liste des professionnels de santé :
-- [{Disponibilités - Construction payload agrégateur}](../web/modules/custom/sas/modules/sas_vuejs/vue-core/src/composables/usePayload.composable.js#L102)
+- [{Disponibilités - Construction payload agrégateur}](../web/modules/custom/sas/modules/sas_vuejs/vue-core/src/composables/usePayload.composable.js#L82)
 >**[Composable] usePayload.createAggregatorPayload()** = construit la liste des professionnels de santé interfacés du lot courant avec leurs éléments de signalétique `results`
 ```javascript
   /**
@@ -215,7 +217,7 @@ Le payload de la requête à l'API agrégateur est construit à partir de la lis
 A noter que l'appel agrégateur est uniquement effectué si au moins un professionnel de santé de la liste courante est interfacé. Les solutions interfacées retournent les créneaux disponibles pour le jour courant, le lendemain et le surlendemain.
 
 Les résultats sont obtenus par l'appel de l'API agrégateur pour le payload précédemment construit fourni en entrée :
-- [{Disponibilités - Appel API agrégateur}](../web/modules/custom/sas/modules/sas_vuejs/vue-core/src/services/search.service.js#L35)
+- [{Disponibilités - Appel API agrégateur}](../web/modules/custom/sas/modules/sas_vuejs/vue-core/src/services/search.service.js#L41)
 >**[Service] SearchService.getAggregatorResults()** = récupère la liste des créneaux disponibles auprès des solutions interfacées pour le lot courant de professionnels de santé
 ```javascript
   static async getAggregatorResults(payload) {
@@ -263,7 +265,7 @@ Les créneaux sont ensuite consolidés pour être affichés et/ou complétés de
   }
 ```
 
-- [{Disponibilités - Données retournées}](../web/modules/custom/sas/modules/sas_vuejs/vue-core/src/models/search/Search.model.js#L30)
+- [{Disponibilités - Données retournées}](../web/modules/custom/sas/modules/sas_vuejs/vue-core/src/models/search/Search.model.js#L26)
 >**[Model] SearchClass.getSearchResultsData()** = consolide la liste des créneaux disponibles pour les afficher sur les cartes des professionnels de santé
 ```javascript
   getSearchResultsData() {
@@ -353,8 +355,7 @@ Pour chaque item, la carte est finalement produite par la méthode `#resolveCard
 
 <img src="./img/step-3b-2.png" height="50%" width="50%" title="Tri final de la disponibilité" />
 
-Il est important de noter que si un premier tri est réalisé lors de la récupération de l'offre de soins, liste des professionnels de la spécialité selon la nature de la géolocalisation (voir [step-3a.md](ici)), un nouveau tri est réalisé à ce stade pour proposer en priorité les créneaux disponibles dans le délai le plus court :
-- [{Disponibilités - Données retournées}](../web/modules/custom/sas/modules/sas_vuejs/vue-core/src/models/search/Search.model.js#L30)
+- [{Disponibilités - Données retournées}](../web/modules/custom/sas/modules/sas_vuejs/vue-core/src/models/search/Search.model.js#L26)
 >**[Model] SearchClass.getSearchResultsData()** = consolide la liste des créneaux disponibles pour les afficher sur les cartes des professionnels de santé
 ```javascript
   getSearchResultsData() {
@@ -379,15 +380,15 @@ Il est important de noter que si un premier tri est réalisé lors de la récup�
   }
 ```
 
->**[Model] SearchClass.sortCardsByFirstSlot()** = tri les cartes pour présenter les créneaux à disponibilité la plus proche en priorisant selon le scénario le médecin traitant (LRM), les participants au SAS, le reste de l'offre de soins
+>**[Model] SearchClass.sortCardsByFirstSlot()** = tri les cartes pour présenter les créneaux en priorisant selon le scénario le médecin traitant (LRM), les participants au SAS, le reste de l'offre de soins
 ```javascript
   /**
-   * Order by the cards by the first available slot && sas participation
+   * Order by the cards by sas participation
    * Niveau 1 : LRM
-   * Niveau 2 : Par participation au SAS par disponibilité
-   * Niveau 3 : reste de l'offre de soins par disponibilité
+   * Niveau 2 : Par participation au SAS
+   * Niveau 3 : reste de l'offre de soins
    */
-  sortCardsByFirstSlot = (cards) => {
+  sortCardsByFirstSlot(cards) {
     const cardsWithSlots = cards.filter((card) => (
       card.slotList
       && (
@@ -407,9 +408,9 @@ Il est important de noter que si un premier tri est réalisé lors de la récup�
     ));
 
     // sort by slot && with sas participation
-    const cardsWithSasParticipation = cardsWithSlots.filter((card) => card.bs_sas_participation).sort(this.#sortCardsBySlot);
+    const cardsWithSasParticipation = cardsWithSlots.filter((card) => card.bs_sas_participation);
     // sort by slot && without sas participation
-    const cardsWithoutSasParticipation = cardsWithSlots.filter((card) => !card.bs_sas_participation).sort(this.#sortCardsBySlot);
+    const cardsWithoutSasParticipation = cardsWithSlots.filter((card) => !card.bs_sas_participation);
 
     // sort with sas participation
     const cardsNoSlotsWithSasParticipation = cardsWithoutSlots.filter((card) => card.bs_sas_participation);
@@ -417,7 +418,7 @@ Il est important de noter que si un premier tri est réalisé lors de la récup�
     const cardsNoSlotsWithoutSasParticipation = cardsWithoutSlots.filter((card) => !card.bs_sas_participation);
 
     return cardsWithSasParticipation.concat(cardsWithoutSasParticipation, cardsNoSlotsWithSasParticipation, cardsNoSlotsWithoutSasParticipation);
-  };
+  }
 ```
 
 S'agissant d'une recherche progressive, la chronologie des requêtes décrite dans ce chapitre est répétée jusqu'à avoir récupéré suffisamment de disponibilités pour compléter l'affichage de la page, en considérant un nouveau lot de 25 professionnels de santé issus de la requête auprès du référentiel national avec application du filtre par spécialité et géolocalisation.

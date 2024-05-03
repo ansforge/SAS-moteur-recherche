@@ -1,5 +1,7 @@
 <template>
+  <!-- shouldn't be here-->
   <button
+    v-if="!isAggregOnlyAddress"
     class="btn-highlight js-btn-open-modal-sas"
     :disabled="isDisabled"
     type="button"
@@ -7,6 +9,7 @@
   >
     {{ buttonTitle }}
   </button>
+  <!---->
 
   <ModalWrapper v-if="open" @on-close-modal="close" title="Informations complémentaires" modal-class="modal-further-info">
     <div>
@@ -55,7 +58,7 @@
 <script>
 
 import {
- onMounted, ref, reactive, computed,
+  onMounted, ref, reactive, computed,
 } from 'vue';
 
 import { CalendarService } from '@/services';
@@ -78,7 +81,11 @@ export default {
       type: String,
       default: 'Informations complémentaires',
     },
-    timeslotNid: {
+    sheetNid: {
+      type: Number,
+      default: null,
+    },
+    userIdNat: {
       type: String,
       default: '',
     },
@@ -87,6 +94,10 @@ export default {
       default: 'calendar',
     },
     isDisabled: {
+      type: Boolean,
+      default: false,
+    },
+    isAggregOnlyAddress: {
       type: Boolean,
       default: false,
     },
@@ -102,18 +113,22 @@ export default {
 
     const userDashboardStore = useUserDashboard();
     const isSosMedecinsChecked = computed(() => userDashboardStore.isSosMedecinsChecked);
-    const isEditorsChecked = computed(() => userDashboardStore.isEditorsChecked);
 
     const isCalendar = props.source === 'calendar';
-    const nodeId = computed(() => (isCalendar ? CalendarService.getNodeId() : props.timeslotNid));
+    const nodeId = computed(() => {
+      if (!isCalendar) {
+        return props.sheetNid;
+      }
 
-    function getText() {
-      return CalendarService.getInformationText(nodeId.value);
-    }
+      return window?.API?.['time-slot-schedule']?.sheet_nid ?? null;
+    });
+    const idNat = computed(() => {
+      if (!isCalendar) {
+        return props.userIdNat;
+      }
 
-    function getMessage() {
-      return CalendarService.getAdditionnalInformationMessage(nodeId.value);
-    }
+      return window?.API?.['time-slot-schedule']?.id_nat ?? null;
+    });
 
     function checkText() {
       // if empty text : disable submit
@@ -152,11 +167,10 @@ export default {
 
       if (
         !isSosMedecinsChecked.value
-        && !isEditorsChecked.value
-        && (props.timeslotNid || isCalendar)
+        && nodeId.value
       ) {
-        text.value = await getText();
-        message.value = await getMessage();
+        text.value = await CalendarService.fetchAdditionalInformationText(nodeId.value, idNat.value);
+        message.value = await CalendarService.fetchAdditionalInformationAlertMsg(nodeId.value);
 
         if (!isCalendar) {
           updateAdditionalInfo();
@@ -180,9 +194,9 @@ export default {
 
       if (
         !isSosMedecinsChecked.value
-        && !isEditorsChecked.value
+        && nodeId.value
       ) {
-        text.value = await getText();
+        text.value = await CalendarService.fetchAdditionalInformationText(nodeId.value, idNat.value);
       }
 
       if (!isCalendar) {
@@ -198,7 +212,12 @@ export default {
 
       if (isValid.value) {
         try {
-          await CalendarService.postInformationText(nodeId.value, text.value);
+          await CalendarService.submitAdditionalInformationText({
+            nid: nodeId.value,
+            additional_data: text.value,
+            national_id: idNat.value,
+          });
+
           close();
         } catch (e) {
           console.error('Fail to update information text', e);
@@ -220,6 +239,7 @@ export default {
       isValid,
       checkText,
       errors,
+      idNat,
     };
   },
 };

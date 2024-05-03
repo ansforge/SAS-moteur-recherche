@@ -23,6 +23,16 @@ final class SasSolrQueryConstant {
 
   const SEARCH_SORT_RANDOM = 'random';
 
+  const BASE_QUERY_PARAMETERS = [
+    'lowercaseOperators=false',
+    'defType=edismax',
+    'sow=false',
+    'ps=10',
+    'wt=json',
+    'json.nl=map',
+    'q.op=AND',
+  ];
+
   const OPENED_HOURS = [
     0 => ['00', '01', '02', '03', '04', '05'],
     1 => ['06', '07', '08', '09', '10', '11'],
@@ -99,6 +109,8 @@ final class SasSolrQueryConstant {
     'ss_field_identifiant_finess',
     'sm_sas_territory_labels',
     'sm_sas_territory_ids',
+    'sm_sas_intervention_zone_insee',
+    'sm_sas_cpts_care_deal_phones',
     'bs_sas_overbooking',
     'bs_sas_forfait_reo',
     'bs_sas_editor_disabled',
@@ -106,7 +118,7 @@ final class SasSolrQueryConstant {
     'ss_sas_additional_info',
     'ss_sas_cpts_finess',
     'ss_sas_cpts_label',
-    'ss_sas_cpts_phone',
+    'sm_sas_cpts_phone',
     'bs_sas_participation',
     'its_sas_participation_via',
     'ss_field_identifiant',

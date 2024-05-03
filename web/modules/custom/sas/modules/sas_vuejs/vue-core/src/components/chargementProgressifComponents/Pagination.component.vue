@@ -2,6 +2,7 @@
   <ul class="pagination-bloc">
     <PaginationButton
       v-for="(element, idx) in paginationButtonConfigFiltered"
+      :class="element.class"
       :key="`pagination-button-${idx}`"
       :button-info="element"
       :current-page="currentPage"

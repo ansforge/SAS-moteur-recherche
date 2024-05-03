@@ -82,6 +82,11 @@
               {% if cpts.effectors|length > 0 %}
               <div class="cpts-group">
                 <h2 class="title-section-cpts">{{ cpts.title }}</h2>
+              {% if cpts.id|length > 0 %}
+                <a href="{{ path('sas_user_dashboard.information_complementaire_form', {'node': cpts.id}) }}" class="use-ajax btn-highlight link-ps" data-dialog-type="modal" data-dialog-options="{&quot;width&quot;:700}">
+                  {{ 'Informations complémentaires'|t }}
+                </a>
+                {% endif %}
                 <h3 class="subtitle-section-cpts">{{ 'Liste des professionnels de santé inscrits au SAS au sein de la CPTS'|t }}</h3>
                 <ul class="list-cpts">
                   {% for ps in cpts.effectors %}
@@ -99,6 +104,11 @@
               {% else %}
                 <div class="cpts-group">
                   <h2 class="title-section-cpts">{{ cpts.title }}</h2>
+                  {% if cpts.id|length > 0 %}
+                    <a href="{{ path('sas_user_dashboard.information_complementaire_form', {'node': cpts.id}) }}" class="use-ajax btn-highlight link-ps" data-dialog-type="modal" data-dialog-options="{&quot;width&quot;:700}">
+                      {{ 'Informations complémentaires'|t }}
+                    </a>
+                  {% endif %}
                   <h3 class="subtitle-section-cpts">{{ "Aucun professionnel de santé n'est actuellement inscrit au SAS au sein de cette CPTS."|t }}</h3>
                 </div>
               {% endif %}

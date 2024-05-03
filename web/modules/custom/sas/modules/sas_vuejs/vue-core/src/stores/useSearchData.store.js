@@ -23,6 +23,7 @@ export const useSearchData = defineStore('searchData', () => {
   // all results
   const allResultsWithSlots = ref([]);
   const allResultsWithoutSlots = ref([]);
+
   const listNidWithSlots = ref(new Set());
   const listNidWithoutSlots = ref(new Set());
 
@@ -329,9 +330,15 @@ export const useSearchData = defineStore('searchData', () => {
     /* eslint-disable guard-for-in */
     for (const catKey in currentFilterlist) {
       for (const filter in currentFilterlist[catKey]) {
-        const cardsToAdd = (catKey === 'available_hours')
-        ? list.filter((card) => card.slotTable[filter].length)
-        : list.filter((card) => card[catKey] && card[catKey].includes(parseInt(filter, 10)));
+        let cardsToAdd = [];
+
+        if (catKey === 'available_hours') {
+          cardsToAdd = list.filter((card) => card.slotTable[filter].length);
+        } else if (filter === '222605') {
+          cardsToAdd = list.filter((card) => card.type === 'cpts');
+        } else {
+          cardsToAdd = list.filter((card) => card[catKey] && card[catKey].includes(parseInt(filter, 10)));
+        }
 
         const cardsInFilter = new Set(currentFilterlist[catKey][filter].map((card) => card.its_nid));
         const cardsNotInFilterList = cardsToAdd.filter((card) => !cardsInFilter.has(card.its_nid));

@@ -43,8 +43,10 @@
 
         <DashboardComplementaryInfo
           v-if="!isSosMedecinsChecked"
-          :timeslotNid="address.timeslot_nid || ''"
+          :sheetNid
+          :userIdNat
           :isDisabled="!isBtnActive"
+          :isAggregOnlyAddress="address.isNewAddress"
         />
       </div>
     </div>
@@ -103,16 +105,15 @@ export default {
 
     const showUnavailabilities = computed(() => !isEditorsChecked.value && !isSosMedecinsChecked.value);
 
-    const isBtnActive = computed(() => (
-      !isEditorsChecked.value
-      && !isSosMedecinsChecked.value
-      && props.address.calendar_url?.length > 0
-    ));
+    const isBtnActive = computed(() => !isSosMedecinsChecked.value);
 
     const isSosMedecinsChecked = computed(() => userDashboardStore.isSosMedecinsChecked);
     const isEditorsChecked = computed(() => userDashboardStore.isEditorsChecked);
 
     const showSnpCalendars = computed(() => !isEditorsChecked.value || !props.address.calendars?.length);
+
+    const sheetNid = computed(() => (props.address.sheet_nid ? parseInt(props.address.sheet_nid, 10) : null));
+    const userIdNat = computed(() => userDashboardStore.connectedUser.id_nat ?? null);
 
     return {
       currentAddressCountLabel,
@@ -125,6 +126,8 @@ export default {
       showAddressLabel,
       showPhone,
       showSnpCalendars,
+      sheetNid,
+      userIdNat,
     };
   },
 };

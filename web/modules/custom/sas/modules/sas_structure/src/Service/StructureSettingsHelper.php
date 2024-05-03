@@ -6,6 +6,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\node\NodeInterface;
+use Drupal\sas_structure\Entity\SasStructureSettings;
 use Drupal\sas_structure\Enum\StructureConstant;
 use Drupal\user\UserInterface;
 
@@ -69,7 +70,7 @@ class StructureSettingsHelper implements StructureSettingsHelperInterface {
   /**
    * {@inheritDoc}
    */
-  public function getSettingsBy(array $filters): array {
+  public function getSettingsBy(array $filters, bool $to_array = TRUE): SasStructureSettings|array {
     try {
       $result = $this->entityTypeManager
         ->getStorage('sas_structure_settings')
@@ -79,7 +80,11 @@ class StructureSettingsHelper implements StructureSettingsHelperInterface {
       return [];
     }
 
-    return !empty($result) ? reset($result)->toArray() : [];
+    if (empty($result)) {
+      return [];
+    }
+
+    return $to_array ? reset($result)->toArray() : reset($result);
   }
 
   /**

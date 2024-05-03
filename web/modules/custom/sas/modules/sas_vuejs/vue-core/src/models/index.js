@@ -23,3 +23,5 @@ export { default as SolrPageDataModel } from '@/models/search/SolrPayloadPageDat
 export { default as ComboboxAccessibility } from '@/models/rgaa/ComboboxAccessibility.model';
 export { default as AggregatorPayload } from '@/models/payload/AggregatorPayload.model';
 export { default as AggregatorPractitioner } from '@/models/payload/AggregatorPractitioner.model';
+export { default as CptsCollection } from '@/models/search/CptsCollection.model';
+export { default as SearchPaginationAdapter } from '@/models/pagination/SearchPaginationAdapter.model';

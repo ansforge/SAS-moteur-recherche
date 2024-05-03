@@ -7,8 +7,10 @@ use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\node\NodeInterface;
 use Drupal\sas_snp\Enum\SnpConstant;
 use Drupal\sas_snp\Service\AvailabilityBlockProviderInterface;
+use Drupal\sas_snp\Service\SnpContentHelper;
 use Drupal\sas_structure\Service\SosMedecinHelperInterface;
 use Drupal\sas_structure\Service\StructureHelperInterface;
 use Drupal\sas_structure\Service\StructureSettingsHelperInterface;
@@ -74,6 +76,11 @@ class DashboardUsers implements DashboardUserInterface {
   protected SosMedecinHelperInterface $sosMedecinHelper;
 
   /**
+   * @var \Drupal\sas_snp\Service\SnpContentHelperInterface
+   */
+  protected $snpContentHelper;
+
+  /**
    * Constructs a database object.
    *
    *  Entity Type Manager.
@@ -86,7 +93,8 @@ class DashboardUsers implements DashboardUserInterface {
     StructureSettingsHelperInterface $structure_settings_helper,
     CurrentRouteMatch $currentRouteMatch,
     AccountProxyInterface $accountProxy,
-    SosMedecinHelperInterface $sos_medecin_helper
+    SosMedecinHelperInterface $sos_medecin_helper,
+    SnpContentHelper $snpContentHelper
   ) {
     $this->entityTypeManager = $entity_type_manager;
     $this->database = $database;
@@ -96,6 +104,7 @@ class DashboardUsers implements DashboardUserInterface {
     $this->currentRouteMatch = $currentRouteMatch;
     $this->currentUser = $accountProxy;
     $this->sosMedecinHelper = $sos_medecin_helper;
+    $this->snpContentHelper = $snpContentHelper;
   }
 
   /**
@@ -113,7 +122,8 @@ class DashboardUsers implements DashboardUserInterface {
       $query = $this->database->select('users_field_data', 'u')
         ->fields('u', ['uid']);
       $query->addJoin('left', 'user__field_sas_related_pro', 'srp', 'srp.field_sas_related_pro_target_id = u.uid');
-      $query->addJoin('left', 'user__field_sas_rel_structure_manager', 'srsm', 'srsm.field_sas_rel_structure_manager_target_id = u.uid');
+      $query->addJoin('left', 'user__field_sas_rel_structure_manager', 'srsm',
+        'srsm.field_sas_rel_structure_manager_target_id = u.uid');
       $query->condition('u.status', 1);
       $or_condition = $query->orConditionGroup()
         ->condition('srsm.entity_id', $account)
@@ -160,10 +170,8 @@ class DashboardUsers implements DashboardUserInterface {
         }
 
         /** @var \Drupal\user\UserInterface $currentUserEntity */
-        if (in_array(SnpConstant::SAS_DELEGATAIRE, $this->currentUser
-          ->getRoles())
-          && $this->currentUser
-            ->id() != $this->currentRouteMatch->getParameter('user')) {
+        if (in_array(SnpConstant::SAS_DELEGATAIRE, $this->currentUser->getRoles())
+          && $this->currentUser->id() != $this->currentRouteMatch->getParameter('user')) {
           unset($address['structure_settings_link']);
         }
 
@@ -251,6 +259,68 @@ class DashboardUsers implements DashboardUserInterface {
     }
 
     return $datas;
+  }
+
+  /**
+   * @param \Drupal\node\Entity\NodeInterface $node
+   * @param string $additional_info
+   * @return void
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   */
+  public function handleTimeSlot(NodeInterface $node, String $additional_info): void {
+    /** @var \Drupal\node\Entity\NodeStorage $node_storage */
+    $node_storage = $this->entityTypeManager->getStorage('node');
+
+    // Vérifier si un nœud SAS_TIME_SLOTS référence déjà ce nœud.
+    $query = $node_storage->getQuery()->accessCheck(TRUE)
+      ->condition('type', 'sas_time_slots')
+      ->condition('field_sas_time_slot_ref', $node->id());
+
+    $time_slots_ids = $query->execute();
+
+    // Charger le nœud existant s'il y a des IDs de créneaux horaires, sinon créer un nouveau nœud.
+    $time_slots_node = !empty($time_slots_ids)
+      ? $node_storage->load(reset($time_slots_ids))
+      : $node_storage->create([
+        'type' => 'sas_time_slots',
+        'title' => sprintf('sas_snp_%s', $node->id()),
+        'field_sas_time_slot_ref' => ['target_id' => $node->id()],
+        'uid' => 0,
+        'status' => NodeInterface::PUBLISHED,
+      ]);
+
+    // Mettre à jour le champ field_sas_time_info avec le texte du formulaire.
+    $time_slots_node->set('field_sas_time_info', $additional_info);
+
+    // Sauvegarder le nœud.
+    $time_slots_node->save();
+  }
+
+  /**
+   * Get additional information from a node referenced in a time slot.
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *
+   * @return array|null
+   *
+   * @throws \Drupal\Core\TypedData\Exception\MissingDataException
+   */
+  public function getTimeSlotAdditionalInfo(NodeInterface $node): ?array {
+
+    // Searching for a SAS_TIME_SLOTS node referencing the provided node.
+    $node_ref = $this->snpContentHelper->getChild($node);
+    if (!empty($node_ref)) {
+      // Return the value of the additional information field.
+      $additional_info_value = $node_ref->get('field_sas_time_info')->first() ?
+        $node_ref->get('field_sas_time_info')->first()->getValue()['value'] : '';
+      return [
+        'additional_info' => $additional_info_value,
+      ];
+    }
+
+    return NULL;
   }
 
 }

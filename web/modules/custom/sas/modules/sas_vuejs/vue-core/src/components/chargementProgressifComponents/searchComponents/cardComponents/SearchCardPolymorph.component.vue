@@ -1,22 +1,27 @@
 <template>
-  <div :class="`search-card search-card-${mode}`">
+  <div
+    class="search-card"
+    :class="[
+      `search-card-${mode}`,
+    ]"
+  >
     <div class="search-card-grid-col">
       <slot name="header" />
       <template v-if="mode === 'compact'">
         <slot name="address" />
       </template>
-      <slot name="surnumerary" :emitButtonClick="emitButtonClick" />
+      <slot name="surnumerary" :emitButtonClick />
     </div>
 
     <div class="search-card-grid-col">
       <template v-if="mode === 'compact'">
         <div class="search-card-grid-top-right-zone">
-          <slot name="phoneNumber" />
+          <slot name="phoneNumber" :phoneNumber />
           <slot name="generalPractitioner" />
         </div>
       </template>
       <template v-if="mode === 'long'">
-        <slot name="phoneNumber" />
+        <slot name="phoneNumber" :phoneNumber />
         <slot name="address" />
       </template>
       <slot name="additional" />
@@ -38,7 +43,7 @@
       <!--orientation modal-->
       <OrientationModal
         v-if="showOrientationModal"
-        :cardData="cardData"
+        :cardData
         :type="cardTypeOrientation"
         @close="$emit('close-orientation-modal')"
       />
@@ -47,8 +52,12 @@
 </template>
 
 <script>
-import OrientationConst from '@/const/orientation.const';
 
+import {
+  computed,
+} from 'vue';
+
+import OrientationConst from '@/const/orientation.const';
 import OrientationModal from '@/components/searchComponents/orientationModal/OrientationModal.component.vue';
 
 /**
@@ -57,6 +66,7 @@ import OrientationModal from '@/components/searchComponents/orientationModal/Ori
  * It also handles the surnumerary orientation modal.
  */
 export default {
+  name: 'SearchCardPolymorph',
   components: {
     OrientationModal,
   },
@@ -77,15 +87,19 @@ export default {
   emits: [
     'open-orientation-modal',
     'close-orientation-modal',
+    'go-to-cpts-page',
   ],
   setup(props, { emit }) {
     const emitButtonClick = () => {
       emit('open-orientation-modal');
     };
 
+    const phoneNumber = computed(() => props.cardData?.final_phone_number);
+
     return {
       cardTypeOrientation: OrientationConst.SURNUMERAIRE,
       emitButtonClick,
+      phoneNumber,
     };
   },
 };

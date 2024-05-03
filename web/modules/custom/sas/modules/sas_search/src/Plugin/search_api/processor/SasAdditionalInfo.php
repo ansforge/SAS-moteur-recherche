@@ -53,7 +53,8 @@ class SasAdditionalInfo extends SasProcessorBase {
       return;
     }
 
-    if (!$this->snpContentHelper->isSupportSasSnpEntity($entity)) {
+    if (!$this->snpContentHelper->isSupportSasSnpEntity($entity)
+        && !\Drupal::service('sas_structure.helper')->isCpts($entity)) {
       return;
     }
 

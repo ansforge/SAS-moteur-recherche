@@ -39,8 +39,8 @@ export function generateHoursOptions() {
 
 /**
  * transforms a timezone in string to hours
- * Europe/paris => +01:00
  * @param {string} timezoneLabel
+ * @example formatTimeZoneToHour('Europe/Paris') === '+01:00'
 */
 export function formatTimeZoneToHour(timezoneLabel) {
   const currentTimeZone = timezoneLabel || 'Europe/Paris';

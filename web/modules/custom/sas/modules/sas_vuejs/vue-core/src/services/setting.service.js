@@ -30,6 +30,10 @@ export default class SettingClass {
     }
   }
 
+  /**
+   * It also set the token in a temporary cookie on success
+   * @returns {string} the token
+   */
   static async getAggregatorToken() {
     try {
       const res = await ApiPlugin.post(SAS_AGGREGATOR_TOKEN);

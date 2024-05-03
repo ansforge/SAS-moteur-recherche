@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/prefer-default-export
 export { default as useSearchHelper } from '@/composables/useSearchHelper.composable';
 export { default as useSearchMap } from '@/composables/useSearchMap.composable';
 export { default as useUser } from '@/composables/useUser.composable';
@@ -18,3 +17,7 @@ export { default as useSearchCard } from '@/composables/useSearchCard.composable
 export { default as useScroll } from '@/composables/useScroll.composable';
 export { useCombobox } from '@/composables/useCombobox.composable';
 export { useLeafletMap } from '@/composables/useLeafletMap.composable';
+export { useCptsDisplay } from '@/composables/useCpts.composable';
+
+export * from '@/composables/search';
+export { usePagination } from '@/composables/usePagination.composable';

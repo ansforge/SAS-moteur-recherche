@@ -54,6 +54,19 @@ final class StructureConstant {
   }
 
   /**
+   * Get structure types.
+   *
+   * @return string[]
+   */
+  public static function getStructureTypes(): array {
+    return [
+      self::STRUCTURE_TYPE_CPTS,
+      self::STRUCTURE_TYPE_MSP,
+      self::STRUCTURE_TYPE_SOS_MEDECIN,
+    ];
+  }
+
+  /**
    * List of vocabularies used to set type of structure.
    */
   const STRUCTURE_TYPE_TAXONOMIES = [
@@ -61,6 +74,12 @@ final class StructureConstant {
     'type_etablissement_finess',
     'establishment_type',
   ];
+
+  const CONTENT_TYPE_HEALTH_INSTITUTION = 'health_institution';
+
+  const CONTENT_TYPE_FINESS_INSTITUTION = 'finess_institution';
+
+  const CONTENT_TYPE_HEALTH_SERVICE = 'service_de_sante';
 
   /**
    * List of content type names where MSP structure can be store.
@@ -110,9 +129,7 @@ final class StructureConstant {
    * Field list where structure type is set for MSP.
    */
   const STRUCTURE_CPTS_FIELDS = [
-    'field_type_de_service_de_sante',
     'field_establishment_type',
-    'field_finess_establishment_type',
   ];
 
   /**
@@ -147,9 +164,7 @@ final class StructureConstant {
    * Content type where is stored CPTS data.
    */
   const CPTS_CONTENT_TYPE = [
-    'service_de_sante',
     'health_institution',
-    'finess_institution',
   ];
 
   /**
