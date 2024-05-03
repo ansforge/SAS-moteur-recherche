@@ -10,7 +10,6 @@ use Drupal\sante_search_solr\SanteSearchDirectoryForgeRequest;
 use Drupal\sante_search_solr\SanteSearchDirectoryLocalisation;
 use Drupal\sante_search_solr\SanteSearchSolrDirectory;
 use Drupal\sante_search_solr\SanteSearchSolrManager;
-use Drupal\sas_geolocation\Service\SasGeolocationHelperInterface;
 use Drupal\sas_search\Enum\SasSolrQueryConstant;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -48,11 +47,6 @@ class SasSearchManager extends SanteSearchSolrDirectory implements SasSearchMana
   protected $processedParameters;
 
   /**
-   * @var \Drupal\sas_geolocation\Service\SasGeolocationHelperInterface
-   */
-  protected SasGeolocationHelperInterface $sasGeoloc;
-
-  /**
    * SasSearchManager constructor.
    *
    * @param \Drupal\sante_search_solr\SanteSearchDirectoryLocalisation $localisationHelpers
@@ -80,14 +74,12 @@ class SasSearchManager extends SanteSearchSolrDirectory implements SasSearchMana
     CacheBackendInterface $cache,
     SanteSearchDirectoryEtablishment $etablishmentHelpers,
     SasSolrQueryManagerInterface $sas_solr_query_manager,
-    SasSolrPractitionerQueryManager $solr_practitioner_query,
-    SasGeolocationHelperInterface $sas_geolocation_helper
+    SasSolrPractitionerQueryManager $solr_practitioner_query
   ) {
     parent::__construct($localisationHelpers, $forgeRequest, $solrManager, $state,
       $request_stack, $entityTypeManager, $cache, $etablishmentHelpers);
     $this->sasSolrQueryManager = $sas_solr_query_manager;
     $this->solrPractitionerQuery = $solr_practitioner_query;
-    $this->sasGeoloc = $sas_geolocation_helper;
   }
 
   /**

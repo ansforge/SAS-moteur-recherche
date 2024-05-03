@@ -18,7 +18,12 @@
         @mouseenter="cardMouseEnter(card)"
         @mouseleave="cardMouseLeave(card)"
       >
-        <SearchCard :cardData="card" :cardIndex="idx" :key="`card-item-${card.its_nid}`" :miniMap="miniMap" />
+        <SearchCard
+          :cardData="card"
+          :cardIndex="idx"
+          :miniMap
+          :key="`card-item-${card.its_nid}`"
+        />
       </li>
 
       <li v-if="showLoader" class="search-loader">
@@ -89,14 +94,14 @@ export default {
     function cardMouseEnter(card) {
       currentHoveringCard.value = card?.its_nid || null;
       emit('mouseenter-list-card', {
-        markerId: card.its_nid ? card.its_nid : '',
+        markerId: card.its_nid ?? '',
       });
     }
 
     function cardMouseLeave(card) {
       currentHoveringCard.value = null;
       emit('mouseleave-list-card', {
-        markerId: card.its_nid ? card.its_nid : '',
+        markerId: card.its_nid ?? '',
       });
     }
 

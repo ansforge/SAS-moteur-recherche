@@ -1,20 +1,21 @@
 <template>
-  <SearchCardPolymorph
-    :cardData="cardData"
+  <component
+    :is="componentName"
+    :cardData
     :mode="miniMap ? 'long' : 'compact'"
-    :showOrientationModal="showOrientationModal"
+    :showOrientationModal
     @open-orientation-modal="showOrientationModal = true"
     @close-orientation-modal="showOrientationModal = false"
   >
     <template #header>
       <div class="search-card-header-zone">
-        <SearchCardHeader :cardData="cardData" />
-        <SearchCardExtra :cardData="cardData" />
+        <SearchCardHeader :cardData />
+        <SearchCardExtra :cardData />
       </div>
     </template>
 
     <template #address>
-      <div class="search-card-adress-zone">
+      <div class="search-card-address-zone">
         <!--adress-->
         <div class="search-card-doctor-address">
           <a
@@ -61,7 +62,7 @@
       <div class="search-card-calendar-zone">
         <div class="search-card-schedule">
           <SnpCalendar
-            :cardData="cardData"
+            :cardData
             :currentIndex="cardIndex"
             :key="`card-calendar-${cardData.its_nid}`"
           />
@@ -69,9 +70,9 @@
       </div>
     </template>
 
-    <template #phoneNumber>
+    <template #phoneNumber="phoneNumberProps">
       <div class="search-card-phone">
-        <SafeLink v-if="psPhoneNumber" :link="`tel:${psPhoneNumber}`">{{ psPhoneNumber }}</SafeLink>
+        <SafeLink v-if="phoneNumberProps.phoneNumber" :link="`tel:${phoneNumberProps.phoneNumber}`">{{ phoneNumberProps.phoneNumber }}</SafeLink>
       </div>
     </template>
 
@@ -93,22 +94,40 @@
         <p>MÉDECIN TRAITANT</p>
       </div>
     </template>
-  </SearchCardPolymorph>
+  </component>
 </template>
 
 <script>
   import { ref, computed } from 'vue';
 
+  import { useSearchCard } from '@/composables';
   import AdditionalInformation from '@/components/sharedComponents/AdditionalInformation.component.vue';
   import SnpCalendar from '@/components/searchComponents/listViewComponents/SnpCalendar.component.vue';
   import TimeAccordion from '@/components/sharedComponents/TimeAccordion.component.vue';
   import SafeLink from '@/components/sharedComponents/SafeLink.component.vue';
-  import { useSearchCard } from '@/composables';
-  import { useSearchData } from '@/stores';
-  import SearchCardExtra from './SearchCardExtra.component.vue';
-  import SearchCardHeader from './SearchCardHeader.component.vue';
-  import SearchCardPolymorph from './SearchCardPolymorph.component.vue';
 
+  import SearchCardExtra from '@/components/chargementProgressifComponents/searchComponents/cardComponents/SearchCardExtra.component.vue';
+  import SearchCardHeader from '@/components/chargementProgressifComponents/searchComponents/cardComponents/SearchCardHeader.component.vue';
+
+  import SearchCardPolymorph from '@/components/chargementProgressifComponents/searchComponents/cardComponents/SearchCardPolymorph.component.vue';
+  import SearchCardPolymorphCpts from '@/components/search/cards/SearchCardPolymorphCpts.component.vue';
+
+  /**
+   * @typedef {object} Props
+   * @property {import('@/types').ICard} cardData
+   * @property {number} cardIndex
+   * @property {boolean} miniMap
+   */
+
+  /**
+   * The reason this component is written like this is because
+   * we need to adapt the layout for a card based on two distinct factors:
+   *  - The type of the card - managed by the `<component :is>`)
+   *  - The mode (either compact/long) - managed via the slots system inside each child component
+   * This system is advantageous because each child can implement specialized treatment if necessary.
+   * Although it may introduce some redundancies in the way Polymorph cards are written,
+   * the benefits we get from it (mostly in term of flexibility) far outweigh the drawbacks
+   */
   export default {
     components: {
       AdditionalInformation,
@@ -116,6 +135,7 @@
       SearchCardExtra,
       SearchCardHeader,
       SearchCardPolymorph,
+      SearchCardPolymorphCpts,
       SnpCalendar,
       TimeAccordion,
     },
@@ -134,28 +154,20 @@
       },
     },
 
-    setup(props) {
-      const searchDataStore = useSearchData();
+    setup(/** @type {Props} */props) {
       const {
         showAdditionalInfo,
         showSuperNumeraryBtn,
-        showSasParticipation,
         superNumeraryBtnLabel,
       } = useSearchCard();
 
       const showOrientationModal = ref(false);
 
-      /**
-       * if surnuméraire & cpts phone, show cpts phone. Else if there are no cpts phone, show ps phone.
-       */
-      const psPhoneNumber = computed(() => {
-        const isCPTS = props.cardData.its_sas_participation_via === 2;
-
-        return (
-          isCPTS
-          && showSasParticipation(props.cardData)
-          && !searchDataStore.isFiltered
-        ) ? '' : props.cardData?.final_phone_number;
+      const componentName = computed(() => {
+        switch (props.cardData.type) {
+          case 'cpts': return SearchCardPolymorphCpts.name;
+          default: return SearchCardPolymorph.name;
+        }
       });
 
       /**
@@ -176,12 +188,12 @@
       }
 
       return {
-        psPhoneNumber,
         showAdditionalInfo,
         showSuperNumeraryBtn,
         handleAdressClick,
         superNumeraryBtnLabel,
         showOrientationModal,
+        componentName,
       };
     },
   };

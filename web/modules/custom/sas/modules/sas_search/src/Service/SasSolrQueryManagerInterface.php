@@ -12,15 +12,7 @@ use Drupal\sas_search\SasSolrQueryInterface;
 interface SasSolrQueryManagerInterface extends SasSolrQueryInterface {
 
   /**
-   * Get pagination data from query parameters.
-   *
-   * @return mixed
-   *   Array with page, item_per_page and offset data.
-   */
-  public function getPagination();
-
-  /**
-   * Get search type depending to the search "what".
+   * Get search type depending on the search "what".
    *
    * @return string
    *   Search type. Default to 'normal'.

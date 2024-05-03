@@ -1,7 +1,7 @@
 # Etape 3a - Récupération de l'offre de soins selon géolocalisation
 
 Après initialisation et à partir du périmètre de recherche issu de la géolocalisation (point central et rayon), l'offre de soins associée à la spécialité est extraite de l'index du référentiel national.
-- [{Chargement progressif - Offre de soins}](../web/modules/custom/sas/modules/sas_vuejs/vue-core/src/pages/chargement-progressif/Search.page.vue#L244)  
+- [{Chargement progressif - Offre de soins}](../web/modules/custom/sas/modules/sas_vuejs/vue-core/src/pages/chargement-progressif/Search.page.vue#L298)  
 >**[Page] fetchBatchSolr()** = récupère la liste des professionnels de santé correspondant la spécialité dans le périmètre de recherche
 ```javascript
     async function fetchBatchSolr(customFilterSearch = false) {
@@ -49,7 +49,7 @@ A noter le tri appliqué en fonction de la nature de la géolocalisation :
 <img src="./img/step-3a-2.png" height="50%" width="50%" title="Tri de l'offre de soins" />
 
 La construction du payload :
-- [{Offre de soins - Payload}](../web/modules/custom/sas/modules/sas_vuejs/vue-core/src/composables/usePayload.composable.js#L40)
+- [{Offre de soins - Payload}](../web/modules/custom/sas/modules/sas_vuejs/vue-core/src/composables/usePayload.composable.js#L20)
 >**[Model] PayloadClass.createSearchPayload()** = construit le payload et applique les filtres
 ```javascript
   /**
@@ -69,7 +69,7 @@ La construction du payload :
 ...
     if (filters) payloadTemp.filters = filters;
 
-    return payloadTemp.getQuery();
+    return payloadTemp.computeQuery();
   };
 ```
 
@@ -78,25 +78,25 @@ La requête Solr est issue de la transformation du payload.
 >**[Model] PayloadClass.getQuery()** = transforme le payload en requête Solr
 ```javascript
 export default class PayloadClass {
-  getQuery() {
+  computeQuery() {
     let query = '';
 
-    query += Object.keys(this).map((key) => `${key}=${ key === 'filters' ? JSON.stringify(this[key]) : this[key]}`).join('&');
+    query += Object.keys(this).map((key) => `${key}=${key === 'filters' ? JSON.stringify(this[key]) : this[key]}`).join('&');
 
     return query;
   }
 }
 ```
 
-- [{Offre de soins - Appel API index Solr}](../web/modules/custom/sas/modules/sas_vuejs/vue-core/src/services/search.service.js#L22)
+- [{Offre de soins - Appel API index Solr}](../web/modules/custom/sas/modules/sas_vuejs/vue-core/src/services/search.service.js#L28)
 >**[Service] SearchService.getSearchResults()** = récupère la liste des professionnels de santé correspondant la spécialité dans le périmètre de recherche
 ```javascript
-  static async getSearchResults(payload) {
+  static async getSearchResults(payload, baseUrl = SAS_SOLR) {
     // have to remove all quotations marks added by the payload model
     const currentParams = decodeURI(new URLSearchParams(payload).toString());
 
     try {
-      const result = await ApiPlugin.get(`${SAS_SOLR}?${currentParams}`);
+      const result = await ApiPlugin.get(`${baseUrl}?${currentParams}`);
       return result?.data;
     } catch (e) {
       console.error('Error fetching getResults \n', e);

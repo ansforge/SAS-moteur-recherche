@@ -20,6 +20,14 @@ interface SasSolrQueryInterface {
   public function checkQueryParameters(): ?array;
 
   /**
+   * Get pagination data from query parameters.
+   *
+   * @return mixed
+   *   Array with page, item_per_page and offset data.
+   */
+  public function getPagination();
+
+  /**
    * Get solr server URL to make select request.
    *
    * @return string

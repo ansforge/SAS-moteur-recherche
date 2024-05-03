@@ -3,39 +3,19 @@ import { routeHelper } from '@/helpers';
 import { useLrmData } from '@/stores';
 import { PayloadModel } from '@/models';
 
+/**
+ * @typedef {object} PaginationData
+ * @property {number} rand_id
+ * @property {number} qty
+ * @property {number} page
+ */
+
 export default () => {
   /**
-   * Create filters scoped and add a custom filter if current user is IOA but not OSNP
-   * @param {Array} filters - contains the ids of filters checked by user
-   * @param {UserModel} currentUser - is the current user connected
-   * @return {Array}
-   */
-  const createFiltersMapped = (filters, currentUser) => {
-    const filtersTemp = {};
-    if (filters && filters.length) {
-      filters.forEach((cat) => {
-        const listIdChecked = cat.items.filter((fil) => fil.checked).map((fil) => fil.idItems);
-        if (cat.name === 'customParameters') {
-          if (listIdChecked.includes('sas_participation')) {
-            filtersTemp['bs_sas_overbooking'] = ['TRUE'];
-          }
-
-          if (listIdChecked.includes('reorientation')) {
-            filtersTemp['bs_sas_forfait_reo'] = ['TRUE'];
-          }
-        } else if (listIdChecked.length) filtersTemp[cat.key || cat.name] = listIdChecked;
-      });
-    }
-
-    if (currentUser.value?.isRegulateurIOA && !currentUser.value?.isRegulateurOSNP) filtersTemp['bs_sas_forfait_reo'] = ['TRUE'];
-
-    return filtersTemp;
-  };
-
-  /**
    * Creation of the solr search payload
-   * @param {object} _ - contains the ids of filters checked by user
+   * @param {object} _
    * @param {Array} _.filters - contains the ids of filters checked by user
+   * @param {PaginationData} _.paginationData
    */
   const createSearchPayload = ({ filters, paginationData, settings = {} }) => {
     const payloadTemp = new PayloadModel();
@@ -69,7 +49,7 @@ export default () => {
 
     if (filters) payloadTemp.filters = filters;
 
-    return payloadTemp.getQuery();
+    return payloadTemp.computeQuery();
   };
 
   /**
@@ -95,9 +75,9 @@ export default () => {
 
   /**
    * Creation of the aggregator payload
-   * @param {Array} results - contains the list of the results
-   * @param {Boolean} isFiltered - if the filter custom availabilty is checked
-   * @param {Object} departments - contains the departmenent of the search result
+   * @param {import('@/types').ICard[]} results - contains the list of the results
+   * @param {boolean} isFiltered - if the filter custom availabilty is checked
+   * @param {object} departments - contains the departmenent of the search result
    */
   const createAggregatorPayload = (results, isFiltered, departments) => {
     const searchType = isFiltered ? 'filtered' : 'not filtered';
@@ -140,6 +120,5 @@ export default () => {
     createSearchPayload,
     createSasApiPayload,
     createAggregatorPayload,
-    createFiltersMapped,
   };
 };

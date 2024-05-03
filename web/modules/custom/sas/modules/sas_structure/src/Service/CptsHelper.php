@@ -2,11 +2,12 @@
 
 namespace Drupal\sas_structure\Service;
 
-use Drupal\Core\Cache\CacheBackendInterface;
-use Drupal\Core\Database\Connection;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Path\CurrentPathStack;
 use Drupal\Core\Url;
+use Drupal\sas_directory_pages\Entity\CareDealsSas;
+use Drupal\sas_directory_pages\Entity\HealthInstitutionSas;
 use Drupal\sas_directory_pages\Entity\ProfessionnelDeSanteSas;
 use Drupal\sas_entity_snp_user\Enum\SnpUserDataConstant;
 use Drupal\sas_entity_snp_user\Service\SasSnpUserDataHelper;
@@ -43,25 +44,16 @@ class CptsHelper implements CptsHelperInterface {
   protected SasEffectorHelperInterface $sasEffectorHelper;
 
   /**
+   * @var \Drupal\sas_structure\Service\StructureHelper
+   */
+  protected StructureHelper $structureHelper;
+
+  /**
    * Sas user data helper.
    *
    * @var Drupal\sas_entity_snp_user\Service\SasSnpUserDataHelper
    */
   protected SasSnpUserDataHelper $sasSnpUserDataHelper;
-
-  /**
-   * Cache backend service.
-   *
-   * @var \Drupal\Core\Cache\CacheBackendInterface
-   */
-  protected CacheBackendInterface $cache;
-
-  /**
-   * Database service.
-   *
-   * @var \Drupal\Core\Database\Connection
-   */
-  protected Connection $database;
 
   /**
    * The current path.
@@ -76,28 +68,63 @@ class CptsHelper implements CptsHelperInterface {
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
    *   Entity type manager.
    * @param \Drupal\sas_user\Service\SasEffectorHelperInterface $sasEffectorHelper
-   * @param FinessStructureHelperInterface $finess_StructureHelper
+   * @param FinessStructureHelperInterface $finessStructureHelper
    * @param \Drupal\sas_entity_snp_user\Service\SasSnpUserDataHelper $sasSnpUserDataHelper
-   * @param \Drupal\Core\Cache\CacheBackendInterface $cache
-   * @param \Drupal\Core\Database\Connection $database
+   * @param \Drupal\sas_structure\Service\StructureHelper $structureHelper
    * @param \Drupal\Core\Path\CurrentPathStack $current_path
    */
   public function __construct(
     EntityTypeManagerInterface $entityTypeManager,
     SasEffectorHelperInterface $sasEffectorHelper,
-    FinessStructureHelperInterface $finess_StructureHelper,
+    FinessStructureHelperInterface $finessStructureHelper,
     SasSnpUserDataHelper $sasSnpUserDataHelper,
-    CacheBackendInterface $cache,
-    Connection $database,
+    StructureHelper $structureHelper,
     CurrentPathStack $current_path
   ) {
     $this->entityTypeManager = $entityTypeManager;
     $this->sasEffectorHelper = $sasEffectorHelper;
-    $this->finessStructureHelper = $finess_StructureHelper;
+    $this->finessStructureHelper = $finessStructureHelper;
+    $this->structureHelper = $structureHelper;
     $this->sasSnpUserDataHelper = $sasSnpUserDataHelper;
-    $this->cache = $cache;
-    $this->database = $database;
     $this->currentPath = $current_path;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public function getCptsInseeList(EntityInterface $structure): array {
+    if (
+      !$structure instanceof HealthInstitutionSas
+      || !$this->structureHelper->isCpts($structure)
+    ) {
+      return [];
+    }
+
+    return $structure->getInterventionCityInseeList();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public function getCptsCareDealPhones(EntityInterface $structure): array {
+    if (
+      !$structure instanceof HealthInstitutionSas
+      || !$this->structureHelper->isCpts($structure)
+    ) {
+      return [];
+    }
+
+    $phones = [];
+    $care_deals = $structure->getCareDeals();
+    if (!empty($care_deals)) {
+      foreach ($care_deals as $care_deal) {
+        if ($care_deal instanceof CareDealsSas) {
+          $phones = array_merge($phones, $care_deal->getCareDealsPhones());
+        }
+      }
+    }
+
+    return $phones;
   }
 
   /**
@@ -108,8 +135,12 @@ class CptsHelper implements CptsHelperInterface {
 
     foreach ($finessNumbers as $finessNumber) {
       // Get the CPTS from its FINESS number.
-      $cptsNode = $this->finessStructureHelper->getStructureByFiness($finessNumber);
-      $cptsTitle = $cptsNode ? $cptsNode->getTitle() : '';
+      $cptsNode = $this->finessStructureHelper
+        ->getStructureByFiness($finessNumber, StructureConstant::CONTENT_TYPE_HEALTH_INSTITUTION);
+
+      if (NULL === $cptsNode) {
+        continue;
+      }
 
       // Get the RPPS for the given FINESS number from sas_snp_user_data Table.
       $usersData = $this->getUserDataForCpts($finessNumber);
@@ -120,7 +151,8 @@ class CptsHelper implements CptsHelperInterface {
       }
 
       $cptsDetailsList[] = [
-        'title' => $cptsTitle,
+        'id' => $cptsNode ? $cptsNode->id() : '',
+        'title' => $cptsNode->getTitle(),
         'finess' => $finessNumber,
         'effectors' => $effectorsList,
       ];

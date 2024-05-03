@@ -51,8 +51,10 @@ interface StructureHelperInterface {
    *
    * @param string $finess
    *   Structure FINESS number.
+   * @param string|null $structure_content_type
+   *   Content type to filter structure search.
    */
-  public function getStructureDataByFiness(string $finess);
+  public function getStructureDataByFiness(string $finess, string $structure_content_type = NULL);
 
   /**
    * Get term id for a given structure type.
@@ -68,11 +70,23 @@ interface StructureHelperInterface {
   /**
    * Get structure data.
    *
-   * @param string $id_type
+   * @param string $id_structure
    * @param string $id
    *
    * @return mixed
    */
-  public function getStructureBasicInfo(string $id_type, string $id);
+  public function getStructureBasicInfo(string $id_structure, string $id): mixed;
+
+  /**
+   * Get data cpts/msp.
+   *
+   * @param string $id
+   *   Numéro finess.
+   * @param string $content_type
+   *   Content type.
+   *
+   * @return array
+   */
+  public function getDataStructure(string $id, string $content_type): array;
 
 }

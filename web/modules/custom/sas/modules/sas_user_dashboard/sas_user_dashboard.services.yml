@@ -10,6 +10,7 @@ services:
       - '@current_route_match'
       - '@current_user'
       - '@sas_structure.sos_medecin'
+      - '@sas_snp.content_helper'
 
   sas_user_dashboard.event_subscriber:
     class: Drupal\sas_user_dashboard\EventSubscriber\SasUserDashboardSubscriber

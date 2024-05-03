@@ -8,8 +8,10 @@
 
       <PopinInfo
         buttonTitle="Éditer"
-        :timeslotNid="timeslotNid"
-        :isDisabled="isBtnDisabled"
+        :sheetNid
+        :userIdNat
+        :isDisabled
+        :isAggregOnlyAddress
         source="dashboard"
         @update-additional-info="getAdditionalInfo"
         @show-loader="handleLoader"
@@ -32,7 +34,7 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import PopinInfo from '@/components/calendars/PopinInfo.component.vue';
 import RingLoader from '@/components/sharedComponents/loader/RingLoader.component.vue';
 
@@ -42,7 +44,11 @@ export default {
     RingLoader,
   },
   props: {
-    timeslotNid: {
+    sheetNid: {
+      type: Number,
+      default: null,
+    },
+    userIdNat: {
       type: String,
       default: '',
     },
@@ -50,11 +56,13 @@ export default {
       type: Boolean,
       default: false,
     },
+    isAggregOnlyAddress: {
+      type: Boolean,
+      default: false,
+    },
   },
-  setup(props) {
+  setup() {
     const additionalInformation = ref('');
-
-    const isBtnDisabled = computed(() => props.isDisabled || !props.timeslotNid || !props.timeslotNid.length);
 
     function getAdditionalInfo(val) {
       additionalInformation.value = val.additionalInfo;
@@ -72,7 +80,6 @@ export default {
       getAdditionalInfo,
       handleLoader,
       showLoader,
-      isBtnDisabled,
     };
   },
 };

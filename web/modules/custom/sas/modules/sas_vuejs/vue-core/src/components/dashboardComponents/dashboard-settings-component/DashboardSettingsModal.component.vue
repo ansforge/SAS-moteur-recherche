@@ -528,9 +528,17 @@ export default {
         }
         // for fetch structure label if participation via CPTS, MSP or SOS médecins
         if (form.value.sasParticipationVia > 1) {
+          const getLabelFromSasParticipationId = (id) => {
+            switch (id) {
+              case 2: return 'cpts';
+              case 3: return 'msp';
+              case 4: return 'sos';
+              default: return '';
+            }
+          };
           showStructureLoader.value = true;
+          const idType = getLabelFromSasParticipationId(form.value.sasParticipationVia);
           const isSOSMedecins = form.value.sasParticipationVia === 4;
-          const idType = isSOSMedecins ? 'siret' : 'finess';
           const structureId = isSOSMedecins ? siret : structure_finess;
           const res = await DashboardService.fetchAutocompleteLabel(idType, structureId);
           structureAutocompleteLabel.value = !_isEmpty(res) ? `${res.title} (${res.id})` : '';

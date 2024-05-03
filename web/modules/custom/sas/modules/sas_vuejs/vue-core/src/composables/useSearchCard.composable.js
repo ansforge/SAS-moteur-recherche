@@ -23,11 +23,16 @@ export default () => {
    * @returns {boolean}
    */
   function showSasParticipation(cardData) {
-    return currentUser.value.isRegulateurOSNP && cardData.bs_sas_participation;
+    return (
+      currentUser.value.isRegulateurOSNP
+      && (cardData.bs_sas_participation || cardData.type === 'cpts')
+    );
   }
 
   const showSuperNumeraryBtn = (cardData) => (
-    showSasParticipation(cardData) && isBsSasParticipationChecked.value
+    showSasParticipation(cardData)
+    && isBsSasParticipationChecked.value
+    && cardData.type !== 'cpts'
   );
 
   function showAdditionalInfo(cardData) {

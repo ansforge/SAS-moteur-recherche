@@ -3,6 +3,7 @@
 namespace Drupal\sas_structure\Service;
 
 use Drupal\node\NodeInterface;
+use Drupal\sas_structure\Entity\SasStructureSettings;
 use Drupal\user\UserInterface;
 
 /**
@@ -17,7 +18,7 @@ interface StructureSettingsHelperInterface {
   /**
    * Get matching 'sas_structure_settings' entities filtered by criteria.
    */
-  public function getSettingsBy(array $filters): array;
+  public function getSettingsBy(array $filters, bool $to_array = TRUE): SasStructureSettings|array;
 
   /**
    * Get link to structure setting edition form.

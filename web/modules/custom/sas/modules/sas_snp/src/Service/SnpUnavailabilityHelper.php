@@ -171,6 +171,8 @@ class SnpUnavailabilityHelper implements SnpUnavailabilityHelperInterface {
           unset($nodes[$vacation->field_sas_time_slot_ref_target_id]['slots'][$key]);
         }
       }
+      // Force array reindexation to always get key like 0,1,2,3, ... and not 2,3,5,7,....
+      $nodes[$vacation->field_sas_time_slot_ref_target_id]['slots'] = array_values($nodes[$vacation->field_sas_time_slot_ref_target_id]['slots']);
     }
 
     return $nodes;

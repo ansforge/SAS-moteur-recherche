@@ -239,7 +239,7 @@ class StructureHelper implements StructureHelperInterface {
   /**
    * {@inheritDoc}
    */
-  public function getStructureDataByFiness(string $finess) {
+  public function getStructureDataByFiness(string $finess, string $structure_content_type = NULL) {
     $query = $this->database->select('node_field_data', 'n');
     $query->fields('n', ['nid', 'title']);
     $query->leftJoin('node__field_identifiant_finess', 'fif', 'fif.entity_id = n.nid');
@@ -247,6 +247,10 @@ class StructureHelper implements StructureHelperInterface {
     $query->addField('fif', 'field_identifiant_finess_value');
     $query->addField('ftf', 'field_telephone_fixe_value');
     $query->condition('fif.field_identifiant_finess_value', $finess);
+
+    if (!empty($structure_content_type)) {
+      $query->condition('type', $structure_content_type);
+    }
     $result = $query->execute()->fetchAll();
 
     return !empty($result) ? reset($result) : NULL;
@@ -255,14 +259,14 @@ class StructureHelper implements StructureHelperInterface {
   /**
    * {@inheritDoc}
    */
-  public function getStructureBasicInfo(string $id_type, string $id) {
+  public function getStructureBasicInfo(string $id_structure, string $id): mixed {
     $structure = [
       'id' => $id,
-      'id_type' => $id_type,
+      'id_structure' => $id_structure,
     ];
 
-    switch ($id_type) {
-      case StructureConstant::ID_TYPE_SIRET:
+    switch ($id_structure) {
+      case StructureConstant::STRUCTURE_TYPE_SOS_MEDECIN:
         $name = $this->sosMedecinHelper->getAssociationNameBySiret($id);
 
         if (empty($name)) {
@@ -272,15 +276,21 @@ class StructureHelper implements StructureHelperInterface {
         $structure['title'] = $name;
         break;
 
-      case StructureConstant::ID_TYPE_FINESS:
-        $data = $this->getStructureDataByFiness($id);
+      case StructureConstant::STRUCTURE_TYPE_CPTS:
+        $cpts = $this->getDataStructure(
+          $id,
+          StructureConstant::CONTENT_TYPE_HEALTH_INSTITUTION
+        );
+        $structure['title'] = $cpts['title'];
+        $structure['nid'] = $cpts['nid'];
+        break;
 
-        if (empty($data)) {
-          return [];
-        }
-
-        $structure['title'] = $data->title;
-        $structure['nid'] = $data->nid;
+      case StructureConstant::STRUCTURE_TYPE_MSP:
+        $msp = $this->getDataStructure(
+          $id
+        );
+        $structure['title'] = $msp['title'];
+        $structure['nid'] = $msp['nid'];
         break;
 
       default:
@@ -288,6 +298,25 @@ class StructureHelper implements StructureHelperInterface {
     }
 
     return $structure;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public function getDataStructure(string $id, string $content_type = NULL): array {
+    $data = $this->getStructureDataByFiness(
+      $id,
+      $content_type
+    );
+
+    if (empty($data)) {
+      return [];
+    }
+
+    return [
+      'title' => $data->title,
+      'nid' => $data->nid,
+    ];
   }
 
 }

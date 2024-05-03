@@ -34,6 +34,7 @@
     </p>
 
     <Switch
+      :current="errorCode"
       :cases="[
         {
           id: 'sas_pf_001',
@@ -44,7 +45,6 @@
           value: `Le médecin traitant n'a pas été renseigné dans le logiciel de régulation médicale`,
         },
       ]"
-      :current="errorCode"
     >
       <template #default="current">
         <p v-if="current.case" class="search-header--subtitle">
@@ -59,20 +59,29 @@
 import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import {
-  useSearchData,
   useLrmData,
   useGeolocationData,
  } from '@/stores';
 import { routeHelper, formatTimeZoneToHour } from '@/helpers';
 import Switch from '@/components/sharedComponents/Switch.component.vue';
 
+/**
+ * @typedef {object} Props
+ * @property {import('@/types').ICard[]} cards
+ */
+
 export default {
   components: {
     Switch,
   },
-  setup() {
+  props: {
+    cards: {
+      type: Object,
+      default: () => ({}),
+    },
+  },
+  setup(/** @type {Props} */props) {
     const lrmDataStore = useLrmData();
-    const searchDataStore = useSearchData();
     const geolocationStore = useGeolocationData();
     const {
       hasFailed: geolocationHasFailed,
@@ -98,16 +107,11 @@ export default {
 
     const showLocalTimeZoneLabel = computed(() => {
       const currentBrowserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      const currentResults = searchDataStore.isFiltered
-      ? searchDataStore.allResultsWithSlots
-      : searchDataStore.allResultsWithoutSlots;
 
-      const showTimezone = currentResults.filter((card) => (
+      return props.cards.some((card) => (
         card.calculatedTimeZone
         && formatTimeZoneToHour(card.calculatedTimeZone) !== formatTimeZoneToHour(currentBrowserTimezone)
       ));
-
-      return showTimezone.length > 0;
     });
 
     const errorCode = computed(() => (lrmDataStore.preferredDoctorResponseError?.error_code_sas ?? ''));

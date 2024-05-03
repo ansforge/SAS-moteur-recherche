@@ -54,7 +54,6 @@ class TerritoryManager implements TerritoryManagerInterface {
               'id' => $sas_api_id,
             ],
             'body' => [
-              'id' => $sas_api_id,
               'name' => $term->getName(),
             ],
           ];

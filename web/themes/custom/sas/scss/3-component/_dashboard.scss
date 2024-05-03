@@ -65,6 +65,10 @@
     margin-bottom: 5px;
   }
 
+  .link-ps {
+    float: right;
+  }
+
   .list-cpts {
     list-style: none;
     padding-left: 0;
@@ -194,6 +198,15 @@
         }
       }
     }
+  }
+}
+
+.ui-dialog .ui-dialog-buttonpane .form-actions.ui-dialog-buttonset {
+  .btn-info.form-submit,
+  .btn-info.form-submit:hover {
+    background-color: $sas-blue4;
+    border: 1px solid $sas-blue4;
+    box-shadow: none;
   }
 }
 

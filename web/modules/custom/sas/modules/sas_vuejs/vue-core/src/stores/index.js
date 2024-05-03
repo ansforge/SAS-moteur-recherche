@@ -6,3 +6,6 @@ export * from './useSearchData.store';
 export * from './useSearchType.store';
 export * from './useFilterDictionnary.store';
 export * from './useGeolocation.store';
+export * from './useMarketPlaceEditorsList.store';
+export * from './useCpts.store';
+export * from './useCardCollection.store';

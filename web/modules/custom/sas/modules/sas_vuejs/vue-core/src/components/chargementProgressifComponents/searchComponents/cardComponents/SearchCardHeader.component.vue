@@ -1,15 +1,5 @@
 <template>
-  <SearchCardHeadline
-    :showSasParticipation="showSasParticipation(cardData)"
-    :showSasForfait="showSasForfait"
-    :defaultPicto="cardData.defaultPicto"
-    :isSOSMedecin="cardData.isSOSMedecin"
-    :cardUrl="cardUrl"
-    :cardTitle="cardData.cardTitle"
-    :cardSubTitle="cardData.cardSubTitle"
-    :sasParticipationLabel="cardData.sasParticipationLabel"
-    :sasForfaitReuLabel="cardData.sasForfaitReuLabel"
-  />
+  <SearchCardHeadline v-bind="headlineProps" />
 
   <!--SOS Médecins PFG-->
   <template v-if="cardData.isSOSMedecin">
@@ -73,22 +63,29 @@
   import { computed } from 'vue';
 
   import _isEmpty from 'lodash.isempty';
+
+  import { useSearchCard } from '@/composables';
+
+  import SearchCardHeadline from '@/components/chargementProgressifComponents/searchComponents/cardComponents/SearchCardHeadline.component.vue';
+  import SafeLink from '@/components/sharedComponents/SafeLink.component.vue';
+
+  import { epurate } from '@/helpers';
+
   import {
     useUserData,
     useSearchData,
     useGeolocationData,
   } from '@/stores';
-  import { useSearchCard } from '@/composables';
-  import SafeLink from '@/components/sharedComponents/SafeLink.component.vue';
 
-  import { epurate } from '@/helpers';
-
-  import SearchCardHeadline from './SearchCardHeadline.component.vue';
+  /**
+   * @typedef {object} Props
+   * @property {import('@/types').ICard} cardData
+   */
 
   export default {
     components: {
-      SafeLink,
       SearchCardHeadline,
+      SafeLink,
     },
     props: {
       cardData: {
@@ -96,7 +93,7 @@
         default: () => ({}),
       },
     },
-    setup(props) {
+    setup(/** @type {Props} */props) {
       const userDataStore = useUserData();
       const searchDataStore = useSearchData();
       const geolocationStore = useGeolocationData();
@@ -155,25 +152,47 @@
 
       const cptsInfos = computed(() => {
         const {
-          ss_sas_cpts_phone: phone,
+          // sm_sas_cpts_phone: phones,
           ss_sas_cpts_label: label,
         } = props.cardData;
 
         return epurate({
           label,
-          phone,
+          // Temporary: cf. SAS-7743
+          // phone: phones?.[0],
         });
       });
 
+      const headlineProps = computed(() => {
+        const {
+          defaultPicto,
+          isSOSMedecin,
+          cardTitle,
+          cardSubTitle,
+          sasParticipationLabel,
+          sasForfaitReuLabel,
+        } = props.cardData;
+
+        return {
+          showSasParticipation: showSasParticipation(props.cardData),
+          showSasForfait: showSasForfait.value,
+          cardUrl: cardUrl.value,
+          defaultPicto,
+          isSOSMedecin,
+          cardTitle,
+          cardSubTitle,
+          sasParticipationLabel,
+          sasForfaitReuLabel,
+        };
+      });
+
       return {
-        showSasParticipation,
-        showSasForfait,
-        cardUrl,
         specialities,
         showDistance,
         showCptsInfos,
         getDistance,
         cptsInfos,
+        headlineProps,
       };
     },
   };

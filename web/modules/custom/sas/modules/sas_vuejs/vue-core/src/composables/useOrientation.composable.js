@@ -26,13 +26,6 @@ export default () => {
   };
 
   /**
-   * return null value if we don't have value (SQL error)
-   */
-  function checkNullValue(val) {
-    return val || null;
-  }
-
-  /**
    * Format date and time to post to server side with GMT+00:00
    * need date string
    * @returns {string}
@@ -94,7 +87,6 @@ export default () => {
   return {
     write,
     hoursSlotFormatted,
-    checkNullValue,
     formatDateTime,
     setOrientationRegistration,
   };

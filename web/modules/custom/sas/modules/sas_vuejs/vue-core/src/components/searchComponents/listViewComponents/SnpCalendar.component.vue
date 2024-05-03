@@ -116,7 +116,7 @@ export default {
       fetchSlotList();
     });
 
-    watch(props.cardData, () => {
+    watch(() => props.cardData, () => {
       fetchSlotList();
     });
 

@@ -10,7 +10,9 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\node\Entity\Node;
 use Drupal\sas_keycloak\Service\SasKeycloakPscUserInterface;
 use Drupal\sas_orientation\Enum\OrientationStrategy;
+use Drupal\sas_search_index\Service\SasSearchIndexHelperInterface;
 use Drupal\sas_snp\Enum\SnpConstant;
+use Drupal\sas_snp\Service\SnpContentHelper;
 use Drupal\sas_snp\Service\SnpUnavailabilityHelper;
 use Drupal\sas_user_dashboard\Services\DashboardUserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -51,13 +53,6 @@ class SasSnpController extends ControllerBase {
   protected $sasSnpManager;
 
   /**
-   * Search results formatter.
-   *
-   * @var \Drupal\sas_snp\Service\SnpSlotsFormatter
-   */
-  protected $snpSlotsFormatter;
-
-  /**
    * ProSanteConnect user manager.
    *
    * @var \Drupal\sas_keycloak\Service\SasKeycloakPscUserInterface
@@ -79,6 +74,18 @@ class SasSnpController extends ControllerBase {
   protected SnpUnavailabilityHelper $sasSnpUnavailabilityHelper;
 
   /**
+   * UserGetDelegations service.
+   *
+   * @var \Drupal\sas_snp\Service\SnpContentHelper
+   */
+  protected SnpContentHelper $sasSnpContentHelper;
+
+  /**
+   * @var \Drupal\sas_search_index\Service\SasSearchIndexHelperInterface
+   */
+  protected SasSearchIndexHelperInterface $sasSearchIndexHelper;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
@@ -86,10 +93,11 @@ class SasSnpController extends ControllerBase {
     $instance->sasCoreService = $container->get('sas_core.service');
     $instance->sasApiClientService = $container->get('sas_api_client.service');
     $instance->sasSnpManager = $container->get('sas_snp.manager');
-    $instance->snpSlotsFormatter = $container->get('sas_snp.slots_formatter');
     $instance->pscUser = $container->get('sas_keycloak.psc_user');
     $instance->dashboard = $container->get('sas_user_dashboard.dashboard');
     $instance->sasSnpUnavailabilityHelper = $container->get('sas_snp.unavailability_helper');
+    $instance->sasSnpContentHelper = $container->get('sas_snp.content_helper');
+    $instance->sasSearchIndexHelper = $container->get('sas_search_index.helper');
 
     return $instance;
   }
@@ -572,6 +580,10 @@ class SasSnpController extends ControllerBase {
         $node->setChangedTime(time());
         $node->save();
         $this->sasSnpManager->updateSnpAvailability($node);
+        $parent_node = $this->sasSnpContentHelper->getParent($node);
+        if (!empty($parent_node)) {
+          $this->sasSearchIndexHelper->indexSpecificItem($parent_node->id());
+        }
         $response = 'Indisponibilite mise a jours';
         break;
 
@@ -682,8 +694,7 @@ class SasSnpController extends ControllerBase {
           $formatedResponse[$value['nid']] = $value;
         }
         unset($response);
-        $response = $this->sasSnpUnavailabilityHelper->getUnavalaibilities($formatedResponse);
-        $slots = $this->snpSlotsFormatter->orderByTimestamp($response);
+        $slots = $this->sasSnpUnavailabilityHelper->getUnavalaibilities($formatedResponse);
       }
     }
 
