@@ -12,6 +12,10 @@ La plateforme numérique SAS est un outil dédié aux professionnels de la chaî
  2. API métiers (géolocalisation, calendrier, etc.)
  3. Agrégateur de créneaux (API FHIR éditeurs)
 
+Remarque :
+Ce repository ne contient pas l'intégralité du code permettant de cloner et déployer l'applicatif, en particulier des éléments mutualisés du socle ou des services tiers qui n'impactent pas la logique de l'algorithme de recherche.
+Il n'y a donc pas de documentation relative à l'installation de l'application.
+
 # Algorithme du moteur de recherche
 
 Le présent document a pour but de faciliter la navigation au sein du code source de la plateforme numérique SAS. Le lecteur pourra suivre le déroulé de l'algorithme et accéder directement au module du code en charge des différentes étapes.
