@@ -91,11 +91,11 @@ La requête de recherche interroge dans un premier temps le service de géolocal
   }
 ```
 
-L'API de géolocalisation retourne un tableau clé-valeur `$geoloc_result` contenant le détail de l'adresse, sa géolocalisation et le rayon de recherche associé (dépendant notamment du département, sa population et du nombre de professionnels de santé par habitant), qui alimente un objet de classe `SasLocation`.    
+L'API de géolocalisation retourne un tableau clé-valeur `$geoloc_result` contenant le détail de l'adresse, sa géolocalisation et le rayon de recherche associé (dépendant notamment du département, sa population et du nombre de professionnels de santé par habitant), qui alimente un objet de classe `SasLocation`.<br><br>
 Le rayon de recherche a été établi en se basant sur le rapport de l'[Observatoire des Territoires - Densité de l'offre de santé par professionnel](https://www.observatoire-des-territoires.gouv.fr/densite-de-loffre-de-sante-par-professionnel) (base permanente des équipements de 2020 et recensement de population de 2018).  
-Les données exploitées sont acessibles via le fichier ci-joint : [ANCT_Densite_Medecins_generalistes_liberaux_2020.ods](./data/ANCT_Densite_Medecins_generalistes_liberaux_2020.ods)    
+Les données exploitées sont acessibles via le fichier ci-joint : [ANCT_Densite_Medecins_generalistes_liberaux_2020.ods](./data/ANCT_Densite_Medecins_generalistes_liberaux_2020.ods)<br><br>
  A partir de ces données, le rayon minimal permettant d'assurer la présence d'un professionnel de santé dans la zone de recherche correspondante a été calculé. Enfin, une approximation a été réalisée pour déterminer le rayon finalement applicable par département avec pour objectif d'assurer la présence d'au moins 5 professionnels de santé qui in fine disposeraient de créneaux disponibles. Cette valeur constitue le rayon par défaut applicable à un territoire/département, qui reste personnalisable selon les contraintes locales et retours terrain.  
- Le fichier correspondant aux zones de recherche applicables en 2025 est accessible bia le fichier ci-joint : [SAS_Rayons_zones_de_recherche_2025.ods](./data/SAS_Rayons_zones_de_recherche_2025.ods)    
+ Le fichier correspondant aux zones de recherche applicables en 2025 est accessible bia le fichier ci-joint : [SAS_Rayons_zones_de_recherche_2025.ods](./data/SAS_Rayons_zones_de_recherche_2025.ods)<br><br>
  A noter enfin que si la zone de recherche est un département, parce que la géolocalisation n'a pu aboutir à un objet plus précis, le barycentre du département est considéré comme le centre de la zone de recherche et le rayon a été déterminé pour inclure tout le département lui-même.  
 - [{Objet adresse géolocalisée}](../web/modules/custom/sas/modules/sas_geolocation/src/Model/SasLocation.php#L10)  
 >**[Model] SasLocation.create()** = chargement du détail du lieu de recherche géolocalisaté dans un objet  
