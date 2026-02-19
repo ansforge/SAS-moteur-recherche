@@ -1,0 +1,64 @@
+publiccodeYmlVersion: 0.5.0
+name: Plateforme numérique SAS
+url: https://github.com/ansforge/SAS-moteur-recherche
+landingURL: https://sas.sante.fr
+softwareVersion: "1.2"
+releaseDate: 2025-03-31
+platforms:
+  - web
+categories:
+  - other
+organisation:
+  name: Agence du numérique en santé
+  uri: https://esante.gouv.fr
+fundedBy:
+  - name: Ministère de la Santé
+    uri: https://sante.gouv.fr
+usedBy:
+  - Régulateur
+  - Médecin
+developmentStatus: stable
+softwareType: standalone/web
+intendedAudience:
+  countries:
+    - FR
+  scope:
+    - healthcare
+description:
+  fr:
+    localisedName: Service d'accès aux soins
+    shortDescription: La plateforme SAS est un outil dédié aux professionnels de la
+      chaîne de régulation médicale pour faciliter l'orientation vers la
+      médecine de ville.
+    longDescription: >-
+      Le Service d’accès aux soins est un nouveau service d'orientation de la
+      population dans leur parcours de soins.
+
+
+      Pour le patient confronté à un besoin de soins urgents ou non programmés
+      et lorsque l'accès à son médecin traitant n'est pas possible, le SAS doit
+      permettre d'accéder, à toute heure et à distance à un professionnel de
+      santé.
+
+
+      La plateforme numérique SAS est un outil dédié aux professionnels de la
+      chaîne de régulation médicale pour faciliter l'orientation vers la
+      médecine de ville.
+    documentation: https://esante.gouv.fr/domaine-urgences/sas
+    apiDocumentation: https://interop.esante.gouv.fr/ig/fhir/sas
+    features:
+      - Agrégateur de créneaux de disponibilité pour des soins non programmés
+    awards:
+      - "0"
+legal:
+  license: MIT
+maintenance:
+  type: contract
+  contractors:
+    - name: Klee
+      until: 2027-10-12
+    - null
+localisation:
+  localisationReady: true
+  availableLanguages:
+    - fr
