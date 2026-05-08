@@ -2,7 +2,7 @@ import ROLES from '@/const/roles.const';
 import { FaqService, SettingService } from '@/services';
 import { ThemesModel } from '@/models';
 
-export default () => {
+const useFaq = () => {
   /**
    * @description récupérer le theme FAQ à partir du role de l'utilisateur
    * @param roles
@@ -60,3 +60,5 @@ export default () => {
     getTerritories,
   };
 };
+
+export default useFaq;
