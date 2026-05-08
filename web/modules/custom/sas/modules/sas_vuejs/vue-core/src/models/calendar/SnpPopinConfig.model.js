@@ -15,21 +15,7 @@ export default class SnpPopinConfigModel {
       titre_type_consultation: '',
     },
     group5 = { jour: '', titre_recurrence: '' },
-  } = {
-    group1: { nom_snp: '', sous_titre: '', titre: '' },
-    group2: { a: '', date: '', de: '' },
-    group3: { consultation: '', rendez_vous: '' },
-    group4: {
-      cabinet: '',
-      domicile: '',
-      initial_cabinet: '',
-      initial_domicile: '',
-      initial_teleconsultation: '',
-      teleconsultation: '',
-      titre_type_consultation: '',
-    },
-    group5: { jours: '', titre_recurrence: '' },
-  }) {
+  } = {}) {
     this.group1 = { nameSnp: group1.nom_snp, subtitle: group1.sous_titre, title: group1.titre };
     this.group2 = { to: group2.a, date: group2.date, from: group2.de };
     this.group3 = { consultation: group3.consultation, meet: group3.rendez_vous };

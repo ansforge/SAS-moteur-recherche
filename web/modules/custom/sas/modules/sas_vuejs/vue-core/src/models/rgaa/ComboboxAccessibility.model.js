@@ -1,27 +1,17 @@
 export default class ComboboxAccessibility {
   /** @type {HTMLInputElement?} */
-  #comboboxNode;
+  #comboboxNode = null;
 
   /** @type {HTMLLIElement[]} */
-  #optionNodes;
+  #optionNodes = [];
 
-  #currentOptionIndex;
+  #currentOptionIndex = -1;
 
   /** @type {import('vue').Ref<string>?} */
-  #inputText;
+  #inputText = null;
 
-  constructor() {
-    this.#comboboxNode = null;
-
-    this.#optionNodes = [];
-
-    this.#currentOptionIndex = -1;
-
-    this.#inputText = null;
-
-    /** Tells wether or not the last keypress action was captured by this model */
-    this.keyFlag = false;
-  }
+  /** Tells wether or not the last keypress action was captured by this model */
+  keyFlag = false;
 
   listBoxIsEmpty = () => (this.#optionNodes.length === 0);
 

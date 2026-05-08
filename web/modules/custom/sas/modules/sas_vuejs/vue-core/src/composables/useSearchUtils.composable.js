@@ -10,7 +10,7 @@ import usePayload from './usePayload.composable';
 import useAnalytics from './useAnalytics.composable';
 import useSearchApiCalls from './useSearchApiCalls.composable';
 
-export default () => {
+export default function useSearchUtils() {
   const { createSearchPayload } = usePayload();
   const { launchLogsForLrm } = useAnalytics();
   const { getApiResults } = useSearchApiCalls();
@@ -65,4 +65,4 @@ export default () => {
   return {
     configureSearchPrefDoctor,
   };
-};
+}
