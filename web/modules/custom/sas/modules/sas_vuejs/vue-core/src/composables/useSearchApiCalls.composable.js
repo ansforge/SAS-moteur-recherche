@@ -10,7 +10,7 @@ import {
 } from '@/stores';
 import usePayload from './usePayload.composable';
 
-export default () => {
+export default function useSearchApiCalls() {
   const { createSearchPayload, createSasApiPayload, createAggregatorPayload } = usePayload();
 
   const lrmDataStore = useLrmData();
@@ -60,14 +60,14 @@ export default () => {
         ...searchDataStore.paginationData,
         ...res.infos,
         ngroups: res?.data?.grouped?.ss_field_custom_group?.ngroups || 0,
-        page: parseInt(res.infos?.page, 10),
+        page: Number.parseInt(res.infos?.page, 10),
       });
     } else {
       searchDataStore.paginationDataUnfiltered.setPaginationData({
         ...searchDataStore.paginationDataUnfiltered,
         ...res.infos,
         ngroups: res?.data?.grouped?.ss_field_custom_group?.ngroups || 0,
-        page: parseInt(res.infos?.page, 10),
+        page: Number.parseInt(res.infos?.page, 10),
       });
     }
 
@@ -142,4 +142,4 @@ export default () => {
     getApiResults,
     getSOLRresults,
   };
-};
+}
