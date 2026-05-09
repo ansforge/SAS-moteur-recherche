@@ -2,7 +2,7 @@ import { AddressService } from '@/services';
 import { AddressModel } from '@/models';
 import useSearchParams from './useSearchParams.composable';
 
-export default () => {
+const useSearchMap = () => {
   const { getLocationFromParams } = useSearchParams();
   let postCodeFromParams = 0;
   let position = {};
@@ -88,3 +88,5 @@ export default () => {
     fetchBestResult,
   };
 };
+
+export default useSearchMap;

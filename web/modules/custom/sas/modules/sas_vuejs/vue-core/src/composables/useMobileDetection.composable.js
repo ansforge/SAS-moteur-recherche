@@ -2,7 +2,7 @@ import {
  onMounted, onBeforeUnmount, provide, ref,
 } from 'vue';
 
-export default () => {
+function useMobileDetection() {
   const isLessThanDesktop = ref(window.innerWidth < 1200);
   const isLessThanLargeDesktop = ref(window.innerWidth < 1280);
   const isDesktop = ref(window.innerWidth >= 1200);
@@ -38,4 +38,6 @@ export default () => {
     isLargeDesktop,
     isScreenMdMin,
   };
-};
+}
+
+export default useMobileDetection;
