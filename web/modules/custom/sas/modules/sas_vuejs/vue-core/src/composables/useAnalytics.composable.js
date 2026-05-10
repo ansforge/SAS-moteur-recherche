@@ -2,7 +2,7 @@ import { useLrmData } from '@/stores';
 import { LrmService } from '@/services';
 import { routeHelper } from '@/helpers';
 
-export default () => {
+function useAnalytics() {
   const lrmDataStore = useLrmData();
 
   /**
@@ -23,4 +23,6 @@ export default () => {
   return {
     launchLogsForLrm,
   };
-};
+}
+
+export default useAnalytics;

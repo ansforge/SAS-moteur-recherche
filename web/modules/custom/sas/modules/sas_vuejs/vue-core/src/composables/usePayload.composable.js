@@ -10,7 +10,7 @@ import { PayloadModel } from '@/models';
  * @property {number} page
  */
 
-export default () => {
+const usePayload = () => {
   /**
    * Creation of the solr search payload
    * @param {object} _
@@ -34,7 +34,7 @@ export default () => {
     }
 
     payloadTemp.etb = 'treat';
-    payloadTemp.rand_id = parseInt(paginationData.rand_id, 10);
+    payloadTemp.rand_id = Number.parseInt(paginationData.rand_id, 10);
 
     if (settings.location) {
       payloadTemp.center_lat = settings.location.latitude;
@@ -43,7 +43,7 @@ export default () => {
       payloadTemp.sort = settings.location.type === 'address' ? 'distance' : 'random';
     }
 
-    payloadTemp.page = parseInt(paginationData.page, 10);
+    payloadTemp.page = Number.parseInt(paginationData.page, 10);
     payloadTemp.qty = paginationData.qty;
     payloadTemp.has_slot = settings.hasSlot ? 1 : 0;
 
@@ -122,3 +122,5 @@ export default () => {
     createAggregatorPayload,
   };
 };
+
+export default usePayload;

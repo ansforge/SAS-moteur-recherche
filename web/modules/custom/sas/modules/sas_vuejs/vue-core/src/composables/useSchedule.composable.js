@@ -1,6 +1,6 @@
 import { formatTimeZoneToHour } from '@/helpers';
 
-export default () => {
+function useSchedule() {
   function getPayloadDate(date, systemTimezone, isStartDate = false) {
     const timezoneVal = systemTimezone === 'Europe/Paris'
         ? '+01:00'
@@ -16,4 +16,6 @@ export default () => {
   return {
     getPayloadDate,
   };
-};
+}
+
+export default useSchedule;
